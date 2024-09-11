@@ -1,6 +1,6 @@
 import pickle
 import sqlite3
-from dbgpt_hub.configs.config import (CHECKER_TEMPLATE, LITERAL_ERROR_TEMPLATE,
+from lc_nl2sql.configs.config import (CHECKER_TEMPLATE, LITERAL_ERROR_TEMPLATE,
                                       MAJORITY_VOTING, NOT_NULL_ERROR_TEMPLATE,
                                       DISTINCT_ERROR_TEMPLATE,
                                       COLUMN_SELECTOR_TEMPLATE)
@@ -10,12 +10,12 @@ import os, re
 import time
 from typing import Any, Dict, Generator, List, Optional, Tuple
 
-from dbgpt_hub.configs.model_args import (
+from lc_nl2sql.configs.model_args import (
     ModelArguments,
     FinetuningArguments,
     GeneratingArguments,
 )
-from dbgpt_hub.configs.data_args import DataArguments
+from lc_nl2sql.configs.data_args import DataArguments
 from transformers import HfArgumentParser
 
 import vertexai
@@ -29,8 +29,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 class GeminiModel:
 
-    def __init__(self) -> None:
-        vertexai.init(project="400355794761", location="us-central1")
+    def __init__(self, project_id="400355794761") -> None:
+        vertexai.init(project=project_id, location="us-central1")
         self.model = GenerativeModel(model_name="gemini-1.5-pro-preview-0514")
         self.model2 = GenerativeModel(
             model_name="gemini-1.5-flash-preview-0514")

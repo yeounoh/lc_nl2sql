@@ -13,6 +13,9 @@ from lc_nl2sql.predict import predict
 def main():
     parser = argparse.ArgumentParser()
 
+    # Vertex AI project ID
+    parser.add_argument("--vertex_ai_project_id", default="618488765595")
+
     # BIRD-Bench input files
     parser.add_argument("--input_data_path", default="")
     parser.add_argument("--input_table_path", default="")
@@ -58,9 +61,10 @@ def main():
         use_column_filtering=bool(int(args.use_column_filtering)),
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
+        vertex_ai_project_id=args.vertex_ai_project_id,
     )
 
-    model = GeminiModel()
+    model = GeminiModel(project_id=args.vertex_ai_project_id)
     model._infer_args({"temperature": float(args.temperature),
                        "db_folder_path": args.db_folder_path,
                        "db_tbl_col_vals_file": args.db_tbl_col_vals_file})

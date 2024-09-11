@@ -12,11 +12,11 @@ import numpy as np
 from tqdm import tqdm
 import pandas as pd
 
-from dbgpt_hub.configs.config import (BASIC_INSTRUCTION_PROMPT,
+from lc_nl2sql.configs.config import (BASIC_INSTRUCTION_PROMPT,
                                       EXAMPLE_GENERATOR, SQL_DATA_INFO,
                                       DATA_PATH, EXAMPLE_GENERATOR2,
                                       COLUMN_SELECTOR_TEMPLATE)
-from dbgpt_hub.llm_base.api_model import GeminiModel
+from lc_nl2sql.llm_base.api_model import GeminiModel
 
 ROOT_PATH = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -40,6 +40,7 @@ class ProcessSqlData:
         use_column_filtering=False,
         filtered_schema_file="",
         db_tbl_col_vals_file="",
+        vertex_ai_project_id="",
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -56,7 +57,7 @@ class ProcessSqlData:
         self.db_tbl_col_vals_file = db_tbl_col_vals_file
 
         self.emb_model = None
-        self.model = GeminiModel()
+        self.model = GeminiModel(vertex_ai_project_id)
 
     def decode_json_file_with_ddl(self, data_file_list, table_file,
                                   db_folder_path, db_id_name, output_name,
@@ -460,5 +461,6 @@ if __name__ == "__main__":
         use_column_filtering=bool(int(args.use_column_filtering)),
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
+        vertex_ai_project_id=
     )
     process.create_sft_raw_data()

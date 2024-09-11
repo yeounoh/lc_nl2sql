@@ -1,22 +1,17 @@
-# DB-GPT-Hub: Text-to-SQL parsing with LLMs
+# Long Context Evaluation for NL2SQL
 
-This is based on the DB-GPT-Hub open source project under MIT license.
-
-`poetry.toml` contains the list of dependencies,
-```
-# install the dependencies
-poetry install
-```
-
-At a high-level, there are two key components,
-- `llm_base/api_model.py` SQL generation & agentic workflows
-- `data_process/sql_data_process.py` data preprocessing & example generation
+The work here done to Google Gemini long context models.
+Some utility functions and file structures are taken from DB-GPT-Hub open source project under MIT license.
 
 The data generation relies on CHESS column selection result,
 that can be referenced in `gen_train_eval_data.sh` (or `sql_data_process.py`) all:
 ```
 --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv
 ```
+
+At a high-level, there are two key components,
+- `llm_base/api_model.py` SQL generation & agentic workflows
+- `data_process/sql_data_process.py` data preprocessing & example generation
 
 ## Generating answer candidates
 ### Dumping all candidates into a csv file

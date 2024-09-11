@@ -13,8 +13,8 @@ from tqdm import tqdm
 from typing import List, Dict, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from dbgpt_hub.data_process.data_utils import extract_sql_prompt_dataset
-from dbgpt_hub.llm_base.api_model import GeminiModel
+from lc_nl2sql.data_process.data_utils import extract_sql_prompt_dataset
+from lc_nl2sql.llm_base.api_model import GeminiModel
 
 
 def prepare_dataset(predict_file_path: Optional[str] = None, ) -> List[Dict]:
