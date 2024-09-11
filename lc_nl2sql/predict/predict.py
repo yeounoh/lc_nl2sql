@@ -1,0 +1,160 @@
+import logging
+import os
+import json
+import sys
+
+from func_timeout import func_timeout, FunctionTimedOut
+
+ROOT_PATH = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(ROOT_PATH)
+
+from tqdm import tqdm
+from typing import List, Dict, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+from dbgpt_hub.data_process.data_utils import extract_sql_prompt_dataset
+from dbgpt_hub.llm_base.api_model import GeminiModel
+
+
+def prepare_dataset(predict_file_path: Optional[str] = None, ) -> List[Dict]:
+    with open(predict_file_path, "r") as fp:
+        data = json.load(fp)
+    predict_data = [extract_sql_prompt_dataset(item) for item in data]
+    return predict_data
+
+
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
+
+
+def inference_worker(
+        model, item,
+        input_kwargs):  # Worker function for a single inference task
+
+    def _task():
+        n_candidates = model.generating_args.num_beams
+        n_repeat = 3 if n_candidates > 1 else 1
+        cands = []
+        for i in range(n_candidates):
+            response, _ = model.chat(query=item["input"],
+                                     history=[],
+                                     **input_kwargs)
+            response = model.verify_and_correct(item["input"], response,
+                                                model.db_folder_path)
+            cands.append(response)
+        if n_candidates == 1:
+            return response
+        else:
+            query = item["input"].split(
+                '- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.'
+            )[1].split(
+                'Now generate SQLite SQL query to answer the given "Question".'
+            )[0]
+            new_cands = list()
+            for i in range(n_repeat):
+                new_cands.append(model.majority_voting(query, cands))
+            return model.majority_voting(query, new_cands)
+
+    try:
+        return func_timeout(300, _task, args=())
+    except FunctionTimedOut:
+        response, _ = model.chat(query=item["input"],
+                                     history=[],
+                                     **input_kwargs)
+        response = model.verify_and_correct(item["input"], response,
+                                                model.db_folder_path)
+        return response
+
+
+def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
+                           **input_kwargs):
+    num_threads = 50 if model.generating_args.num_beams < 3 else 25
+    if model.generating_args.num_beams > 10:
+        num_threads = 10
+
+    res_dict = {}
+    success_count, failure_count = 0, 0
+
+    # Initialization outside the executor
+    pbar = tqdm(total=len(predict_data),
+                desc="Inference Progress",
+                unit="item")
+
+    with ThreadPoolExecutor(max_workers=num_threads) as executor:
+        futures = {
+            executor.submit(inference_worker, model, item, input_kwargs): i
+            for i, item in enumerate(predict_data)
+        }
+        try:
+            for future in tqdm(as_completed(futures,
+                                            timeout=7200),
+                               total=len(futures),
+                               desc="Inference Progress",
+                               unit="item"):
+                index = futures[future]
+                result = future.result()
+                res_dict[index] = result
+                if result != "":
+                    success_count += 1
+                else:
+                    failure_count += 1
+                pbar.update(1)
+        except TimeoutError as e:
+            logging.info(e)
+            for i in range(len(predict_data)):
+                if i not in res_dict:
+                    res_dict[i] = ""
+            executor.shutdown()
+    pbar.close()
+    logging.info(
+        f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
+    )
+    return [res_dict[i] for i in range(len(predict_data))]
+
+
+def inference(model: GeminiModel, predict_data: List[Dict], **input_kwargs):
+    res = []
+    for item in tqdm(predict_data, desc="Inference Progress", unit="item"):
+        n_candidates = 1
+        cands = []
+        for i in range(n_candidates):
+            response, _ = model.chat(query=item["input"],
+                                     history=[],
+                                     **input_kwargs)
+            response = model.verify_and_correct(item["input"], response,
+                                                model.db_folder_path)
+            cands.append(response)
+        if n_candidates == 1:
+            res.append(response)
+        else:
+            query = item["input"].split(
+                'Also consider the "Rules" and some useful "Hints" if provided.'
+            )[1].split(
+                'Now generate SQLite SQL query to answer the given "Question".'
+            )[0]
+            res.append(model.majority_voting(query, cands))
+    return res
+
+
+def predict(model: GeminiModel, dump_file=True):
+    args = model.data_args
+    ## predict file can be give by param --predicted_input_filename ,output_file can be gived by param predicted_out_filename
+    predict_data = prepare_dataset(args.predicted_input_filename)
+    result = parallelized_inference(model, predict_data)
+
+    if dump_file:
+        with open(args.predicted_out_filename, "w") as f:
+            for p in result:
+                try:
+                    f.write(p.replace("\n", " ") + "\n")
+                except:
+                    f.write("Invalid Output!\n")
+    else:
+        return result
+
+
+if __name__ == "__main__":
+    model = GeminiModel()
+    model._infer_args()
+    predict(model)
