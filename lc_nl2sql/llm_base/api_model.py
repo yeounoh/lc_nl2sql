@@ -92,7 +92,7 @@ class GeminiModel:
                                               use_flash,
                                               max_retries=max_retries - 1)
             else:
-                logging.error(f"SQL generation failed for: {str(e)[:100]} ...")
+                logging.error(f"SQL generation failed for: {str(e)}")
             return ""
         resp = re.sub(r"^ite\s+", "", resp)
         resp = re.sub('\s+', ' ', resp).strip()
