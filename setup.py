@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='lc_nl2sql',
-    version='0.1.1',
+    version='0.1.2',
     description='Long Context NL2SQL',
     author='Yeounoh Chung',
     author_email='yeounoh@google.com',
