@@ -461,6 +461,6 @@ if __name__ == "__main__":
         use_column_filtering=bool(int(args.use_column_filtering)),
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
-        vertex_ai_project_id=
+        vertex_ai_project_id="400355794761",  # change appropriately
     )
     process.create_sft_raw_data()

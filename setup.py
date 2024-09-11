@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='lc_nl2sql',
-    version='0.1.0',
+    version='0.1.1',
     description='Long Context NL2SQL',
     author='Yeounoh Chung',
     author_email='yeounoh@google.com',
@@ -16,7 +16,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'lc_nl2sql = dbgpt_hub.process_and_predict:main',
+            'lc_nl2sql = lc_nl2sql.process_and_predict:main',
         ],
     },
 )
