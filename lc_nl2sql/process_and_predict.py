@@ -72,6 +72,7 @@ def main():
     dev_data = process.create_sft_raw_data(dump_file=False)
     predict_data = [extract_sql_prompt_dataset(item) for item in dev_data]
     candidate_sets = list()
+    candidate_sets.append([idx for idx in range(len(predict_data))])
     for _ in range(int(args.num_candidates)):
         result = predict.parallelized_inference(model, predict_data)
         candidate_sets.append(result)
