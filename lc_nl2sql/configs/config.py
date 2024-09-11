@@ -1,15 +1,11 @@
 import os
 
 ### path config
-ROOT_PATH = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ADAPTER_PATH = os.path.join(ROOT_PATH, "dbgpt_hub/output/adapter")
-DATA_PATH = os.path.join(ROOT_PATH, "dbgpt_hub/data")
-PREDICTED_DATA_PATH = os.path.join(ROOT_PATH,
-                                   "dbgpt_hub/data/eval_data/dev_sql.json")
-PREDICTED_OUT_FILENAME = "pred_sql.sql"
-OUT_DIR = os.path.join(ROOT_PATH, "dbgpt_hub/output/")
+ADAPTER_PATH = os.path.join(ROOT_PATH, "lc_nl2sql/output/adapter")
+DATA_PATH = os.path.join(ROOT_PATH, "lc_nl2sql/data")
+OUT_DIR = os.path.join(ROOT_PATH, "lc_nl2sql/output/")
 
 ## model constants
 IGNORE_INDEX = -100

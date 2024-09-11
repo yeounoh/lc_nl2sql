@@ -80,7 +80,7 @@ class DataArguments:
         },
     )
     dataset_dir: Optional[str] = field(
-        default="dbgpt_hub/data/",
+        default="lc_nl2sql/data/",
         metadata={"help": "The name of the folder containing datasets."},
     )
     cutoff_len: Optional[int] = field(
@@ -172,7 +172,7 @@ class DataArguments:
         metadata={"help": "Cache file to hold column values"}
     )
     predicted_input_filename: Optional[str] = field(
-        default="dbgpt_hub/data/example_text2sql_dev.json",
+        default="lc_nl2sql/data/example_text2sql_dev.json",
         metadata={"help": "Predict input filename to do pred "},
     )
     predicted_out_filename: Optional[str] = field(

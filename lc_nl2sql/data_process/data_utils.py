@@ -25,8 +25,8 @@ from datasets import (
 )
 from transformers.tokenization_utils import PreTrainedTokenizer
 
-from dbgpt_hub.configs.config import EXT2TYPE, IGNORE_INDEX
-from dbgpt_hub.configs.data_args import (
+from lc_nl2sql.configs.config import EXT2TYPE, IGNORE_INDEX
+from lc_nl2sql.configs.data_args import (
     DEFAULT_PROMPT_DICT,
     ALPACA_PROMPT_DICT,
     SQL_PROMPT_DICT,
@@ -35,8 +35,8 @@ from dbgpt_hub.configs.data_args import (
 )
 
 if TYPE_CHECKING:
-    from dbgpt_hub.configs.model_args import ModelArguments
-    from dbgpt_hub.configs.data_args import DataArguments
+    from lc_nl2sql.configs.model_args import ModelArguments
+    from lc_nl2sql.configs.data_args import DataArguments
     from datasets import IterableDataset
     from transformers import TrainingArguments, Seq2SeqTrainingArguments
 

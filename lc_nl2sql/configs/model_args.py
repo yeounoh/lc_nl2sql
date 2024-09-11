@@ -3,7 +3,7 @@ import torch
 from dataclasses import dataclass, field, asdict
 from typing import Optional, Any, Dict, Literal
 from transformers import Seq2SeqTrainingArguments
-from dbgpt_hub.configs.config import ADAPTER_PATH
+from lc_nl2sql.configs.config import ADAPTER_PATH
 
 
 @dataclass

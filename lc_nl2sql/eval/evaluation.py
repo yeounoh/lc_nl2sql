@@ -1,5 +1,5 @@
 """
-do evaluate about the predict sql in dataset spider,compare with default gold.txt 
+do evaluate about the predict sql in dataset spider,compare with default gold.txt
 --db
 """
 import os
@@ -1206,7 +1206,7 @@ if __name__ == "__main__":
         dest="db",
         type=str,
         help="the directory that contains all the databases and test suites",
-        default="./dbgpt_hub/data/spider/database",
+        default="./lc_nl2sql/data/spider/database",
     )
     parser.add_argument(
         "--table",
@@ -1258,13 +1258,13 @@ if __name__ == "__main__":
         output_file_path = (
             args.input.rsplit(".", 1)[0] + "2sql." + args.input.rsplit(".", 1)[1]
         )
-        args.gold = "./dbgpt_hub/data/eval_data/gold_natsql2sql.txt"
-        args.table = "./dbgpt_hub/data/eval_data/tables_for_natsql2sql.json"
+        args.gold = "./lc_nl2sql/data/eval_data/gold_natsql2sql.txt"
+        args.table = "./lc_nl2sql/data/eval_data/tables_for_natsql2sql.json"
     else:
         output_file_path = args.input
         # args.gold = "./eval/data/gold.txt"
-        args.gold = "./dbgpt_hub/data/eval_data/gold.txt"
-        args.table = "./dbgpt_hub/data/eval_data/tables.json"
+        args.gold = "./lc_nl2sql/data/eval_data/gold.txt"
+        args.table = "./lc_nl2sql/data/eval_data/tables.json"
     args.pred = output_file_path
 
     # only evaluating exact match needs this argument
