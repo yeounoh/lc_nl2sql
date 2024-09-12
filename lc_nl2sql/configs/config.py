@@ -19,9 +19,9 @@ EXT2TYPE = {"csv": "csv", "json": "json", "jsonl": "json", "txt": "text"}
 # text2sql dataset information for processing sql data
 SQL_DATA_INFO = [
     {
-        "data_source": "bird",
+        "data_source": "bird", # "spider"
         "db_id_name": "db_id",
-        "output_name": "SQL",
+        "output_name": "SQL",  # "query"
         "is_multiple_turn": False,
     }
 ]

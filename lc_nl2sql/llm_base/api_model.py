@@ -74,8 +74,7 @@ class GeminiModel:
                                               2: HarmBlockThreshold.BLOCK_NONE,
                                               3: HarmBlockThreshold.BLOCK_NONE,
                                               4: HarmBlockThreshold.BLOCK_NONE,
-                                          }).text.replace("```sql",
-                    s                                      "").replace(
+                                          }).text.replace("```sql","").replace(
                                                               "```", "\n")
             if "<FINAL_ANSWER>" in resp:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(

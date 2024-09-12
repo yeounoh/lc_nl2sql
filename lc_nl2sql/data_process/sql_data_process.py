@@ -12,15 +12,15 @@ import numpy as np
 from tqdm import tqdm
 import pandas as pd
 
+ROOT_PATH = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(ROOT_PATH)
+
 from lc_nl2sql.configs.config import (BASIC_INSTRUCTION_PROMPT,
                                       EXAMPLE_GENERATOR, SQL_DATA_INFO,
                                       DATA_PATH, EXAMPLE_GENERATOR2,
                                       COLUMN_SELECTOR_TEMPLATE)
 from lc_nl2sql.llm_base.api_model import GeminiModel
-
-ROOT_PATH = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(ROOT_PATH)
 
 
 class ProcessSqlData:
@@ -68,6 +68,14 @@ class ProcessSqlData:
             datas = []
             for data_file in data_file_list:
                 datas.extend(json.load(open(data_file)))
+            for i, data in enumerate(datas):
+                if 'question_id' not in data:
+                    data['question_id'] = i
+                if i not in col_selected_schemas:
+                    col_selected_schemas[i] = ""
+                elif (not col_selected_schemas[i] 
+                        or str(col_selected_schemas[i]) == 'nan'):
+                    col_selected_schemas[i] = ""
         else:
             logging.error("Unsupported file types")
             raise
@@ -401,7 +409,7 @@ class ProcessSqlData:
     def create_sft_raw_data(self, dump_file=True):
         dev_data = []
         for data_info in SQL_DATA_INFO:
-            if data_info['data_source'] == 'bird':
+            if data_info['data_source'] in ['bird', 'spider']:
                 col_selected_schemas = dict()
                 if self.use_column_filtering and self.filtered_schema_file:
                     df = pd.read_csv(self.filtered_schema_file)
