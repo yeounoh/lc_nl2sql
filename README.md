@@ -18,7 +18,7 @@ At a high-level, there are two key components,
 It is recommended to install the package
 ```
 python setup.py sdist bdist_wheel
-pip install dist/lc_nl2sql-0.1.4-py3-none-any.whl
+pip install dist/lc_nl2sql-0.1.5-py3-none-any.whl
 ```
 and run the following to generate the candidates into a csv file.
 ```
