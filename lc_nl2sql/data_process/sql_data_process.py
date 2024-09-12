@@ -79,11 +79,7 @@ class ProcessSqlData:
             else:
                 return s
 
-        # store comprehensive table column value examples
-        db_tbl_col_vals = dict()
-        db_table_schema_map = dict()
-        db_context = dict()
-        for item in all_tables:
+        def _process_table_schema(item):
             db_path = os.path.join(db_folder_path,
                                    item['db_id']) + f"/{item['db_id']}.sqlite"
             conn = sqlite3.connect(db_path)
@@ -97,13 +93,12 @@ class ProcessSqlData:
             primary_key = item["primary_keys"]
             foreign_keys = item["foreign_keys"]
 
-            db_tbl_col_vals[item['db_id']] = {}
-
+            tbl_col_vals = {}
             for i, table in enumerate(tables):
-                db_tbl_col_vals[item['db_id']][table] = {}
+                tbl_col_vals[table] = {}
                 for j, col in enumerate(columns):
                     if col[0] == i:
-                        db_tbl_col_vals[item['db_id']][table][col[1]] = list()
+                        tbl_col_vals[table][col[1]] = list()
                         example_vals = list()
                         try:
                             nval_limit = 5
@@ -122,11 +117,7 @@ class ProcessSqlData:
                                         f"SELECT count(DISTINCT `{col[1]}`) "
                                         f" FROM `{table}` WHERE `{col[1]}` IS NOT NULL"
                                     )
-                                    col_val_cnt = cursor.execute(
-                                        sql).fetchall()[0][0]
                                     sql = f"SELECT count(*) FROM `{table}`"
-                                    row_cnt = float(
-                                        cursor.execute(sql).fetchall()[0][0])
 
                                     def validate_email(email):
                                         pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
@@ -155,7 +146,7 @@ class ProcessSqlData:
                                             ]) > 95):
                                             nval_limit = 5
                                         else:
-                                            db_tbl_col_vals[item['db_id']][
+                                            tbl_col_vals[
                                                 table][col[1]] = [
                                                     ','.join(
                                                         map(
@@ -179,11 +170,6 @@ class ProcessSqlData:
                                 f"Failed to retrieve example values for {col[1]} due to {e}"
                             )
                         column_examples[j] = example_vals
-
-            # Extra bookeeping for text example values.
-            # This is used later for literal error fix.
-            with open(self.db_tbl_col_vals_file, "wb") as file:
-                pickle.dump(db_tbl_col_vals, file)
 
             table_schema_map = dict()
             table_creation_statements = ""
@@ -226,8 +212,37 @@ class ProcessSqlData:
                 table_creation_statements += "".join(ddl_statements)
                 if name not in table_schema_map:
                     table_schema_map[name] = ddl_statements
-            db_context[item['db_id']] = table_creation_statements
-            db_table_schema_map[item['db_id']] = table_schema_map
+            return tbl_col_vals, table_creation_statements, table_schema_map
+
+        n_workers = 40
+
+        # store comprehensive table column value examples
+        db_tbl_col_vals = dict()
+        db_table_schema_map = dict()
+        db_context = dict()
+
+        with ThreadPoolExecutor(max_workers=n_workers) as executor:
+            futures = {
+                executor.submit(_process_table_schema, item): item['db_id']
+                for item in all_tables
+            }
+            try:
+                for future in tqdm(as_completed(futures),
+                                   total=len(futures),
+                                   desc="Processing table schemas",
+                                   unit="item"):
+                    tbl_col_vals, table_creation_statements, table_schema_map = future.result()
+                    db_tbl_col_vals[futures[future]] = tbl_col_vals
+                    db_context[futures[future]] = table_creation_statements
+                    db_table_schema_map[futures[future]] = table_schema_map
+            except TimeoutError as e:
+                logging.error(e)
+                raise
+
+        # Extra bookeeping for text example values.
+        # This is used later for literal error fix.
+        with open(self.db_tbl_col_vals_file, "wb") as file:
+            pickle.dump(db_tbl_col_vals, file)
 
         def extract_k_tables(db_context, target_db_id, k):
             create_stmts = db_context[target_db_id].split(";")[:k]
@@ -269,7 +284,7 @@ class ProcessSqlData:
                     tables.append(table_schema_map.get(tname, ""))
             return "".join(tables)
 
-        def _data_worker1(db_id_key):
+        def _generate_examples(db_id_key):
             schema = db_context[db_id_key]
             examples = ""
             if self.num_examples > 0 and self.synthetic_examples:
@@ -280,21 +295,17 @@ class ProcessSqlData:
             return examples
 
         db_examples = dict()
-        pbar = tqdm(total=len(db_context.keys()),
-                    desc="Inference Progress",
-                    unit="item")
-        with ThreadPoolExecutor(max_workers=10) as executor:
+        with ThreadPoolExecutor(max_workers=n_workers) as executor:
             futures = {
-                executor.submit(_data_worker1, db_id_key): db_id_key
+                executor.submit(_generate_examples, db_id_key): db_id_key
                 for db_id_key in db_context.keys()
             }
             try:
-                for future in tqdm(as_completed(futures, timeout=5000),
+                for future in tqdm(as_completed(futures),
                                    total=len(futures),
-                                   desc="Inference Progress",
+                                   desc="Generate examples",
                                    unit="item"):
                     db_examples[futures[future]] = future.result()
-                    pbar.update(1)
             except TimeoutError as e:
                 logging.error(e)
                 for k in db_context.keys():
@@ -302,7 +313,7 @@ class ProcessSqlData:
                         db_examples[k] = ""
                 executor.shutdown()
 
-        def _data_worker2(data):
+        def _context_packing(data):
             if data[db_id_name] in db_context.keys():
                 # all tables and columns with primary and foreign keys.
                 schema = db_context[data[db_id_name]]
@@ -353,21 +364,19 @@ class ProcessSqlData:
                 return input
 
         res_dict = {}
-        pbar = tqdm(total=len(datas), desc="Inference Progress", unit="item")
-        with ThreadPoolExecutor(max_workers=40) as executor:
+        with ThreadPoolExecutor(max_workers=n_workers) as executor:
             futures = {
-                executor.submit(_data_worker2, item): i
+                executor.submit(_context_packing, item): i
                 for i, item in enumerate(datas)
             }
             try:
-                for future in tqdm(as_completed(futures, timeout=5000),
+                for future in tqdm(as_completed(futures),
                                    total=len(futures),
-                                   desc="Inference Progress",
+                                   desc="Context packing",
                                    unit="item"):
                     index = futures[future]
                     result = future.result()
                     res_dict[index] = result
-                    pbar.update(1)
             except TimeoutError as e:
                 logging.error(e)
                 for i in range(len(datas)):

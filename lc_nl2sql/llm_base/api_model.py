@@ -75,7 +75,7 @@ class GeminiModel:
                                               3: HarmBlockThreshold.BLOCK_NONE,
                                               4: HarmBlockThreshold.BLOCK_NONE,
                                           }).text.replace("```sql",
-                                                          "").replace(
+                    s                                      "").replace(
                                                               "```", "\n")
             if "<FINAL_ANSWER>" in resp:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
@@ -88,7 +88,7 @@ class GeminiModel:
                 time.sleep(10)
                 if max_retries > 0:
                     return self._generate_sql(query,
-                                              temperature,
+                                              temperature + 0.1,
                                               use_flash,
                                               max_retries=max_retries - 1)
             else:
