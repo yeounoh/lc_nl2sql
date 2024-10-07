@@ -41,6 +41,7 @@ class ProcessSqlData:
         filtered_schema_file="",
         db_tbl_col_vals_file="",
         vertex_ai_project_id="",
+        tbr_selection_file="",
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -55,6 +56,7 @@ class ProcessSqlData:
         self.use_column_filtering = use_column_filtering
         self.filtered_schema_file = filtered_schema_file
         self.db_tbl_col_vals_file = db_tbl_col_vals_file
+        self.tbr_selection_file = tbr_selection_file
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -79,6 +81,16 @@ class ProcessSqlData:
         else:
             logging.error("Unsupported file types")
             raise
+
+        # Simulated TBR result. If not present, we do a static retrieval
+        # over available DB tables.
+        qid_tbr = dict()
+        if self.tbr_selection_file:
+            with open(self.tbr_selection_file, 'r') as file:
+                tbr_selection = json.load(file)
+            for i, v in enumerate(tbr_selection):
+                qid = int(v['question_id'])
+                qid_tbr[qid] = [t.split('/')[-1] for t in v['response_tables']]
 
         def truncate_example(val):
             s = str(val)
@@ -252,8 +264,21 @@ class ProcessSqlData:
         with open(self.db_tbl_col_vals_file, "wb") as file:
             pickle.dump(db_tbl_col_vals, file)
 
-        def extract_k_tables(db_context, target_db_id, k):
-            create_stmts = db_context[target_db_id].split(";")[:k]
+        def extract_k_tables(db_context, target_db_id, k, tbr_result=[]):
+            # retrieve k tables for random
+            create_stmts = db_context[target_db_id].split(";")
+            if len(tbr_result) > 0:
+                # retrieve k tables based on the simulation result
+                retrieved_table_stmts = set()
+                for retrieved_tbl_name in tbr_result[:k]:
+                    for stmt in create_stmts:
+                        if retrieved_tbl_name in stmt.split('(')[0]:
+                            retrieved_table_stmts.add(stmt)
+                create_stmts = retrieved_table_stmts
+            else:
+                create_stmts = create_stmts[:k]
+                
+            # add extra tables from other DBs
             extra_table_cnt = k - len(create_stmts)
             while extra_table_cnt > 0:
                 for key, val in db_context.items():
@@ -327,7 +352,8 @@ class ProcessSqlData:
                 schema = db_context[data[db_id_name]]
                 if self.extra_top_k > 0 and data['difficulty'] != 'simple':
                     schema = extract_k_tables(db_context, data[db_id_name],
-                                              self.extra_top_k)
+                                              self.extra_top_k, qid_tbr[int(
+                                    data['question_id'])])
 
                 examples = ""
                 if self.num_examples > 0:
@@ -460,6 +486,7 @@ if __name__ == "__main__":
     # this contains filtered database schema by question_id (key)
     parser.add_argument("--filtered_schema_file", default="")
     parser.add_argument("--db_tbl_col_vals_file", default="db_tbl_col_vals.pickle")
+    parser.add_argument("--tbr_selection_file", default="")
 
     args = parser.parse_args()
 
@@ -479,5 +506,6 @@ if __name__ == "__main__":
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
         vertex_ai_project_id="400355794761",  # change appropriately
+        tbr_selection_file=args.tbr_selection_file,
     )
     process.create_sft_raw_data()

@@ -1,4 +1,3 @@
-# base spider dataset ,produce train and dev data
 python lc_nl2sql/data_process/sql_data_process.py \
   --use_column_filtering 1 \
   --num_examples 50 \
