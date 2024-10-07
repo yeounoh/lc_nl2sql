@@ -1,7 +1,7 @@
 import os
 
 ### path config
-ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 ADAPTER_PATH = os.path.join(ROOT_PATH, "lc_nl2sql/output/adapter")
 DATA_PATH = os.path.join(ROOT_PATH, "lc_nl2sql/data")

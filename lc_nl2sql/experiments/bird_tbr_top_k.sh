@@ -12,7 +12,7 @@ python lc_nl2sql/predict/predict.py \
   --num_beams 1 \
   --temperature 0.5 \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
-  --predicted_out_filename "lc_nl2sql/output/pred/bird_tbr_top_all_tables" >> ${pred_log}
+  --predicted_out_filename "lc_nl2sql/output/pred/bird_tbr_top_all_tables"
 
 # Use simulated TBR with top_k and draw tables across the DBs.
 k_values=(1 7 13 100) 
@@ -30,7 +30,6 @@ for k in "${k_values[@]}"; do
     --num_beams 1 \
     --temperature 0.5 \
     --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
-    --predicted_out_filename "lc_nl2sql/output/pred/bird_tbr_top_$k" >> ${pred_log}
-
+    --predicted_out_filename "lc_nl2sql/output/pred/bird_tbr_top_$k" 
 
 done
