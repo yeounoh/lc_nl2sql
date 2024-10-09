@@ -241,28 +241,45 @@ class ProcessSqlData:
         db_table_schema_map = dict()
         db_context = dict()
 
-        with ThreadPoolExecutor(max_workers=n_workers) as executor:
-            futures = {
-                executor.submit(_process_table_schema, item): item['db_id']
-                for item in all_tables
-            }
-            try:
-                for future in tqdm(as_completed(futures),
-                                   total=len(futures),
-                                   desc="Processing table schemas",
-                                   unit="item"):
-                    tbl_col_vals, table_creation_statements, table_schema_map = future.result()
-                    db_tbl_col_vals[futures[future]] = tbl_col_vals
-                    db_context[futures[future]] = table_creation_statements
-                    db_table_schema_map[futures[future]] = table_schema_map
-            except TimeoutError as e:
-                logging.error(e)
-                raise
+        # Load cached contents
+        if os.path.exists('db_context.cache'):
+            with open('db_context.cache', 'rb') as file:
+                db_context = pickle.load(file)
+        if os.path.exists('db_table_schema_map.cache'):
+            with open('db_table_schema_map.cache', 'rb') as file:
+                db_table_schema_map = pickle.load(file)
+        if os.path.exists(self.db_tbl_col_vals_file):
+            with open(self.db_tbl_col_vals_file, "wb") as file:
+                db_tbl_col_vals = pickle.load(self.db_tbl_col_vals_file, 'rb')
 
-        # Extra bookeeping for text example values.
-        # This is used later for literal error fix.
-        with open(self.db_tbl_col_vals_file, "wb") as file:
-            pickle.dump(db_tbl_col_vals, file)
+        if len(db_tbl_col_vals) == 0 or len(db_table_schema_map) == 0 and len(db_context) == 0:
+            with ThreadPoolExecutor(max_workers=n_workers) as executor:
+                futures = {
+                    executor.submit(_process_table_schema, item): item['db_id']
+                    for item in all_tables
+                }
+                try:
+                    for future in tqdm(as_completed(futures),
+                                    total=len(futures),
+                                    desc="Processing table schemas",
+                                    unit="item"):
+                        tbl_col_vals, table_creation_statements, table_schema_map = future.result()
+                        db_tbl_col_vals[futures[future]] = tbl_col_vals
+                        db_context[futures[future]] = table_creation_statements
+                        db_table_schema_map[futures[future]] = table_schema_map
+                except TimeoutError as e:
+                    logging.error(e)
+                    raise
+
+            # Caching for faster experimentation.
+            with open('db_context.cache', 'wb') as file:
+                pickle.dump(db_context, file)
+            with open('db_table_schema_map.cache', 'wb') as file:
+                pickle.dump(db_table_schema_map, file)
+            # Extra bookeeping for text example values.
+            # This is used later for literal error fix.
+            with open(self.db_tbl_col_vals_file, "wb") as file:
+                pickle.dump(db_tbl_col_vals, file)
 
         def extract_k_tables(db_context, target_db_id, k, tbr_result=[]):
             # retrieve k tables for random
