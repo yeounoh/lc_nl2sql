@@ -38,6 +38,7 @@ class ProcessSqlData:
         column_description=False,
         column_examples=False,
         use_column_filtering=False,
+        num_col_values=50,
         filtered_schema_file="",
         db_tbl_col_vals_file="",
         vertex_ai_project_id="",
@@ -54,6 +55,7 @@ class ProcessSqlData:
         self.column_description = column_description
         self.column_examples = column_examples
         self.use_column_filtering = use_column_filtering
+        self.num_col_values = num_col_values
         self.filtered_schema_file = filtered_schema_file
         self.db_tbl_col_vals_file = db_tbl_col_vals_file
         self.tbr_selection_file = tbr_selection_file
@@ -152,7 +154,7 @@ class ProcessSqlData:
                                         or 'url' in col[1].lower()
                                         or 'uuid' in col[1].lower())
                                     if not too_many_col_vals:
-                                        nval_limit = 50
+                                        nval_limit = self.num_col_values
                                         sql = (
                                             f'SELECT DISTINCT `{col[1]}` FROM `{table}` WHERE'
                                             f' `{col[1]}` IS NOT NULL')
@@ -503,6 +505,7 @@ if __name__ == "__main__":
     parser.add_argument("--column_description", default=True)
     parser.add_argument("--column_examples", default=True)
     parser.add_argument("--use_column_filtering", default=False)
+    parser.add_argument("--num_col_values", default=50)
     # filtered_schema_file dict (csv) from CHESS column selection
     # (selected_schema_with_connections);
     # column names: question_id,selected_schema_with_connections
@@ -526,6 +529,7 @@ if __name__ == "__main__":
         column_description=bool(int(args.column_description)),
         column_examples=bool(int(args.column_examples)),
         use_column_filtering=bool(int(args.use_column_filtering)),
+        num_col_values=int(args.num_col_values),
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
         vertex_ai_project_id="400355794761",  # change appropriately
