@@ -14,6 +14,10 @@ python lc_nl2sql/predict/predict.py \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --predicted_out_filename "lc_nl2sql/output/pred/bird_tbr_top_all_tables"
 
+python lc_nl2sql/predict/count_token.py \
+  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+  --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_tbr_top_all_tables"
+
 # Use simulated TBR with top_k and draw tables across the DBs.
 k_values=(1 7 13 100) 
 for k in "${k_values[@]}"; do
@@ -31,5 +35,9 @@ for k in "${k_values[@]}"; do
     --temperature 0.5 \
     --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
     --predicted_out_filename "lc_nl2sql/output/pred/bird_tbr_top_$k" 
+
+  python lc_nl2sql/predict/count_token.py \
+    --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+    --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_tbr_top_$k" 
 
 done
