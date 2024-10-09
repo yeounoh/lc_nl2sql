@@ -242,16 +242,21 @@ class ProcessSqlData:
         db_context = dict()
 
         # Load cached contents
-        if os.path.exists('db_context.cache'):
-            with open('db_context.cache', 'rb') as file:
-                db_context = pickle.load(file)
-        if os.path.exists('db_table_schema_map.cache'):
-            with open('db_table_schema_map.cache', 'rb') as file:
-                db_table_schema_map = pickle.load(file)
-        if os.path.exists(self.db_tbl_col_vals_file):
-            with open(self.db_tbl_col_vals_file, "wb") as file:
-                db_tbl_col_vals = pickle.load(self.db_tbl_col_vals_file, 'rb')
-
+        try:
+            if os.path.exists('db_context.cache'):
+                with open('db_context.cache', 'rb') as file:
+                    db_context = pickle.load(file)
+            if os.path.exists('db_table_schema_map.cache'):
+                with open('db_table_schema_map.cache', 'rb') as file:
+                    db_table_schema_map = pickle.load(file)
+            if os.path.exists(self.db_tbl_col_vals_file):
+                with open(self.db_tbl_col_vals_file, "rb") as file:
+                    db_tbl_col_vals = pickle.load(file)
+        except:
+            db_tbl_col_vals = dict()
+            db_table_schema_map = dict()
+            db_context = dict()
+    
         if len(db_tbl_col_vals) == 0 or len(db_table_schema_map) == 0 and len(db_context) == 0:
             with ThreadPoolExecutor(max_workers=n_workers) as executor:
                 futures = {
@@ -291,7 +296,7 @@ class ProcessSqlData:
                     for stmt in create_stmts:
                         if retrieved_tbl_name in stmt.split('(')[0]:
                             retrieved_table_stmts.add(stmt)
-                create_stmts = retrieved_table_stmts
+                create_stmts = list(retrieved_table_stmts)
             else:
                 create_stmts = create_stmts[:k]
                 
@@ -369,8 +374,9 @@ class ProcessSqlData:
                 schema = db_context[data[db_id_name]]
                 if self.extra_top_k > 0 and data['difficulty'] != 'simple':
                     schema = extract_k_tables(db_context, data[db_id_name],
-                                              self.extra_top_k, qid_tbr[int(
-                                    data['question_id'])])
+                                              self.extra_top_k, 
+                                              qid_tbr[int(data['question_id'])] if int(data['question_id']) in qid_tbr else []
+                                              )
 
                 examples = ""
                 if self.num_examples > 0:

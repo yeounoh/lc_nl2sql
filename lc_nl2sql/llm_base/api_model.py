@@ -57,6 +57,10 @@ class GeminiModel:
             self.db_folder_path = self.data_args.db_folder_path
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
 
+    def _count_token(self, prompt):
+        response = self.model.count_tokens(prompt)
+        return response.total_tokens
+    
     def _generate_sql(self,
                       query,
                       temperature=0.5,

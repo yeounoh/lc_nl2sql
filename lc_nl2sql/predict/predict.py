@@ -2,6 +2,7 @@ import logging
 import os
 import json
 import sys
+import numpy as np
 
 from func_timeout import func_timeout, FunctionTimedOut
 
@@ -65,7 +66,6 @@ def inference_worker(
         response = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path)
         return response
-
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
