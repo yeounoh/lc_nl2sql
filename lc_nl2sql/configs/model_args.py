@@ -132,6 +132,12 @@ class GeneratingArguments:
             "help": "Whether or not to use sampling, use greedy decoding otherwise."
         },
     )
+    use_disambiguation: Optional[bool] = field(
+        default=True,
+        metadata={
+            "help": "Whether or not to use disambiguation feature with all column values."
+        },
+    )
     temperature: Optional[float] = field(
         default=0.5,
         metadata={"help": "The value used to modulate the next token probabilities."},

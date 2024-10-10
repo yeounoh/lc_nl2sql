@@ -41,6 +41,7 @@ class GeminiModel:
         if args:
             self.data_args = DataArguments
             self.generating_args = GeneratingArguments
+            self.use_disambiguation = args.get("use_disambiguation", True)
             self.db_folder_path = args.get("db_folder_path", "")
             self.temperature = args.get("temperature", 0.5)
             self.db_tbl_col_vals_file = args.get("db_tbl_col_vals_file", "")
@@ -54,6 +55,7 @@ class GeminiModel:
             # Initial generation and error correction uses this.
             # Set to 0.5 by default.
             self.temperature = self.generating_args.temperature
+            self.use_disambiguation = self.generating_args.use_disambiguation
             self.db_folder_path = self.data_args.db_folder_path
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
 
@@ -245,7 +247,7 @@ class GeminiModel:
 
         tried_sql = [_sql]
         while not valid and retry_cnt < max_retries:
-            if err == "empty results":
+            if err == "empty results" and self.use_disambiguation:
                 _sql = fix_literal_error(_sql, db_name, tried_sql)
             else:
                 _sql = fix_error(_sql, err)

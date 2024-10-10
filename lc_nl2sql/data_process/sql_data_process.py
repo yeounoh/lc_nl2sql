@@ -39,6 +39,7 @@ class ProcessSqlData:
         column_examples=False,
         use_column_filtering=False,
         num_col_values=50,
+        use_column_filtering_for_generation=False,
         filtered_schema_file="",
         db_tbl_col_vals_file="",
         vertex_ai_project_id="",
@@ -56,6 +57,7 @@ class ProcessSqlData:
         self.column_examples = column_examples
         self.use_column_filtering = use_column_filtering
         self.num_col_values = num_col_values
+        self.use_column_filtering_for_generation = use_column_filtering_for_generation
         self.filtered_schema_file = filtered_schema_file
         self.db_tbl_col_vals_file = db_tbl_col_vals_file
         self.tbr_selection_file = tbr_selection_file
@@ -370,36 +372,43 @@ class ProcessSqlData:
                         db_examples[k] = ""
                 executor.shutdown()
 
+        def _filter_schema(schema):
+            filtered_schema =""
+            if len(col_selected_schemas) > 0:
+                filtered_schema = col_selected_schemas[int(
+                    data['question_id'])]
+            if not filtered_schema:
+                filtered_col_json = select_table_columns(
+                    schema, data['question'], data['evidence'])
+                table_schema_map = db_table_schema_map[
+                    data[db_id_name]]
+                filtered_schema = filter_tables(
+                    table_schema_map, filtered_col_json)
+            return filtered_schema
+        
         def _context_packing(data):
             if data[db_id_name] in db_context.keys():
                 # all tables and columns with primary and foreign keys.
                 schema = db_context[data[db_id_name]]
-                if self.extra_top_k > 0 and data['difficulty'] != 'simple':
+                if self.extra_top_k > 0:
                     schema = extract_k_tables(db_context, data[db_id_name],
                                               self.extra_top_k, 
                                               qid_tbr[int(data['question_id'])] if int(data['question_id']) in qid_tbr else []
                                               )
+                if self.use_column_filtering or self.use_column_filtering_for_generation:
+                    filtered_schema = _filter_schema(schema)
 
                 examples = ""
                 if self.num_examples > 0:
                     if self.synthetic_examples:
                         examples = db_examples[data[db_id_name]]
                         if self.use_column_filtering:
-                            if len(col_selected_schemas) > 0:
-                                filtered_schema = col_selected_schemas[int(
-                                    data['question_id'])]
-                            else:
-                                filtered_col_json = select_table_columns(
-                                    schema, data['question'], data['evidence'])
-                                table_schema_map = db_table_schema_map[
-                                    data[db_id_name]]
-                                filtered_schema = filter_tables(
-                                    table_schema_map, filtered_col_json)
                             examples += "\n" + generate_k_examples(
                                 filtered_schema,
                                 self.num_examples // 2,
                                 diverse_set=False)
                     else:
+                        # TODO: enable example selection
                         logging.error("Example selection disabled.")
                         raise
 
@@ -407,7 +416,7 @@ class ProcessSqlData:
                 input_instruction = BASIC_INSTRUCTION_PROMPT.format(
                     db_name=data[db_id_name],
                     hints=hints,
-                    schema=schema,
+                    schema=filtered_schema if self.use_column_filtering_for_generation else schema,
                     examples=examples,
                     documentation="",
                     question=data["question"])
@@ -504,10 +513,10 @@ if __name__ == "__main__":
         default=0)
     parser.add_argument("--column_description", default=True)
     parser.add_argument("--column_examples", default=True)
-    parser.add_argument("--use_column_filtering", default=False)
+    parser.add_argument("--use_column_filtering", default=False)  # for example generation
     parser.add_argument("--num_col_values", default=50)
+    parser.add_argument("--use_column_filtering_for_generation", default=False)
     # filtered_schema_file dict (csv) from CHESS column selection
-    # (selected_schema_with_connections);
     # column names: question_id,selected_schema_with_connections
     # this contains filtered database schema by question_id (key)
     parser.add_argument("--filtered_schema_file", default="")
@@ -530,6 +539,7 @@ if __name__ == "__main__":
         column_examples=bool(int(args.column_examples)),
         use_column_filtering=bool(int(args.use_column_filtering)),
         num_col_values=int(args.num_col_values),
+        use_column_filtering_for_generation=bool(int(args.use_column_filtering_for_generation)),
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
         vertex_ai_project_id="400355794761",  # change appropriately
