@@ -129,51 +129,83 @@ class GeneratingArguments:
     do_sample: Optional[bool] = field(
         default=True,
         metadata={
-            "help": "Whether or not to use sampling, use greedy decoding otherwise."
+            "help":
+            "Whether or not to use sampling, use greedy decoding otherwise."
+        },
+    )
+    use_disambiguation: Optional[bool] = field(
+        default=True,
+        metadata={
+            "help":
+            "Whether or not to use disambiguation feature with all column values."
+        },
+    )
+    use_self_correction: Optional[bool] = field(
+        default=True,
+        metadata={
+            "help":
+            "Whether or not to use self error correction feature."
+        },
+    )
+    measure_self_correction_tokens: Optional[bool] = field(
+        default=False,
+        metadata={
+            "help":
+            "Whether or not to measure and record additional tokens used for self-correction loop."
         },
     )
     temperature: Optional[float] = field(
         default=0.5,
-        metadata={"help": "The value used to modulate the next token probabilities."},
+        metadata={
+            "help": "The value used to modulate the next token probabilities."
+        },
     )
     top_p: Optional[float] = field(
         default=0.7,
         metadata={
-            "help": "The smallest set of most probable tokens with probabilities that add up to top_p or higher are kept."
+            "help":
+            "The smallest set of most probable tokens with probabilities that add up to top_p or higher are kept."
         },
     )
     top_k: Optional[int] = field(
         default=50,
         metadata={
-            "help": "The number of highest probability vocabulary tokens to keep for top-k filtering."
+            "help":
+            "The number of highest probability vocabulary tokens to keep for top-k filtering."
         },
     )
     num_beams: Optional[int] = field(
         default=1,
-        metadata={"help": "Number of beams for beam search. 1 means no beam search."},
+        metadata={
+            "help": "Number of beams for beam search. 1 means no beam search."
+        },
     )
     max_length: Optional[int] = field(
         default=None,
         metadata={
-            "help": "The maximum length the generated tokens can have. It can be overridden by max_new_tokens."
+            "help":
+            "The maximum length the generated tokens can have. It can be overridden by max_new_tokens."
         },
     )
     max_new_tokens: Optional[int] = field(
         default=512,
         metadata={
-            "help": "The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt."
+            "help":
+            "The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt."
         },
     )
     repetition_penalty: Optional[float] = field(
         default=1.0,
         metadata={
-            "help": "The parameter for repetition penalty. 1.0 means no penalty."
+            "help":
+            "The parameter for repetition penalty. 1.0 means no penalty."
         },
     )
     length_penalty: Optional[float] = field(
         default=1.0,
         metadata={
-            "help": "Exponential penalty to the length that is used with beam-based generation."
+            "help":
+            "Exponential penalty to the length that is used with beam-based generation."
         },
     )
 

@@ -30,10 +30,7 @@ def predict(model: GeminiModel, dump_file=True):
 
     if dump_file:
         with open(args.predicted_out_filename, "w") as f:
-            try:
-                f.write(str(avg_tok) + ", " + str(std_tok))
-            except:
-                f.write("Invalid Output!\n")
+            f.write(str(avg_tok) + ", " + str(std_tok))
     else:
         return avg_tok, std_tok
 

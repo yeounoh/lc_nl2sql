@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Use different number of column values
-n_col_values=(0 5 10 25 50 75 100) 
+n_col_values=(0 5 10 25 50 75 100)
 for k in "${n_col_values[@]}"; do
-  echo "Running with top_k = $k"
+  echo "Running with num_col_values = $k"
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \

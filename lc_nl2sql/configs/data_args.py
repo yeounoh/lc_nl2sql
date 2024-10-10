@@ -172,11 +172,15 @@ class DataArguments:
     )
     predicted_input_filename: Optional[str] = field(
         default="lc_nl2sql/data/example_text2sql_dev.json",
-        metadata={"help": "Predict input filename to do pred "},
+        metadata={"help": "Predict input filename to do pred"},
     )
     predicted_out_filename: Optional[str] = field(
-        default="pred_sql.sql",
+        default="",
         metadata={"help": "Filename to save predicted outcomes"},
+    )
+    extra_token_measurement_filename: Optional[str] = field(
+        default="",
+        metadata={"help": "Filename to save extra tokens used for error correction measurements"},
     )
 
     def init_for_training(self):  # support mixing multiple datasets

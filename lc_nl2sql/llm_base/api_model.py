@@ -41,6 +41,9 @@ class GeminiModel:
         if args:
             self.data_args = DataArguments
             self.generating_args = GeneratingArguments
+            self.use_self_correction = args.get("use_self_correction", True)
+            self.use_disambiguation = args.get("use_disambiguation", True)
+            self.measure_self_correction_tokens = args.get("measure_self_correction_tokens", False)
             self.db_folder_path = args.get("db_folder_path", "")
             self.temperature = args.get("temperature", 0.5)
             self.db_tbl_col_vals_file = args.get("db_tbl_col_vals_file", "")
@@ -54,13 +57,16 @@ class GeminiModel:
             # Initial generation and error correction uses this.
             # Set to 0.5 by default.
             self.temperature = self.generating_args.temperature
+            self.use_self_correction = self.generating_args.use_self_correction
+            self.use_disambiguation = self.generating_args.use_disambiguation
+            self.measure_self_correction_tokens = self.generating_args.measure_self_correction_tokens
             self.db_folder_path = self.data_args.db_folder_path
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
 
     def _count_token(self, prompt):
         response = self.model.count_tokens(prompt)
         return response.total_tokens
-    
+
     def _generate_sql(self,
                       query,
                       temperature=0.5,
@@ -78,7 +84,8 @@ class GeminiModel:
                                               2: HarmBlockThreshold.BLOCK_NONE,
                                               3: HarmBlockThreshold.BLOCK_NONE,
                                               4: HarmBlockThreshold.BLOCK_NONE,
-                                          }).text.replace("```sql","").replace(
+                                          }).text.replace("```sql",
+                                                          "").replace(
                                                               "```", "\n")
             if "<FINAL_ANSWER>" in resp:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
@@ -117,11 +124,15 @@ class GeminiModel:
         return sql
 
     def verify_and_correct(self, query, sql, db_folder_path):
+        if not self.use_self_correction:
+            return sql
 
         def syntax_fix(s):
             pattern = r"(?<!\\)'"
+
             def replace_func(match):
                 return match.group().replace("'", '"')
+
             modified_sql = re.sub(pattern, replace_func, r"{}".format(s))
             return modified_sql
 
@@ -169,7 +180,7 @@ class GeminiModel:
             new_sql = self._generate_sql(new_prompt,
                                          use_flash=False,
                                          temperature=self.temperature)
-            return new_sql
+            return new_sql, self._count_token(new_prompt) if self.measure_self_correction_tokens else 0
 
         def fix_literal_error(s, db_id, tried_sql):
             if s == "":
@@ -208,7 +219,7 @@ class GeminiModel:
             new_sql = self._generate_sql(new_prompt,
                                          use_flash=False,
                                          temperature=0.9)
-            return new_sql
+            return new_sql, self._count_token(new_prompt) if self.measure_self_correction_tokens else 0
 
         def isValidSQL(sql, db):
             conn = sqlite3.connect(db)
@@ -243,19 +254,23 @@ class GeminiModel:
         retry_cnt, max_retries = 0, 3
         valid, err, row_cnt = isValidSQL(_sql, db_path)
 
+        # this will tick if --measure_self_correction_tokens is set.
+        accumulated_token_count = 0
+
         tried_sql = [_sql]
         while not valid and retry_cnt < max_retries:
-            if err == "empty results":
-                _sql = fix_literal_error(_sql, db_name, tried_sql)
+            if err == "empty results" and self.use_disambiguation:
+                _sql, extra_tokens = fix_literal_error(_sql, db_name, tried_sql)
             else:
-                _sql = fix_error(_sql, err)
+                _sql, extra_tokens = fix_error(_sql, err)
+            accumulated_token_count += extra_tokens
             _sql = enforce_rules(_sql, db_path)
             tried_sql.append(_sql)
             valid, err, row_cnt = isValidSQL(_sql, db_path)
             retry_cnt += 1
         if retry_cnt == max_retries:
             logging.info(f"Correction failed due to {err}: {_sql}")
-        return _sql
+        return _sql, accumulated_token_count
 
     def chat(self,
              query: str,
