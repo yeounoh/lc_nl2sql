@@ -154,7 +154,7 @@ def predict(model: GeminiModel, dump_file=True):
                     f.write("Invalid Output!\n")
         if model.measure_self_correction_tokens:
             with open(args.extra_token_measurement_filename, "w") as f:
-                f.write(np.mean(extra_tokens) + ", " + np.std(extra_tokens))
+                f.write(str(np.mean(extra_tokens)) + ", " + str(np.std(extra_tokens)))
     else:
         return result
 

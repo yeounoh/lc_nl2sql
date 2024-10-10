@@ -125,7 +125,7 @@ class GeminiModel:
 
     def verify_and_correct(self, query, sql, db_folder_path):
         if not self.use_self_correction:
-            return sql
+            return sql, 0
 
         def syntax_fix(s):
             pattern = r"(?<!\\)'"
