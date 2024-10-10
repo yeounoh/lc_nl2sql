@@ -347,7 +347,8 @@ class ProcessSqlData:
             schema = db_context[db_id_key]
             examples = ""
             if self.num_examples > 0 and self.synthetic_examples:
-                examples = generate_k_examples(schema, self.num_examples)
+                examples = generate_k_examples(schema,
+                            self.num_examples // 2 + self.num_examples % 2)
                 if not self.use_column_filtering:
                     examples += "\n" + generate_k_examples(
                         schema, self.num_examples // 2, diverse_set=False)
