@@ -510,8 +510,9 @@ if __name__ == "__main__":
                         help="Retrieve relevant examples.",
                         default=0)
     parser.add_argument("--synthetic_examples", default=False)
-    # Use hint
+    # Use hint & rules
     parser.add_argument("--use_hint", default=True)
+    parser.add_argument("--use_")
     # Table retrieval. Use --tbr_selection_file, for retrieval with TBR simulation.
     parser.add_argument(
         "--extra_top_k",
