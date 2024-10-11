@@ -79,7 +79,7 @@ class ProcessSqlData:
                     data['question_id'] = i
                 if i not in col_selected_schemas:
                     col_selected_schemas[i] = ""
-                elif (not col_selected_schemas[i] 
+                elif (not col_selected_schemas[i]
                         or str(col_selected_schemas[i]) == 'nan'):
                     col_selected_schemas[i] = ""
         else:
@@ -247,11 +247,11 @@ class ProcessSqlData:
 
         # Load cached contents
         try:
-            if os.path.exists('db_context.cache'):
-                with open('db_context.cache', 'rb') as file:
+            if os.path.exists(f'db_context_ncv{self.num_col_values}.cache'):
+                with open(f'db_context_ncv{self.num_col_values}.cache', 'rb') as file:
                     db_context = pickle.load(file)
-            if os.path.exists('db_table_schema_map.cache'):
-                with open('db_table_schema_map.cache', 'rb') as file:
+            if os.path.exists(f'db_table_schema_map_ncv{self.num_col_values}.cache'):
+                with open(f'db_table_schema_map_ncv{self.num_col_values}.cache', 'rb') as file:
                     db_table_schema_map = pickle.load(file)
             if os.path.exists(self.db_tbl_col_vals_file):
                 with open(self.db_tbl_col_vals_file, "rb") as file:
@@ -260,7 +260,7 @@ class ProcessSqlData:
             db_tbl_col_vals = dict()
             db_table_schema_map = dict()
             db_context = dict()
-    
+
         if len(db_tbl_col_vals) == 0 or len(db_table_schema_map) == 0 and len(db_context) == 0:
             with ThreadPoolExecutor(max_workers=n_workers) as executor:
                 futures = {
@@ -281,9 +281,9 @@ class ProcessSqlData:
                     raise
 
             # Caching for faster experimentation.
-            with open('db_context.cache', 'wb') as file:
+            with open(f'db_context_ncv{self.num_col_values}.cache', 'wb') as file:
                 pickle.dump(db_context, file)
-            with open('db_table_schema_map.cache', 'wb') as file:
+            with open(f'db_table_schema_map_ncv{self.num_col_values}.cache', 'wb') as file:
                 pickle.dump(db_table_schema_map, file)
             # Extra bookeeping for text example values.
             # This is used later for literal error fix.
@@ -303,7 +303,7 @@ class ProcessSqlData:
                 create_stmts = list(retrieved_table_stmts)
             else:
                 create_stmts = create_stmts[:k]
-                
+
             # add extra tables from other DBs
             extra_table_cnt = k - len(create_stmts)
             while extra_table_cnt > 0:
@@ -340,14 +340,15 @@ class ProcessSqlData:
             for item in json.loads(filtered_col_json.replace("json ", "")):
                 tname = item.split(":")[0]
                 if tname:
-                    tables.append(table_schema_map.get(tname, ""))
+                    tables = table_schema_map.get(tname, "")
             return "".join(tables)
 
         def _generate_examples(db_id_key):
             schema = db_context[db_id_key]
             examples = ""
             if self.num_examples > 0 and self.synthetic_examples:
-                examples = generate_k_examples(schema, self.num_examples)
+                examples = generate_k_examples(schema,
+                            self.num_examples // 2 + self.num_examples % 2)
                 if not self.use_column_filtering:
                     examples += "\n" + generate_k_examples(
                         schema, self.num_examples // 2, diverse_set=False)
@@ -385,14 +386,14 @@ class ProcessSqlData:
                 filtered_schema = filter_tables(
                     table_schema_map, filtered_col_json)
             return filtered_schema
-        
+
         def _context_packing(data):
             if data[db_id_name] in db_context.keys():
                 # all tables and columns with primary and foreign keys.
                 schema = db_context[data[db_id_name]]
                 if self.extra_top_k > 0:
                     schema = extract_k_tables(db_context, data[db_id_name],
-                                              self.extra_top_k, 
+                                              self.extra_top_k,
                                               qid_tbr[int(data['question_id'])] if int(data['question_id']) in qid_tbr else []
                                               )
                 if self.use_column_filtering or self.use_column_filtering_for_generation:
@@ -471,7 +472,7 @@ class ProcessSqlData:
         for data_info in SQL_DATA_INFO:
             if data_info['data_source'] in ['bird', 'spider']:
                 col_selected_schemas = dict()
-                if self.use_column_filtering and self.filtered_schema_file:
+                if (self.use_column_filtering or self.use_column_filtering_for_generation) and self.filtered_schema_file:
                     df = pd.read_csv(self.filtered_schema_file)
                     id_name, schema_name = 'question_id', 'selected_schema_with_connections'
                     col_selected_schemas = dict()

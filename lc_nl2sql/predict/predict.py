@@ -41,11 +41,11 @@ def inference_worker(
             response, _ = model.chat(query=item["input"],
                                      history=[],
                                      **input_kwargs)
-            response = model.verify_and_correct(item["input"], response,
+            response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path)
             cands.append(response)
         if n_candidates == 1:
-            return response
+            return (response, extra_tokens)
         else:
             query = item["input"].split(
                 '- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.'
@@ -63,9 +63,9 @@ def inference_worker(
         response, _ = model.chat(query=item["input"],
                                      history=[],
                                      **input_kwargs)
-        response = model.verify_and_correct(item["input"], response,
+        response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path)
-        return response
+        return (response, extra_tokens)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
@@ -74,6 +74,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
         num_threads = 10
 
     res_dict = {}
+    extra_tokens = []
     success_count, failure_count = 0, 0
 
     # Initialization outside the executor
@@ -93,9 +94,10 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                                desc="Inference Progress",
                                unit="item"):
                 index = futures[future]
-                result = future.result()
-                res_dict[index] = result
-                if result != "":
+                result = future.result()  # (sql, token_count)
+                extra_tokens.append(result[1])
+                res_dict[index] = result[0]
+                if result[0] != "":
                     success_count += 1
                 else:
                     failure_count += 1
@@ -110,7 +112,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )
-    return [res_dict[i] for i in range(len(predict_data))]
+    return [res_dict[i] for i in range(len(predict_data))], extra_tokens
 
 
 def inference(model: GeminiModel, predict_data: List[Dict], **input_kwargs):
@@ -141,7 +143,7 @@ def predict(model: GeminiModel, dump_file=True):
     args = model.data_args
     ## predict file can be give by param --predicted_input_filename ,output_file can be gived by param predicted_out_filename
     predict_data = prepare_dataset(args.predicted_input_filename)
-    result = parallelized_inference(model, predict_data)
+    result, extra_tokens = parallelized_inference(model, predict_data)
 
     if dump_file:
         with open(args.predicted_out_filename, "w") as f:
@@ -150,6 +152,9 @@ def predict(model: GeminiModel, dump_file=True):
                     f.write(p.replace("\n", " ") + "\n")
                 except:
                     f.write("Invalid Output!\n")
+        if model.measure_self_correction_tokens:
+            with open(args.extra_token_measurement_filename, "w") as f:
+                f.write(str(np.mean(extra_tokens)) + ", " + str(np.std(extra_tokens)))
     else:
         return result
 
