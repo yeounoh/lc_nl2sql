@@ -330,12 +330,19 @@ class ProcessSqlData:
             return self.model._generate_sql(prompt)
 
         def generate_k_examples(schema, k, diverse_set=True):
-            if diverse_set:
-                prompt = EXAMPLE_GENERATOR2.format(schema=schema, k=k)
-                return self.model._generate_sql(prompt)
-            else:
-                prompt = EXAMPLE_GENERATOR.format(schema, k)
-                return self.model._generate_sql(prompt)
+            num_generated_examples = 0
+            examples = ""
+            while num_generated_examples < k:
+                _k = min(k - num_generated_examples, 128)
+                if diverse_set:
+                    prompt = EXAMPLE_GENERATOR2.format(schema=schema, k=_k)
+                else:
+                    prompt = EXAMPLE_GENERATOR.format(schema, _k)
+                _examples = self.model._generate_sql(prompt)
+                num_generated_examples += len(_examples.split("\"input\":"))
+                examples += "\n" + _examples
+            return examples
+            
 
         def filter_tables(table_schema_map, filtered_col_json):
             tables = []

@@ -17,12 +17,11 @@ def count_token(model: GeminiModel, predict_data: List[Dict], sample=True):
         if sample and i % 5 != 0:
             # Counting based on every other five questions
             continue
-        num_examples = len(item['input'].split("###Examples")[1].split("\"input:"))
+        num_examples = len(item['input'].split("###Examples")[1].split("\"input\":"))
         if num_examples != model.data_args.expected_num_examples:
             logging.error(f"Expected {model.data_args.expected_num_examples} but found {num_examples}")
         else:
-            logging.info(f"{num_examples} are found!")
-        tok_cnts.append(model._count_token(item['input']))
+            tok_cnts.append(model._count_token(item['input']))
     return tok_cnts
 
 
