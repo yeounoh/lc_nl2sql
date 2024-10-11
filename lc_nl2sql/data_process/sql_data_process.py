@@ -44,6 +44,7 @@ class ProcessSqlData:
         db_tbl_col_vals_file="",
         vertex_ai_project_id="",
         tbr_selection_file="",
+        use_hint=True,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -61,6 +62,7 @@ class ProcessSqlData:
         self.filtered_schema_file = filtered_schema_file
         self.db_tbl_col_vals_file = db_tbl_col_vals_file
         self.tbr_selection_file = tbr_selection_file
+        self.use_hint = use_hint
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -413,7 +415,7 @@ class ProcessSqlData:
                         logging.error("Example selection disabled.")
                         raise
 
-                hints = data["evidence"] if "evidence" in data else ""
+                hints = data["evidence"] if "evidence" in data and self.use_hint else ""
                 input_instruction = BASIC_INSTRUCTION_PROMPT.format(
                     db_name=data[db_id_name],
                     hints=hints,
@@ -503,11 +505,14 @@ if __name__ == "__main__":
     parser.add_argument("--input_table_path")
     parser.add_argument("--db_folder_path")
 
-    # New flags
+    # Synthetic example generation
     parser.add_argument("--num_examples",
                         help="Retrieve relevant examples.",
                         default=0)
     parser.add_argument("--synthetic_examples", default=False)
+    # Use hint
+    parser.add_argument("--use_hint", default=True)
+    # Table retrieval. Use --tbr_selection_file, for retrieval with TBR simulation.
     parser.add_argument(
         "--extra_top_k",
         help="Retrieve extra tables outside the DB to guarantee 'k' tables.",
@@ -545,5 +550,6 @@ if __name__ == "__main__":
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
         vertex_ai_project_id="400355794761",  # change appropriately
         tbr_selection_file=args.tbr_selection_file,
+        use_hint=bool(int(args.use_hint)),
     )
     process.create_sft_raw_data()
