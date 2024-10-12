@@ -1,0 +1,84 @@
+
+
+
+
+
+Determine If Virtual Table Column Access Is For UPDATE
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Determine If Virtual Table Column Access Is For UPDATE
+
+
+
+
+> ```
+> 
+> int sqlite3_vtab_nochange(sqlite3_context*);
+> 
+> ```
+
+
+
+If the sqlite3\_vtab\_nochange(X) routine is called within the [xColumn](../vtab.html#xcolumn)
+method of a [virtual table](../vtab.html), then it might return true if the
+column is being fetched as part of an UPDATE operation during which the
+column value will not change. The virtual table implementation can use
+this hint as permission to substitute a return value that is less
+expensive to compute and that the corresponding
+[xUpdate](../vtab.html#xupdate) method understands as a "no\-change" value.
+
+
+If the [xColumn](../vtab.html#xcolumn) method calls sqlite3\_vtab\_nochange() and finds that
+the column is not changed by the UPDATE statement, then the xColumn
+method can optionally return without setting a result, without calling
+any of the [sqlite3\_result\_xxxxx() interfaces](../c3ref/result_blob.html).
+In that case, [sqlite3\_value\_nochange(X)](../c3ref/value_blob.html) will return true for the
+same column in the [xUpdate](../vtab.html#xupdate) method.
+
+
+The sqlite3\_vtab\_nochange() routine is an optimization. Virtual table
+implementations should continue to give a correct answer even if the
+sqlite3\_vtab\_nochange() interface were to always return false. In the
+current implementation, the sqlite3\_vtab\_nochange() interface does always
+returns false for the enhanced [UPDATE FROM](../lang_update.html#upfrom) statement.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

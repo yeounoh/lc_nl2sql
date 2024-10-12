@@ -1,0 +1,89 @@
+
+
+
+
+
+Options for sqlite3session\_object\_config
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+[## Session Module C Interface](../session/intro.html)## Options for sqlite3session\_object\_config
+
+
+> ```
+> #define SQLITE_SESSION_OBJCONFIG_SIZE  1
+> #define SQLITE_SESSION_OBJCONFIG_ROWID 2
+> 
+> ```
+
+
+The following values may passed as the the 2nd parameter to
+sqlite3session\_object\_config().
+
+
+SQLITE\_SESSION\_OBJCONFIG\_SIZE 
+ This option is used to set, clear or query the flag that enables
+ the [sqlite3session\_changeset\_size()](../session/sqlite3session_changeset_size.html) API. Because it imposes some
+ computational overhead, this API is disabled by default. Argument
+ pArg must point to a value of type (int). If the value is initially
+ 0, then the sqlite3session\_changeset\_size() API is disabled. If it
+ is greater than 0, then the same API is enabled. Or, if the initial
+ value is less than zero, no change is made. In all cases the (int)
+ variable is set to 1 if the sqlite3session\_changeset\_size() API is
+ enabled following the current call, or 0 otherwise.
+
+
+ It is an error (SQLITE\_MISUSE) to attempt to modify this setting after 
+ the first table has been attached to the session object.
+
+
+SQLITE\_SESSION\_OBJCONFIG\_ROWID 
+ This option is used to set, clear or query the flag that enables
+ collection of data for tables with no explicit PRIMARY KEY.
+
+
+ Normally, tables with no explicit PRIMARY KEY are simply ignored
+ by the sessions module. However, if this flag is set, it behaves
+ as if such tables have a column "\_rowid\_ INTEGER PRIMARY KEY" inserted
+ as their leftmost columns.
+
+
+ It is an error (SQLITE\_MISUSE) to attempt to modify this setting after 
+ the first table has been attached to the session object.
+
+
+See also lists of
+ [Objects](../session/objlist.html),
+ [Constants](../session/constlist.html), and
+ [Functions](../session/funclist.html).
+
+

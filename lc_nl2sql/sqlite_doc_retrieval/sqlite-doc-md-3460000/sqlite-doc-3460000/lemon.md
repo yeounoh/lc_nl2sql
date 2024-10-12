@@ -1,0 +1,210 @@
+
+
+
+
+
+The Lemon LALR(1\) Parser Generator
+
+
+
+
+[![SQLite](images/sqlite370_banner.gif)](index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](index.html)* [Menu](javascript:void(0))* [About](about.html)* [Documentation](docs.html)* [Download](download.html)* [License](copyright.html)* [Support](support.html)* [Purchase](prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](about.html)* [Documentation](docs.html)* [Download](download.html)* [Support](support.html)* [Purchase](prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+
+The Lemon LALR(1\) Parser Generator
+
+
+►
+Table Of Contents
+[1\. Overview](#overview)
+[1\.1\. Lemon Source Files And Documentation](#lemon_source_files_and_documentation)
+[2\. Advantages of Lemon](#advantages_of_lemon)
+[2\.1\. Use of Lemon Within SQLite](#use_of_lemon_within_sqlite)
+[2\.2\. Lemon Customizations Especially For SQLite](#lemon_customizations_especially_for_sqlite)
+[3\. History Of Lemon](#history_of_lemon)
+
+
+
+
+# 1\. Overview
+
+
+The SQL language parser for SQLite is generated using a code\-generator
+program called "Lemon". The Lemon program reads a grammar of the input
+language and emits C\-code to implement a parser for that language.
+
+
+
+
+## 1\.1\. Lemon Source Files And Documentation
+
+
+Lemon does not have its own source repository. Rather, Lemon consists
+of a few files in the SQLite source tree:
+
+
+
+* [lemon.html](https://sqlite.org/src/doc/trunk/doc/lemon.html) →
+ The original detailed usage documentation and programmers reference
+ for Lemon.
+* [lemon.c](https://sqlite.org/src/file/tool/lemon.c) → The source code
+ for the utility program that reads a grammar file and generates 
+ corresponding parser C\-code.
+* [lempar.c](https://sqlite.org/src/file/tool/lempar.c) → A template
+ for the generated parser C\-code. The "lemon" utility program reads this
+ template and inserts additional code in order to generate a parser.
+
+
+# 2\. Advantages of Lemon
+
+
+Lemon generates an LALR(1\) parser. Its operation is similar to the
+more familiar tools [Yacc](https://en.wikipedia.org/wiki/Yacc) and
+[Bison](https://en.wikipedia.org/wiki/GNU_bison), but Lemon adds important
+improvements, including:
+
+
+
+* The grammar syntax is less error prone \- using symbolic names for
+ semantic values rather that the "$1"\-style positional notation
+ of Yacc.
+* In Lemon, the tokenizer calls the parser. Yacc operates the other
+ way around, with the parser calling the tokenizer. The Lemon
+ approach is reentrant and threadsafe, whereas Yacc uses global 
+ variables and is therefore neither. Reentrancy is especially
+ important for SQLite since some SQL statements make recursive calls
+ to the parser. For example, when parsing a CREATE TABLE statement,
+ SQLite invokes the parser recursively to generate an INSERT statement
+ to make a new entry in the [sqlite\_schema](schematab.html) table.
+* Lemon has the concept of a non\-terminal destructor that can be
+ used to reclaim memory or other resources following a syntax error
+ or other aborted parse.
+
+
+## 2\.1\. Use of Lemon Within SQLite
+
+
+Lemon is used in two places in SQLite.
+
+
+
+The primary use of Lemon is to create the SQL language parser.
+A grammar file ([parse.y](https://sqlite.org/src/file/src/parse.y)) is
+compiled by Lemon into parse.c and parse.h. The parse.c file is
+incorporated into the [amalgamation](amalgamation.html) without further modification.
+
+
+
+Lemon is also used to generate the parser for the query pattern
+expressions in the [FTS5](fts5.html) extension. In this case, the input grammar
+file is [fts5parse.y](https://sqlite.org/src/file/ext/fts5/fts5parse.y).
+
+
+
+## 2\.2\. Lemon Customizations Especially For SQLite
+
+
+One of the advantages of hosting code generator tools as part of
+the project is that the tools can be optimized to serve specific needs of
+the overall project. Lemon has benefited from this effect. Over the years,
+the Lemon parser generator has been extended and enhanced to provide
+new capabilities and improved performance to SQLite. A few of the
+specific enhancements to Lemon that are specifically designed for use
+by SQLite include:
+
+
+
+* Lemon has the concept of a "fallback" token.
+The SQL language contains a large number of keywords and these keywords
+have the potential to collide with identifier names.
+Lemon has the ability to designate some keywords as being able to
+"fallback" to an identifier. If the keyword appears in the input token
+stream in a context that would otherwise be a syntax error, the token
+is automatically transformed into its fallback before the syntax error
+is raised. This feature allows the parser to be very forgiving of
+reserved words used as identifiers, which is a problem that comes up
+frequently in the SQL language.
+* In support of the [100% MC/DC testing](testing.html#mcdc) goal for SQLite, 
+the parser code generated by Lemon has no unreachable branches,
+and contains extra (compile\-time selected) instrumentation useful
+for measuring test coverage.
+* Lemon supports conditional compilation of grammar file rules, so that
+a different parser can be generated depending on compile\-time options.
+* As a performance optimization, reduce actions in the Lemon input grammar
+are allowed to contain comments of the form "/\*A\-overwrites\-Z\*/" to indicate
+that the semantic value "A" on the right\-hand side of the rule is allowed
+to directly overwrite the semantic value "Z" on the left\-hand side.
+This simple optimization reduces the number of stack operations in the
+push\-down automaton used to parse the input grammar, and thus improve
+performance of the parser. It also makes the generated code a little smaller.
+
+
+The parsing of SQL statements is a significant consumer of CPU cycles 
+in any SQL database engine. On\-going efforts to optimize SQLite have caused
+the developers to spend a lot of time tweaking Lemon to generate faster
+parsers. These efforts have benefited all users of the Lemon parser generator,
+not just SQLite. But if Lemon had been a separately maintained tool, it
+would have been more difficult to make coordinated changes to both SQLite
+and Lemon, and as a result not as much optimization would have been
+accomplished. Hence, the fact that the parser generator tool is included
+in the source tree for SQLite has turned out to be a net benefit for both
+the tool itself and for SQLite.
+
+
+
+# 3\. History Of Lemon
+
+
+Lemon was originally written by D. Richard Hipp (also the creator of SQLite)
+while he was in graduate school at Duke University between 1987 and 1992\.
+The original creation date of Lemon has been lost, but was probably sometime
+around 1990\. Lemon generates an LALR(1\) parser. There was a companion 
+LL(1\) parser generator tool named "Lime", but the source code for Lime
+has been lost.
+
+
+
+The Lemon source code was originally written as separate source files,
+and only later merged into a single "lemon.c" source file.
+
+
+
+The author of Lemon and SQLite (Hipp) reports that his C programming
+skills were greatly enhanced by studying John Ousterhout's original
+source code to Tcl. Hipp discovered and studied Tcl in 1993\. Lemon
+was written before then, and SQLite afterwards. There is a clear
+difference in the coding styles of these two products, with SQLite seeming
+to be cleaner, more readable, and easier to maintain.
+
+
+*This page last modified on [2022\-04\-18 02:55:50](https://sqlite.org/docsrc/honeypot) UTC* 
+
+

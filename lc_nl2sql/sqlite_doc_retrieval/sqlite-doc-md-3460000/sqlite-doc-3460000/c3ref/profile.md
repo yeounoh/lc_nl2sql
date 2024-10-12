@@ -1,0 +1,96 @@
+
+
+
+
+
+Deprecated Tracing And Profiling Functions
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Deprecated Tracing And Profiling Functions
+
+
+
+
+> ```
+> 
+> void *sqlite3_trace(sqlite3*,
+>    void(*xTrace)(void*,const char*), void*);
+> void *sqlite3_profile(sqlite3*,
+>    void(*xProfile)(void*,const char*,sqlite3_uint64), void*);
+> 
+> ```
+
+
+
+These routines are deprecated. Use the [sqlite3\_trace\_v2()](../c3ref/trace_v2.html) interface
+instead of the routines described here.
+
+
+These routines register callback functions that can be used for
+tracing and profiling the execution of SQL statements.
+
+
+The callback function registered by sqlite3\_trace() is invoked at
+various times when an SQL statement is being run by [sqlite3\_step()](../c3ref/step.html).
+The sqlite3\_trace() callback is invoked with a UTF\-8 rendering of the
+SQL statement text as the statement first begins executing.
+Additional sqlite3\_trace() callbacks might occur
+as each triggered subprogram is entered. The callbacks for triggers
+contain a UTF\-8 SQL comment that identifies the trigger.
+
+
+The [SQLITE\_TRACE\_SIZE\_LIMIT](../compile.html#trace_size_limit) compile\-time option can be used to limit
+the length of [bound parameter](../lang_expr.html#varparam) expansion in the output of sqlite3\_trace().
+
+
+The callback function registered by sqlite3\_profile() is invoked
+as each SQL statement finishes. The profile callback contains
+the original statement text and an estimate of wall\-clock time
+of how long that statement took to run. The profile callback
+time is in units of nanoseconds, however the current implementation
+is only capable of millisecond resolution so the six least significant
+digits in the time are meaningless. Future versions of SQLite
+might provide greater resolution on the profiler callback. Invoking
+either [sqlite3\_trace()](../c3ref/profile.html) or [sqlite3\_trace\_v2()](../c3ref/trace_v2.html) will cancel the
+profile callback.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

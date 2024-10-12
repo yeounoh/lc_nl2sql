@@ -1,0 +1,100 @@
+
+
+
+
+
+Add Content To A Dynamic String
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Add Content To A Dynamic String
+
+
+
+
+> ```
+> 
+> void sqlite3_str_appendf(sqlite3_str*, const char *zFormat, ...);
+> void sqlite3_str_vappendf(sqlite3_str*, const char *zFormat, va_list);
+> void sqlite3_str_append(sqlite3_str*, const char *zIn, int N);
+> void sqlite3_str_appendall(sqlite3_str*, const char *zIn);
+> void sqlite3_str_appendchar(sqlite3_str*, int N, char C);
+> void sqlite3_str_reset(sqlite3_str*);
+> 
+> ```
+
+
+
+These interfaces add content to an sqlite3\_str object previously obtained
+from [sqlite3\_str\_new()](../c3ref/str_new.html).
+
+
+The [sqlite3\_str\_appendf(X,F,...)](../c3ref/str_append.html) and
+[sqlite3\_str\_vappendf(X,F,V)](../c3ref/str_append.html) interfaces uses the [built\-in printf](../printf.html)
+functionality of SQLite to append formatted text onto the end of
+[sqlite3\_str](../c3ref/str.html) object X.
+
+
+The [sqlite3\_str\_append(X,S,N)](../c3ref/str_append.html) method appends exactly N bytes from string S
+onto the end of the [sqlite3\_str](../c3ref/str.html) object X. N must be non\-negative.
+S must contain at least N non\-zero bytes of content. To append a
+zero\-terminated string in its entirety, use the [sqlite3\_str\_appendall()](../c3ref/str_append.html)
+method instead.
+
+
+The [sqlite3\_str\_appendall(X,S)](../c3ref/str_append.html) method appends the complete content of
+zero\-terminated string S onto the end of [sqlite3\_str](../c3ref/str.html) object X.
+
+
+The [sqlite3\_str\_appendchar(X,N,C)](../c3ref/str_append.html) method appends N copies of the
+single\-byte character C onto the end of [sqlite3\_str](../c3ref/str.html) object X.
+This method can be used, for example, to add whitespace indentation.
+
+
+The [sqlite3\_str\_reset(X)](../c3ref/str_append.html) method resets the string under construction
+inside [sqlite3\_str](../c3ref/str.html) object X back to zero bytes in length.
+
+
+These methods do not return a result code. If an error occurs, that fact
+is recorded in the [sqlite3\_str](../c3ref/str.html) object and can be recovered by a
+subsequent call to [sqlite3\_str\_errcode(X)](../c3ref/str_errcode.html).
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

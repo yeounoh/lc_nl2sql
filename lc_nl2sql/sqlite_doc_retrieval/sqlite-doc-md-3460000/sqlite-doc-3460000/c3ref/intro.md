@@ -1,0 +1,75 @@
+
+
+
+
+
+Introduction
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+# C\-language Interface Specification for SQLite
+
+
+These pages are intended to be precise and detailed specification.
+For a tutorial introduction, see instead:
+* [SQLite In 5 Minutes Or Less](../quickstart.html) and/or
+* the [Introduction To The SQLite C/C\+\+ Interface](../cintro.html).
+
+
+This same content is also available as a
+[single large HTML file](../capi3ref.html).
+
+
+
+The SQLite interface elements can be grouped into three categories:
+
+
+1. [**List Of Objects.**](../c3ref/objlist.html)
+ This is a list of all abstract objects and datatypes used by the
+ SQLite library. There are couple dozen objects in total, but
+ the two most important objects are:
+ A database connection object [sqlite3](../c3ref/sqlite3.html), and the
+ prepared statement object [sqlite3\_stmt](../c3ref/stmt.html).
+2. [**List Of Constants.**](../c3ref/constlist.html)
+ This is a list of numeric constants used by SQLite and represented by
+ \#defines in the sqlite3\.h header file. These constants
+ are things such as numeric [result codes](../rescode.html) from
+ various interfaces (ex: [SQLITE\_OK](../rescode.html#ok)) or flags passed
+ into functions to control behavior
+ (ex: [SQLITE\_OPEN\_READONLY](../c3ref/c_open_autoproxy.html)).
+3. [**List Of Functions.**](../c3ref/funclist.html)
+ This is a list of all functions and methods operating on the
+ [objects](../c3ref/objlist.html) and using and/or
+ returning [constants](../c3ref/constlist.html). There
+ are many functions, but most applications only use a handful.
+
+

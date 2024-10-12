@@ -1,0 +1,124 @@
+
+
+
+
+
+Name Of The Folder Holding Temporary Files
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Name Of The Folder Holding Temporary Files
+
+
+
+
+> ```
+> 
+> SQLITE_EXTERN char *sqlite3_temp_directory;
+> 
+> ```
+
+
+
+If this global variable is made to point to a string which is
+the name of a folder (a.k.a. directory), then all temporary files
+created by SQLite when using a built\-in [VFS](../c3ref/vfs.html)
+will be placed in that directory. If this variable
+is a NULL pointer, then SQLite performs a search for an appropriate
+temporary file directory.
+
+
+Applications are strongly discouraged from using this global variable.
+It is required to set a temporary folder on Windows Runtime (WinRT).
+But for all other platforms, it is highly recommended that applications
+neither read nor write this variable. This global variable is a relic
+that exists for backwards compatibility of legacy applications and should
+be avoided in new projects.
+
+
+It is not safe to read or modify this variable in more than one
+thread at a time. It is not safe to read or modify this variable
+if a [database connection](../c3ref/sqlite3.html) is being used at the same time in a separate
+thread.
+It is intended that this variable be set once
+as part of process initialization and before any SQLite interface
+routines have been called and that this variable remain unchanged
+thereafter.
+
+
+The [temp\_store\_directory pragma](../pragma.html#pragma_temp_store_directory) may modify this variable and cause
+it to point to memory obtained from [sqlite3\_malloc](../c3ref/free.html). Furthermore,
+the [temp\_store\_directory pragma](../pragma.html#pragma_temp_store_directory) always assumes that any string
+that this variable points to is held in memory obtained from
+[sqlite3\_malloc](../c3ref/free.html) and the pragma may attempt to free that memory
+using [sqlite3\_free](../c3ref/free.html).
+Hence, if this variable is modified directly, either it should be
+made NULL or made to point to memory obtained from [sqlite3\_malloc](../c3ref/free.html)
+or else the use of the [temp\_store\_directory pragma](../pragma.html#pragma_temp_store_directory) should be avoided.
+Except when requested by the [temp\_store\_directory pragma](../pragma.html#pragma_temp_store_directory), SQLite
+does not free the memory that sqlite3\_temp\_directory points to. If
+the application wants that memory to be freed, it must do
+so itself, taking care to only do so after all [database connection](../c3ref/sqlite3.html)
+objects have been destroyed.
+
+
+**Note to Windows Runtime users:** The temporary directory must be set
+prior to calling [sqlite3\_open](../c3ref/open.html) or [sqlite3\_open\_v2](../c3ref/open.html). Otherwise, various
+features that require the use of temporary files may fail. Here is an
+example of how to do this using C\+\+ with the Windows Runtime:
+
+
+
+> ```
+> 
+> LPCWSTR zPath = Windows::Storage::ApplicationData::Current->
+>       TemporaryFolder->Path->Data();
+> char zPathBuf[MAX_PATH + 1];
+> memset(zPathBuf, 0, sizeof(zPathBuf));
+> WideCharToMultiByte(CP_UTF8, 0, zPath, -1, zPathBuf, sizeof(zPathBuf),
+>       NULL, NULL);
+> sqlite3_temp_directory = sqlite3_mprintf("%s", zPathBuf);
+> 
+> ```
+
+
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

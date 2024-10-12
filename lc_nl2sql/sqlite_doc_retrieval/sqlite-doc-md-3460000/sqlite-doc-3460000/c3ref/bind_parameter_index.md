@@ -1,0 +1,74 @@
+
+
+
+
+
+Index Of A Parameter With A Given Name
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Index Of A Parameter With A Given Name
+
+
+
+
+> ```
+> 
+> int sqlite3_bind_parameter_index(sqlite3_stmt*, const char *zName);
+> 
+> ```
+
+
+
+Return the index of an SQL parameter given its name. The
+index value returned is suitable for use as the second
+parameter to [sqlite3\_bind()](../c3ref/bind_blob.html). A zero
+is returned if no matching parameter is found. The parameter
+name must be given in UTF\-8 even if the original statement
+was prepared from UTF\-16 text using [sqlite3\_prepare16\_v2()](../c3ref/prepare.html) or
+[sqlite3\_prepare16\_v3()](../c3ref/prepare.html).
+
+
+See also: [sqlite3\_bind()](../c3ref/bind_blob.html),
+[sqlite3\_bind\_parameter\_count()](../c3ref/bind_parameter_count.html), and
+[sqlite3\_bind\_parameter\_name()](../c3ref/bind_parameter_name.html).
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

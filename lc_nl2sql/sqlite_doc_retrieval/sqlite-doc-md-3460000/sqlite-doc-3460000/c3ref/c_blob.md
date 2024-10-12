@@ -1,0 +1,89 @@
+
+
+
+
+
+Fundamental Datatypes
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Fundamental Datatypes
+
+
+
+
+> ```
+> 
+> #define SQLITE_INTEGER  1
+> #define SQLITE_FLOAT    2
+> #define SQLITE_BLOB     4
+> #define SQLITE_NULL     5
+> #ifdef SQLITE_TEXT
+> # undef SQLITE_TEXT
+> #else
+> # define SQLITE_TEXT     3
+> #endif
+> #define SQLITE3_TEXT     3
+> 
+> ```
+
+
+
+Every value in SQLite has one of five fundamental datatypes:
+
+
+* 64\-bit signed integer
+* 64\-bit IEEE floating point number
+* string
+* BLOB
+* NULL
+
+
+
+These constants are codes for each of those types.
+
+
+Note that the SQLITE\_TEXT constant was also used in SQLite version 2
+for a completely different meaning. Software that links against both
+SQLite version 2 and SQLite version 3 should use SQLITE3\_TEXT, not
+SQLITE\_TEXT.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

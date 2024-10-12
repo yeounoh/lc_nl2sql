@@ -1,0 +1,91 @@
+
+
+
+
+
+Status Of A Dynamic String
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Status Of A Dynamic String
+
+
+
+
+> ```
+> 
+> int sqlite3_str_errcode(sqlite3_str*);
+> int sqlite3_str_length(sqlite3_str*);
+> char *sqlite3_str_value(sqlite3_str*);
+> 
+> ```
+
+
+
+These interfaces return the current status of an [sqlite3\_str](../c3ref/str.html) object.
+
+
+If any prior errors have occurred while constructing the dynamic string
+in sqlite3\_str X, then the [sqlite3\_str\_errcode(X)](../c3ref/str_errcode.html) method will return
+an appropriate error code. The [sqlite3\_str\_errcode(X)](../c3ref/str_errcode.html) method returns
+[SQLITE\_NOMEM](../rescode.html#nomem) following any out\-of\-memory error, or
+[SQLITE\_TOOBIG](../rescode.html#toobig) if the size of the dynamic string exceeds
+[SQLITE\_MAX\_LENGTH](../limits.html#max_length), or [SQLITE\_OK](../rescode.html#ok) if there have been no errors.
+
+
+The [sqlite3\_str\_length(X)](../c3ref/str_errcode.html) method returns the current length, in bytes,
+of the dynamic string under construction in [sqlite3\_str](../c3ref/str.html) object X.
+The length returned by [sqlite3\_str\_length(X)](../c3ref/str_errcode.html) does not include the
+zero\-termination byte.
+
+
+The [sqlite3\_str\_value(X)](../c3ref/str_errcode.html) method returns a pointer to the current
+content of the dynamic string under construction in X. The value
+returned by [sqlite3\_str\_value(X)](../c3ref/str_errcode.html) is managed by the sqlite3\_str object X
+and might be freed or altered by any subsequent method on the same
+[sqlite3\_str](../c3ref/str.html) object. Applications must not used the pointer returned
+[sqlite3\_str\_value(X)](../c3ref/str_errcode.html) after any subsequent method call on the same
+object. Applications may change the content of the string returned
+by [sqlite3\_str\_value(X)](../c3ref/str_errcode.html) as long as they do not write into any bytes
+outside the range of 0 to [sqlite3\_str\_length(X)](../c3ref/str_errcode.html) and do not read or
+write any byte after any subsequent sqlite3\_str method call.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

@@ -1,0 +1,114 @@
+
+
+
+
+
+Virtual Table Object
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Virtual Table Object
+
+
+
+
+> ```
+> 
+> struct sqlite3_module {
+>   int iVersion;
+>   int (*xCreate)(sqlite3*, void *pAux,
+>                int argc, const char *const*argv,
+>                sqlite3_vtab **ppVTab, char**);
+>   int (*xConnect)(sqlite3*, void *pAux,
+>                int argc, const char *const*argv,
+>                sqlite3_vtab **ppVTab, char**);
+>   int (*xBestIndex)(sqlite3_vtab *pVTab, sqlite3_index_info*);
+>   int (*xDisconnect)(sqlite3_vtab *pVTab);
+>   int (*xDestroy)(sqlite3_vtab *pVTab);
+>   int (*xOpen)(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor);
+>   int (*xClose)(sqlite3_vtab_cursor*);
+>   int (*xFilter)(sqlite3_vtab_cursor*, int idxNum, const char *idxStr,
+>                 int argc, sqlite3_value **argv);
+>   int (*xNext)(sqlite3_vtab_cursor*);
+>   int (*xEof)(sqlite3_vtab_cursor*);
+>   int (*xColumn)(sqlite3_vtab_cursor*, sqlite3_context*, int);
+>   int (*xRowid)(sqlite3_vtab_cursor*, sqlite3_int64 *pRowid);
+>   int (*xUpdate)(sqlite3_vtab *, int, sqlite3_value **, sqlite3_int64 *);
+>   int (*xBegin)(sqlite3_vtab *pVTab);
+>   int (*xSync)(sqlite3_vtab *pVTab);
+>   int (*xCommit)(sqlite3_vtab *pVTab);
+>   int (*xRollback)(sqlite3_vtab *pVTab);
+>   int (*xFindFunction)(sqlite3_vtab *pVtab, int nArg, const char *zName,
+>                        void (**pxFunc)(sqlite3_context*,int,sqlite3_value**),
+>                        void **ppArg);
+>   int (*xRename)(sqlite3_vtab *pVtab, const char *zNew);
+>   /* The methods above are in version 1 of the sqlite_module object. Those
+>   ** below are for version 2 and greater. */
+>   int (*xSavepoint)(sqlite3_vtab *pVTab, int);
+>   int (*xRelease)(sqlite3_vtab *pVTab, int);
+>   int (*xRollbackTo)(sqlite3_vtab *pVTab, int);
+>   /* The methods above are in versions 1 and 2 of the sqlite_module object.
+>   ** Those below are for version 3 and greater. */
+>   int (*xShadowName)(const char*);
+>   /* The methods above are in versions 1 through 3 of the sqlite_module object.
+>   ** Those below are for version 4 and greater. */
+>   int (*xIntegrity)(sqlite3_vtab *pVTab, const char *zSchema,
+>                     const char *zTabName, int mFlags, char **pzErr);
+> };
+> 
+> ```
+
+
+
+This structure, sometimes called a "virtual table module",
+defines the implementation of a [virtual table](../vtab.html).
+This structure consists mostly of methods for the module.
+
+
+A virtual table module is created by filling in a persistent
+instance of this structure and passing a pointer to that instance
+to [sqlite3\_create\_module()](../c3ref/create_module.html) or [sqlite3\_create\_module\_v2()](../c3ref/create_module.html).
+The registration remains valid until it is replaced by a different
+module or until the [database connection](../c3ref/sqlite3.html) closes. The content
+of this structure must not change while it is registered with
+any database connection.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

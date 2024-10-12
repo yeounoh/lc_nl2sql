@@ -1,0 +1,167 @@
+
+
+
+
+
+Database Connection Handle
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Database Connection Handle
+
+
+
+
+> ```
+> 
+> typedef struct sqlite3 sqlite3;
+> 
+> ```
+
+
+
+Each open SQLite database is represented by a pointer to an instance of
+the opaque structure named "sqlite3". It is useful to think of an sqlite3
+pointer as an object. The [sqlite3\_open()](../c3ref/open.html), [sqlite3\_open16()](../c3ref/open.html), and
+[sqlite3\_open\_v2()](../c3ref/open.html) interfaces are its constructors, and [sqlite3\_close()](../c3ref/close.html)
+and [sqlite3\_close\_v2()](../c3ref/close.html) are its destructors. There are many other
+interfaces (such as
+[sqlite3\_prepare\_v2()](../c3ref/prepare.html), [sqlite3\_create\_function()](../c3ref/create_function.html), and
+[sqlite3\_busy\_timeout()](../c3ref/busy_timeout.html) to name but three) that are methods on an
+sqlite3 object.
+
+
+3 Constructors using this object:
+ [sqlite3\_open()](../c3ref/open.html),
+[sqlite3\_open16()](../c3ref/open.html),
+[sqlite3\_open\_v2()](../c3ref/open.html)
+
+
+2 Destructors using this object:
+ [sqlite3\_close()](../c3ref/close.html),
+[sqlite3\_close\_v2()](../c3ref/close.html)
+
+
+77 Methods using this object:
+
+* [sqlite3\_autovacuum\_pages](../c3ref/autovacuum_pages.html)
+* [sqlite3\_blob\_open](../c3ref/blob_open.html)
+* [sqlite3\_busy\_handler](../c3ref/busy_handler.html)
+* [sqlite3\_busy\_timeout](../c3ref/busy_timeout.html)
+* [sqlite3\_changes](../c3ref/changes.html)
+* [sqlite3\_changes64](../c3ref/changes.html)
+* [sqlite3\_collation\_needed](../c3ref/collation_needed.html)
+* [sqlite3\_collation\_needed16](../c3ref/collation_needed.html)
+* [sqlite3\_commit\_hook](../c3ref/commit_hook.html)
+* [sqlite3\_create\_collation](../c3ref/create_collation.html)
+* [sqlite3\_create\_collation16](../c3ref/create_collation.html)
+* [sqlite3\_create\_collation\_v2](../c3ref/create_collation.html)
+* [sqlite3\_create\_function](../c3ref/create_function.html)
+* [sqlite3\_create\_function16](../c3ref/create_function.html)
+* [sqlite3\_create\_function\_v2](../c3ref/create_function.html)
+* [sqlite3\_create\_module](../c3ref/create_module.html)
+* [sqlite3\_create\_module\_v2](../c3ref/create_module.html)
+* [sqlite3\_create\_window\_function](../c3ref/create_function.html)
+* [sqlite3\_db\_cacheflush](../c3ref/db_cacheflush.html)
+* [sqlite3\_db\_config](../c3ref/db_config.html)
+* [sqlite3\_db\_filename](../c3ref/db_filename.html)
+* [sqlite3\_db\_mutex](../c3ref/db_mutex.html)
+* [sqlite3\_db\_name](../c3ref/db_name.html)
+* [sqlite3\_db\_readonly](../c3ref/db_readonly.html)
+* [sqlite3\_db\_release\_memory](../c3ref/db_release_memory.html)
+* [sqlite3\_db\_status](../c3ref/db_status.html)
+* [sqlite3\_drop\_modules](../c3ref/drop_modules.html)
+* [sqlite3\_enable\_load\_extension](../c3ref/enable_load_extension.html)
+* [sqlite3\_errcode](../c3ref/errcode.html)
+* [sqlite3\_errmsg](../c3ref/errcode.html)
+* [sqlite3\_errmsg16](../c3ref/errcode.html)
+* [sqlite3\_error\_offset](../c3ref/errcode.html)
+* [sqlite3\_errstr](../c3ref/errcode.html)
+* [sqlite3\_exec](../c3ref/exec.html)
+* [sqlite3\_extended\_errcode](../c3ref/errcode.html)
+* [sqlite3\_extended\_result\_codes](../c3ref/extended_result_codes.html)
+* [sqlite3\_file\_control](../c3ref/file_control.html)
+* [sqlite3\_free\_table](../c3ref/free_table.html)
+* [sqlite3\_get\_autocommit](../c3ref/get_autocommit.html)
+* [sqlite3\_get\_clientdata](../c3ref/get_clientdata.html)
+* [sqlite3\_get\_table](../c3ref/free_table.html)
+* [sqlite3\_interrupt](../c3ref/interrupt.html)
+* [sqlite3\_is\_interrupted](../c3ref/interrupt.html)
+* [sqlite3\_last\_insert\_rowid](../c3ref/last_insert_rowid.html)
+* [sqlite3\_limit](../c3ref/limit.html)
+* [sqlite3\_load\_extension](../c3ref/load_extension.html)
+* [sqlite3\_next\_stmt](../c3ref/next_stmt.html)
+* [sqlite3\_overload\_function](../c3ref/overload_function.html)
+* [sqlite3\_prepare](../c3ref/prepare.html)
+* [sqlite3\_prepare16](../c3ref/prepare.html)
+* [sqlite3\_prepare16\_v2](../c3ref/prepare.html)
+* [sqlite3\_prepare16\_v3](../c3ref/prepare.html)
+* [sqlite3\_prepare\_v2](../c3ref/prepare.html)
+* [sqlite3\_prepare\_v3](../c3ref/prepare.html)
+* [sqlite3\_preupdate\_blobwrite](../c3ref/preupdate_blobwrite.html)
+* [sqlite3\_preupdate\_count](../c3ref/preupdate_blobwrite.html)
+* [sqlite3\_preupdate\_depth](../c3ref/preupdate_blobwrite.html)
+* [sqlite3\_preupdate\_hook](../c3ref/preupdate_blobwrite.html)
+* [sqlite3\_preupdate\_new](../c3ref/preupdate_blobwrite.html)
+* [sqlite3\_preupdate\_old](../c3ref/preupdate_blobwrite.html)
+* [sqlite3\_progress\_handler](../c3ref/progress_handler.html)
+* [sqlite3\_rollback\_hook](../c3ref/commit_hook.html)
+* [sqlite3\_set\_authorizer](../c3ref/set_authorizer.html)
+* [sqlite3\_set\_clientdata](../c3ref/get_clientdata.html)
+* [sqlite3\_set\_last\_insert\_rowid](../c3ref/set_last_insert_rowid.html)
+* [sqlite3\_system\_errno](../c3ref/system_errno.html)
+* [sqlite3\_table\_column\_metadata](../c3ref/table_column_metadata.html)
+* [sqlite3\_total\_changes](../c3ref/total_changes.html)
+* [sqlite3\_total\_changes64](../c3ref/total_changes.html)
+* [sqlite3\_trace\_v2](../c3ref/trace_v2.html)
+* [sqlite3\_txn\_state](../c3ref/txn_state.html)
+* [sqlite3\_unlock\_notify](../c3ref/unlock_notify.html)
+* [sqlite3\_update\_hook](../c3ref/update_hook.html)
+* [sqlite3\_wal\_autocheckpoint](../c3ref/wal_autocheckpoint.html)
+* [sqlite3\_wal\_checkpoint](../c3ref/wal_checkpoint.html)
+* [sqlite3\_wal\_checkpoint\_v2](../c3ref/wal_checkpoint_v2.html)
+* [sqlite3\_wal\_hook](../c3ref/wal_hook.html)
+
+
+
+
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

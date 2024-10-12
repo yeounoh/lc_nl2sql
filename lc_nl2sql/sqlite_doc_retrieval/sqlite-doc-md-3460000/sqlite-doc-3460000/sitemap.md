@@ -1,0 +1,680 @@
+
+
+
+
+
+SQLite Site Map
+
+
+
+
+[![SQLite](images/sqlite370_banner.gif)](index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](index.html)* [Menu](javascript:void(0))* [About](about.html)* [Documentation](docs.html)* [Download](download.html)* [License](copyright.html)* [Support](support.html)* [Purchase](prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](about.html)* [Documentation](docs.html)* [Download](download.html)* [Support](support.html)* [Purchase](prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+## Permuted Index
+
+
+
+Other Documentation Indices:
+* [Categorical Document List](docs.html)* [Books About SQLite](books.html)* [Alphabetical List Of Documents](doclist.html)* [Website Keyword Index](keyword_index.html)
+
+
+
+* **[35% Faster Than The Filesystem](fasterthanfs.html)**
+* **[8\+3 Filenames](shortnames.html)**
+* **[About SQLite](about.html)**
+* [About SQLite — Books](books.html)
+* [Advantages Of Flexible Typing — The](flextypegood.html)
+* [Against The Dark Arts — Defense](security.html)
+* [Aggregate Functions — Built in](lang_aggfunc.html)
+* [Ahead Logging — Write](wal.html)
+* [Allocation In SQLite — Dynamic Memory](malloc.html)
+* **[Alphabetical List Of SQLite Documents](doclist.html)**
+* **[ALTER TABLE](lang_altertable.html)**
+* [Amalgamation — The SQLite](amalgamation.html)
+* **[An Asynchronous I/O Module For SQLite](asyncvfs.html)**
+* **[An Introduction To The SQLite C/C\+\+ Interface](cintro.html)**
+* **[ANALYZE](lang_analyze.html)**
+* [And Concurrency In SQLite Version 3 — File Locking](lockingv3.html)
+* [and Considerations — SQLite Over a Network, Caveats](useovernet.html)
+* [and Error Codes — Result](rescode.html)
+* [and FTS4 Extensions — SQLite FTS3](fts3.html)
+* [and Gotchas In SQLite — Quirks, Caveats,](quirks.html)
+* [And Operators — JSON Functions](json1.html)
+* [and Reducing CPU Usage in SQLite — Measuring](cpu.html)
+* [And Tables\_Used() Table Valued Functions — The Bytecode()](bytecodevtab.html)
+* [and the WITHOUT ROWID Optimization — Clustered Indexes](withoutrowid.html)
+* [And Time Functions — Date](lang_datefunc.html)
+* [And Warning Log — The Error](errlog.html)
+* **[Android Bindings](https://sqlite.org/android/)**
+* [API — SQLite Backup](backup.html)
+* [API — SQLite Unlock Notify](unlock_notify.html)
+* [API Reference — C/C\+\+](capi3ref.html)
+* **[Application Defined SQL Functions](appfunc.html)**
+* [Application File Format — SQLite As An](appfileformat.html)
+* [Applications — Using SQLite In Multi Threaded](threadsafe.html)
+* **[Appropriate Uses For SQLite](whentouse.html)**
+* **[Architecture of SQLite](arch.html)**
+* [Archive Files — SQLite](sqlar.html)
+* [Archiver (sqlar.exe) — SQLite](https://sqlite.org/sqlar/)
+* [Are Efficient In SQLite — Many Small Queries](np1queryprob.html)
+* [Arts — Defense Against The Dark](security.html)
+* [Asked Questions — SQLite Frequently](faq.html)
+* [assert() In SQLite — The Use Of](assert.html)
+* [Asynchronous I/O Module For SQLite — An](asyncvfs.html)
+* **[Atomic Commit In SQLite](atomiccommit.html)**
+* **[ATTACH DATABASE](lang_attach.html)**
+* [Autoincrement — SQLite](autoinc.html)
+* **[Automatic Undo/Redo With SQLite](undoredo.html)**
+* [Backup API — SQLite](backup.html)
+* **[Benefits of SQLite As A File Format](aff_short.html)**
+* [Bindings — Android](https://sqlite.org/android/)
+* [BLOBs — Internal Versus External](intern-v-extern-blob.html)
+* **[Books About SQLite](books.html)**
+* [Branches Of SQLite — Maintaining Private](privatebranch.html)
+* [Builds Of SQLite — Custom](custombuild.html)
+* **[Built in Aggregate Functions](lang_aggfunc.html)**
+* **[Built In Mathematical SQL Functions](lang_mathfunc.html)**
+* [Built in printf() — SQLite's](printf.html)
+* **[Built In Scalar SQL Functions](lang_corefunc.html)**
+* [Bytecode — Why SQLite Uses](whybytecode.html)
+* [Bytecode Engine — The SQLite](opcode.html)
+* [Bytecode() And Tables\_Used() Table Valued Functions — The](bytecodevtab.html)
+* **[C/C\+\+ API Reference](capi3ref.html)**
+* [C/C\+\+ Interface — An Introduction To The SQLite](cintro.html)
+* [C/C\+\+ Interface — SQLite Session Module](session.html)
+* **[C/C\+\+ Interface For SQLite Version 3](capi3ref.html)**
+* **[C/C\+\+ Interface For SQLite Version 3 (old)](capi3.html)**
+* [Cache Mode — SQLite Shared](sharedcache.html)
+* [Canonical SQLite Source Code — How To Download](getthecode.html)
+* [Carray() Table Valued Function — The](carray.html)
+* [Caveats and Considerations — SQLite Over a Network,](useovernet.html)
+* [Caveats, and Gotchas In SQLite — Quirks,](quirks.html)
+* **[Change in Default Page Size in SQLite Version 3\.12\.0](pgszchng2016.html)**
+* [Changes From Version 3\.4\.2 To 3\.5\.0 — SQLite](34to35.html)
+* [Changes From Version 3\.5\.9 To 3\.6\.0 — SQLite](35to36.html)
+* [Changes in SQLite — File Format](formatchng.html)
+* [Characters In Strings — NUL](nulinstr.html)
+* [Checksum VFS Shim — The](cksumvfs.html)
+* [Clause — The INDEXED BY](lang_indexedby.html)
+* [Clause — The ON CONFLICT](lang_conflict.html)
+* [Clause — The WITH](lang_with.html)
+* **[Clustered Indexes and the WITHOUT ROWID Optimization](withoutrowid.html)**
+* [Code — How To Download Canonical SQLite Source](getthecode.html)
+* [Coded In C — Why Is SQLite](whyc.html)
+* [Codes — Result and Error](rescode.html)
+* [Collating Sequence — The UINT](uintcseq.html)
+* [Columns — Generated](gencol.html)
+* **[Command Line Shell For SQLite](cli.html)**
+* [Comment Syntax — SQL](lang_comment.html)
+* [Commit In SQLite — Atomic](atomiccommit.html)
+* [Comparison — SQLite Database Speed](speed.html)
+* [Compile SQLite — How To](howtocompile.html)
+* **[Compile time Options](compile.html)**
+* [COMPLETION() Table Valued Function — The](completion.html)
+* [Concurrency In SQLite Version 3 — File Locking And](lockingv3.html)
+* [Configuration — Zero](zeroconf.html)
+* [CONFLICT Clause — The ON](lang_conflict.html)
+* [Conflict Resolution in SQLite — Constraint](conflict.html)
+* [Considerations — SQLite Over a Network, Caveats and](useovernet.html)
+* [Consortium — SQLite](consortium.html)
+* **[Constraint Conflict Resolution in SQLite](conflict.html)**
+* [Contained System — SQLite is a Self](selfcontained.html)
+* [Control System — The Fossil Version](https://www.fossil-scm.org/)
+* [Copyright — SQLite](copyright.html)
+* [Corrupt An SQLite Database File — How To](howtocorrupt.html)
+* [Corrupt SQLite Database — Recovering Data From A](recovery.html)
+* [CPU Usage in SQLite — Measuring and Reducing](cpu.html)
+* **[CREATE INDEX](lang_createindex.html)**
+* **[CREATE TABLE](lang_createtable.html)**
+* **[CREATE TRIGGER](lang_createtrigger.html)**
+* **[CREATE VIEW](lang_createview.html)**
+* **[CREATE VIRTUAL TABLE](lang_createvtab.html)**
+* [CSV Virtual Table — The](csv.html)
+* **[Custom Builds Of SQLite](custombuild.html)**
+* [Dark Arts — Defense Against The](security.html)
+* [Data From A Corrupt SQLite Database — Recovering](recovery.html)
+* [DATABASE — ATTACH](lang_attach.html)
+* [Database — Recovering Data From A Corrupt SQLite](recovery.html)
+* [Database — SQLite: Single File](onefile.html)
+* [Database Difference Utility — sqldiff.exe:](sqldiff.html)
+* [Database Engine — Most Widely Deployed SQL](mostdeployed.html)
+* [Database Engine of SQLite — The Virtual](vdbe.html)
+* [Database File — How To Corrupt An SQLite](howtocorrupt.html)
+* **[Database File Format](fileformat2.html)**
+* **[Database Object Name Resolution](lang_naming.html)**
+* [Database Speed Comparison — SQLite](speed.html)
+* [Databases — In Memory](inmemorydb.html)
+* **[Datatypes In SQLite](datatype3.html)**
+* **[Datatypes In SQLite version 2](datatypes.html)**
+* **[Date And Time Functions](lang_datefunc.html)**
+* [dbhash.exe Utility Program — The](dbhash.html)
+* [DBSTAT Virtual Table — The](dbstat.html)
+* [Debugging SQLite — Hints for](debugging.html)
+* [Default Page Size in SQLite Version 3\.12\.0 — Change in](pgszchng2016.html)
+* **[Defense Against The Dark Arts](security.html)**
+* [Defined SQL Functions — Application](appfunc.html)
+* **[DELETE](lang_delete.html)**
+* [Deployed SQL Database Engine — Most Widely](mostdeployed.html)
+* **[DETACH](lang_detach.html)**
+* **[Deterministic SQL Functions](deterministic.html)**
+* [Developers — SQLite](crew.html)
+* [Diagrams — List of SQLite Syntax](syntax.html)
+* [Diagrams For SQLite — Syntax](syntaxdiagrams.html)
+* [Difference Utility — sqldiff.exe: Database](sqldiff.html)
+* [Disk Format — On](fileformat2.html)
+* **[Distinctive Features Of SQLite](different.html)**
+* [Documentation — SQLite](docs.html)
+* [Documents — Alphabetical List Of SQLite](doclist.html)
+* [Does Not Implement — SQL Features That SQLite](omitted.html)
+* [Does Not Use Git — Why SQLite](whynotgit.html)
+* [Download Canonical SQLite Source Code — How To](getthecode.html)
+* [Download Page — SQLite](download.html)
+* **[DROP INDEX](lang_dropindex.html)**
+* **[DROP TABLE](lang_droptable.html)**
+* **[DROP TRIGGER](lang_droptrigger.html)**
+* **[DROP VIEW](lang_dropview.html)**
+* **[Dynamic Memory Allocation In SQLite](malloc.html)**
+* [Efficient In SQLite — Many Small Queries Are](np1queryprob.html)
+* [Engine — Most Widely Deployed SQL Database](mostdeployed.html)
+* [Engine — The SQLite Bytecode](opcode.html)
+* [Engine of SQLite — The Virtual Database](vdbe.html)
+* [Error And Warning Log — The](errlog.html)
+* [Error Codes — Result and](rescode.html)
+* **[EXPLAIN](lang_explain.html)**
+* **[EXPLAIN QUERY PLAN](eqp.html)**
+* [Expressions — Indexes On](expridx.html)
+* [Expressions — SQL Language](lang_expr.html)
+* [Extension — SQLite FTS5](fts5.html)
+* [Extension — The RBU](rbu.html)
+* [Extension — The Session](sessionintro.html)
+* [Extensions — Run Time Loadable](loadext.html)
+* [Extensions — SQLite FTS3 and FTS4](fts3.html)
+* [External BLOBs — Internal Versus](intern-v-extern-blob.html)
+* [Faster Than The Filesystem — 35%](fasterthanfs.html)
+* [Featured SQL — Full](fullsql.html)
+* **[Features Of SQLite](features.html)**
+* [Features Of SQLite — Distinctive](different.html)
+* [Features That SQLite Does Not Implement — SQL](omitted.html)
+* [File — How To Corrupt An SQLite Database](howtocorrupt.html)
+* [File Database — SQLite: Single](onefile.html)
+* [File Format — Benefits of SQLite As A](aff_short.html)
+* [File Format — Database](fileformat2.html)
+* [File Format — SQLite As An Application](appfileformat.html)
+* [File Format — WAL mode](walformat.html)
+* **[File Format Changes in SQLite](formatchng.html)**
+* **[File Locking And Concurrency In SQLite Version 3](lockingv3.html)**
+* [Filenames — 8\+3](shortnames.html)
+* [Files — SQLite Archive](sqlar.html)
+* [Files Used By SQLite — Temporary](tempfiles.html)
+* [Filesystem — 35% Faster Than The](fasterthanfs.html)
+* [Flexible Typing — The Advantages Of](flextypegood.html)
+* **[Floating Point Numbers](floatingpoint.html)**
+* [Footprint — SQLite Library](footprint.html)
+* [Foreign Key Support — SQLite](foreignkeys.html)
+* [Format — Benefits of SQLite As A File](aff_short.html)
+* [Format — Database File](fileformat2.html)
+* [Format — LoC Recommended Storage](locrsf.html)
+* [Format — On Disk](fileformat2.html)
+* [Format — SQLite As An Application File](appfileformat.html)
+* [Format — WAL mode File](walformat.html)
+* [Format Changes in SQLite — File](formatchng.html)
+* [Fossil Version Control System — The](https://www.fossil-scm.org/)
+* [Frequently Asked Questions — SQLite](faq.html)
+* [From A Corrupt SQLite Database — Recovering Data](recovery.html)
+* [From Version 3\.4\.2 To 3\.5\.0 — SQLite Changes](34to35.html)
+* [From Version 3\.5\.9 To 3\.6\.0 — SQLite Changes](35to36.html)
+* [FTS3 and FTS4 Extensions — SQLite](fts3.html)
+* [FTS4 Extensions — SQLite FTS3 and](fts3.html)
+* [FTS5 Extension — SQLite](fts5.html)
+* **[Full Featured SQL](fullsql.html)**
+* [Function — The Carray() Table Valued](carray.html)
+* [Function — The COMPLETION() Table Valued](completion.html)
+* [Function — The generate\_series Table Valued](series.html)
+* [Functions — Application Defined SQL](appfunc.html)
+* [Functions — Built in Aggregate](lang_aggfunc.html)
+* [Functions — Built In Mathematical SQL](lang_mathfunc.html)
+* [Functions — Built In Scalar SQL](lang_corefunc.html)
+* [Functions — Date And Time](lang_datefunc.html)
+* [Functions — Deterministic SQL](deterministic.html)
+* [Functions — The Bytecode() And Tables\_Used() Table Valued](bytecodevtab.html)
+* [Functions — Window](windowfunctions.html)
+* [Functions And Operators — JSON](json1.html)
+* [generate\_series Table Valued Function — The](series.html)
+* **[Generated Columns](gencol.html)**
+* [Generation Query Planner — The Next](queryplanner-ng.html)
+* [Generator — The Lemon LALR(1\) Parser](lemon.html)
+* [Geopoly Interface To The SQLite R\*Tree Module — The](geopoly.html)
+* [Git — Why SQLite Does Not Use](whynotgit.html)
+* [Gotchas In SQLite — Quirks, Caveats, and](quirks.html)
+* [Handling in SQLite — NULL](nulls.html)
+* **[High Reliability](hirely.html)**
+* **[Hints for Debugging SQLite](debugging.html)**
+* [History Of SQLite — Release](changes.html)
+* **[History Of SQLite Releases](chronology.html)**
+* [Home Page — SQLite](index.html)
+* **[How Indexes Work](queryplanner.html)**
+* **[How SQLite Is Tested](testing.html)**
+* **[How SQLite Works](howitworks.html)**
+* **[How To Compile SQLite](howtocompile.html)**
+* **[How To Corrupt An SQLite Database File](howtocorrupt.html)**
+* **[How To Download Canonical SQLite Source Code](getthecode.html)**
+* [I/O — Memory Mapped](mmap.html)
+* [I/O Module For SQLite — An Asynchronous](asyncvfs.html)
+* [Identifiers — Uniform Resource](uri.html)
+* [Implement — SQL Features That SQLite Does Not](omitted.html)
+* **[Implementation Limits For SQLite](limits.html)**
+* **[Imposter Tables](imposter.html)**
+* **[In Memory Databases](inmemorydb.html)**
+* [INDEX — CREATE](lang_createindex.html)
+* [INDEX — DROP](lang_dropindex.html)
+* [Index — Website Keyword](keyword_index.html)
+* [INDEXED BY Clause — The](lang_indexedby.html)
+* [Indexes — Partial](partialindex.html)
+* [Indexes and the WITHOUT ROWID Optimization — Clustered](withoutrowid.html)
+* **[Indexes On Expressions](expridx.html)**
+* [Indexes Work — How](queryplanner.html)
+* **[INSERT](lang_insert.html)**
+* [Interface — An Introduction To The SQLite C/C\+\+](cintro.html)
+* [Interface — SQLite Session Module C/C\+\+](session.html)
+* [Interface For SQLite Version 3 — C/C\+\+](capi3ref.html)
+* [Interface For SQLite Version 3 (old) — C/C\+\+](capi3.html)
+* [Interface or VFS — The SQLite OS](vfs.html)
+* [interface to SQLite Version 2 — The C language](c_interface.html)
+* [interface to the SQLite library — The Tcl](tclsqlite.html)
+* [Interface To The SQLite R\*Tree Module — The Geopoly](geopoly.html)
+* [Interfaces — Pointer Passing](bindptr.html)
+* **[Internal Versus External BLOBs](intern-v-extern-blob.html)**
+* [Introduction To The SQLite C/C\+\+ Interface — An](cintro.html)
+* **[Invalid UTF Policy](invalidutf.html)**
+* **[Isolation In SQLite](isolation.html)**
+* **[Javascript Required](hp1.html)**
+* **[JSON Functions And Operators](json1.html)**
+* [Key Support — SQLite Foreign](foreignkeys.html)
+* [Keyword Index — Website](keyword_index.html)
+* [Keywords — SQLite](lang_keywords.html)
+* [Known Users Of SQLite — Well](famous.html)
+* [LALR(1\) Parser Generator — The Lemon](lemon.html)
+* [Language Expressions — SQL](lang_expr.html)
+* [language interface to SQLite Version 2 — The C](c_interface.html)
+* [Language Understood by SQLite — Query](lang.html)
+* [Lemon LALR(1\) Parser Generator — The](lemon.html)
+* [Less — SQLite In 5 Minutes Or](quickstart.html)
+* [library — The Tcl interface to the SQLite](tclsqlite.html)
+* [Library Footprint — SQLite](footprint.html)
+* [Limits For SQLite — Implementation](limits.html)
+* [Line Shell For SQLite — Command](cli.html)
+* [List Of SQLite Documents — Alphabetical](doclist.html)
+* **[List of SQLite Syntax Diagrams](syntax.html)**
+* **[List Of Virtual Tables](vtablist.html)**
+* [Loadable Extensions — Run Time](loadext.html)
+* **[LoC Recommended Storage Format](locrsf.html)**
+* [Locking And Concurrency In SQLite Version 3 — File](lockingv3.html)
+* [Log — The Error And Warning](errlog.html)
+* [Logging — Write Ahead](wal.html)
+* **[Long Term Support](lts.html)**
+* **[Maintaining Private Branches Of SQLite](privatebranch.html)**
+* [Management — Quality](qmplan.html)
+* **[Many Small Queries Are Efficient In SQLite](np1queryprob.html)**
+* [Map — SQLite Site](sitemap.html)
+* [Mapped I/O — Memory](mmap.html)
+* [Mathematical SQL Functions — Built In](lang_mathfunc.html)
+* **[Measuring and Reducing CPU Usage in SQLite](cpu.html)**
+* [Mechanism Of SQLite — The Virtual Table](vtab.html)
+* [Memory Allocation In SQLite — Dynamic](malloc.html)
+* [Memory Databases — In](inmemorydb.html)
+* **[Memory Mapped I/O](mmap.html)**
+* [Minutes Or Less — SQLite In 5](quickstart.html)
+* [Mode — SQLite Shared Cache](sharedcache.html)
+* [mode File Format — WAL](walformat.html)
+* [Module — The Geopoly Interface To The SQLite R\*Tree](geopoly.html)
+* [Module — The SQLite R\*Tree](rtree.html)
+* [Module — The SQLite Zipfile](zipfile.html)
+* [Module C/C\+\+ Interface — SQLite Session](session.html)
+* [Module For SQLite — An Asynchronous I/O](asyncvfs.html)
+* **[Most Widely Deployed SQL Database Engine](mostdeployed.html)**
+* [Multi Threaded Applications — Using SQLite In](threadsafe.html)
+* [Name Resolution — Database Object](lang_naming.html)
+* [Network, Caveats and Considerations — SQLite Over a](useovernet.html)
+* [News — Recent SQLite](news.html)
+* [News — SQLite Older](oldnews.html)
+* [Next Generation Query Planner — The](queryplanner-ng.html)
+* [Not Implement — SQL Features That SQLite Does](omitted.html)
+* [Not Use Git — Why SQLite Does](whynotgit.html)
+* [Notify API — SQLite Unlock](unlock_notify.html)
+* **[NUL Characters In Strings](nulinstr.html)**
+* **[NULL Handling in SQLite](nulls.html)**
+* [Numbers — Floating Point](floatingpoint.html)
+* [Numbers in SQLite — Version](versionnumbers.html)
+* [Object Name Resolution — Database](lang_naming.html)
+* [Older News — SQLite](oldnews.html)
+* **[On Disk Format](fileformat2.html)**
+* [OpenDocument Used SQLite? — What If](affcase1.html)
+* [Operators — JSON Functions And](json1.html)
+* [Optimization — Clustered Indexes and the WITHOUT ROWID](withoutrowid.html)
+* [Optimizer Overview — The SQLite Query](optoverview.html)
+* [Options — Compile time](compile.html)
+* [Options — SQLite Support](support.html)
+* [Over a Network, Caveats and Considerations — SQLite](useovernet.html)
+* [Overview — SQLite Version 3](version3.html)
+* [Overview — The SQLite Query Optimizer](optoverview.html)
+* [Overwrite — Powersafe](psow.html)
+* [Page — SQLite Download](download.html)
+* [Page — SQLite Home](index.html)
+* [Page Size in SQLite Version 3\.12\.0 — Change in Default](pgszchng2016.html)
+* [Parser Generator — The Lemon LALR(1\)](lemon.html)
+* **[Partial Indexes](partialindex.html)**
+* [Passing Interfaces — Pointer](bindptr.html)
+* [PLAN — EXPLAIN QUERY](eqp.html)
+* [Planner — The Next Generation Query](queryplanner-ng.html)
+* [Planning — Query](queryplanner.html)
+* [Point Numbers — Floating](floatingpoint.html)
+* **[Pointer Passing Interfaces](bindptr.html)**
+* [Policy — Invalid UTF](invalidutf.html)
+* **[Powersafe Overwrite](psow.html)**
+* **[Pragma statements supported by SQLite](pragma.html)**
+* [printf() — SQLite's Built in](printf.html)
+* [Private Branches Of SQLite — Maintaining](privatebranch.html)
+* [Pro Support — SQLite](prosupport.html)
+* **[Profiling SQL Queries](profile.html)**
+* [Program — The dbhash.exe Utility](dbhash.html)
+* [Program — The sqlite3\_analyzer.exe Utility](sqlanalyze.html)
+* **[Quality Management](qmplan.html)**
+* [Queries — Profiling SQL](profile.html)
+* [Queries Are Efficient In SQLite — Many Small](np1queryprob.html)
+* **[Query Language Understood by SQLite](lang.html)**
+* [Query Optimizer Overview — The SQLite](optoverview.html)
+* [QUERY PLAN — EXPLAIN](eqp.html)
+* [Query Planner — The Next Generation](queryplanner-ng.html)
+* **[Query Planning](queryplanner.html)**
+* [Questions — SQLite Frequently Asked](faq.html)
+* **[Quirks, Caveats, and Gotchas In SQLite](quirks.html)**
+* [R\*Tree Module — The Geopoly Interface To The SQLite](geopoly.html)
+* [R\*Tree Module — The SQLite](rtree.html)
+* [RBU Extension — The](rbu.html)
+* **[Recent SQLite News](news.html)**
+* [Recommended Storage Format — LoC](locrsf.html)
+* **[Recovering Data From A Corrupt SQLite Database](recovery.html)**
+* [Reducing CPU Usage in SQLite — Measuring and](cpu.html)
+* [Reference — C/C\+\+ API](capi3ref.html)
+* **[REINDEX](lang_reindex.html)**
+* **[Release History Of SQLite](changes.html)**
+* [Releases — History Of SQLite](chronology.html)
+* [Reliability — High](hirely.html)
+* **[REPLACE](lang_replace.html)**
+* [Required — Javascript](hp1.html)
+* [Requirements — SQLite](requirements.html)
+* [Resolution — Database Object Name](lang_naming.html)
+* [Resolution in SQLite — Constraint Conflict](conflict.html)
+* [Resource Identifiers — Uniform](uri.html)
+* **[Result and Error Codes](rescode.html)**
+* **[RETURNING](lang_returning.html)**
+* **[Row Values](rowvalue.html)**
+* [ROWID Optimization — Clustered Indexes and the WITHOUT](withoutrowid.html)
+* **[Rowid Tables](rowidtable.html)**
+* **[Run Time Loadable Extensions](loadext.html)**
+* **[Savepoints](lang_savepoint.html)**
+* [Scalar SQL Functions — Built In](lang_corefunc.html)
+* [Schema Table — The](schematab.html)
+* **[SELECT](lang_select.html)**
+* [Self Contained System — SQLite is a](selfcontained.html)
+* [Sequence — The UINT Collating](uintcseq.html)
+* [Serverless — SQLite Is](serverless.html)
+* [Session Extension — The](sessionintro.html)
+* [Session Module C/C\+\+ Interface — SQLite](session.html)
+* [Shared Cache Mode — SQLite](sharedcache.html)
+* [Shell For SQLite — Command Line](cli.html)
+* [Shim — The Checksum VFS](cksumvfs.html)
+* [Single File Database — SQLite:](onefile.html)
+* [Site Map — SQLite](sitemap.html)
+* [Size in SQLite Version 3\.12\.0 — Change in Default Page](pgszchng2016.html)
+* [Small Queries Are Efficient In SQLite — Many](np1queryprob.html)
+* [Source Code — How To Download Canonical SQLite](getthecode.html)
+* [Speed Comparison — SQLite Database](speed.html)
+* [Spellfix1 Virtual Table — The](spellfix1.html)
+* [SQL — Full Featured](fullsql.html)
+* **[SQL Comment Syntax](lang_comment.html)**
+* [SQL Database Engine — Most Widely Deployed](mostdeployed.html)
+* **[SQL Features That SQLite Does Not Implement](omitted.html)**
+* [SQL Functions — Application Defined](appfunc.html)
+* [SQL Functions — Built In Mathematical](lang_mathfunc.html)
+* [SQL Functions — Built In Scalar](lang_corefunc.html)
+* [SQL Functions — Deterministic](deterministic.html)
+* **[SQL Language Expressions](lang_expr.html)**
+* [SQL Queries — Profiling](profile.html)
+* **[sqldiff.exe: Database Difference Utility](sqldiff.html)**
+* **[SQLite Archive Files](sqlar.html)**
+* **[SQLite Archiver (sqlar.exe)](https://sqlite.org/sqlar/)**
+* **[SQLite As An Application File Format](appfileformat.html)**
+* **[SQLite Autoincrement](autoinc.html)**
+* **[SQLite Backup API](backup.html)**
+* **[SQLite Changes From Version 3\.4\.2 To 3\.5\.0](34to35.html)**
+* **[SQLite Changes From Version 3\.5\.9 To 3\.6\.0](35to36.html)**
+* **[SQLite Consortium](consortium.html)**
+* **[SQLite Copyright](copyright.html)**
+* **[SQLite Database Speed Comparison](speed.html)**
+* **[SQLite Developers](crew.html)**
+* **[SQLite Documentation](docs.html)**
+* **[SQLite Download Page](download.html)**
+* **[SQLite Foreign Key Support](foreignkeys.html)**
+* **[SQLite Frequently Asked Questions](faq.html)**
+* **[SQLite FTS3 and FTS4 Extensions](fts3.html)**
+* **[SQLite FTS5 Extension](fts5.html)**
+* **[SQLite Home Page](index.html)**
+* **[SQLite In 5 Minutes Or Less](quickstart.html)**
+* **[SQLite is a Self Contained System](selfcontained.html)**
+* **[SQLite Is Serverless](serverless.html)**
+* **[SQLite Is Transactional](transactional.html)**
+* **[SQLite Keywords](lang_keywords.html)**
+* **[SQLite Library Footprint](footprint.html)**
+* **[SQLite Older News](oldnews.html)**
+* **[SQLite Over a Network, Caveats and Considerations](useovernet.html)**
+* **[SQLite Pro Support](prosupport.html)**
+* **[SQLite Requirements](requirements.html)**
+* **[SQLite Session Module C/C\+\+ Interface](session.html)**
+* **[SQLite Shared Cache Mode](sharedcache.html)**
+* **[SQLite Site Map](sitemap.html)**
+* **[SQLite Support Options](support.html)**
+* **[SQLite Unlock Notify API](unlock_notify.html)**
+* **[SQLite Version 3 Overview](version3.html)**
+* **[SQLite's Built in printf()](printf.html)**
+* [sqlite3\_analyzer.exe Utility Program — The](sqlanalyze.html)
+* **[SQLite: Single File Database](onefile.html)**
+* [SQLite? — What If OpenDocument Used](affcase1.html)
+* [SQLITE\_DBPAGE Virtual Table — The](dbpage.html)
+* [SQLITE\_MEMSTAT Virtual Table — The](memstat.html)
+* [SQLITE\_STMT Virtual Table — The](stmt.html)
+* [statements supported by SQLite — Pragma](pragma.html)
+* [Storage Format — LoC Recommended](locrsf.html)
+* **[STRICT Tables](stricttables.html)**
+* [Strings — NUL Characters In](nulinstr.html)
+* [Support — Long Term](lts.html)
+* [Support — SQLite Foreign Key](foreignkeys.html)
+* [Support — SQLite Pro](prosupport.html)
+* [Support Options — SQLite](support.html)
+* [supported by SQLite — Pragma statements](pragma.html)
+* **[Swarmvtab Virtual Table](swarmvtab.html)**
+* [Syntax — SQL Comment](lang_comment.html)
+* [Syntax Diagrams — List of SQLite](syntax.html)
+* **[Syntax Diagrams For SQLite](syntaxdiagrams.html)**
+* [System — SQLite is a Self Contained](selfcontained.html)
+* [System — The Fossil Version Control](https://www.fossil-scm.org/)
+* **[System.Data.SQLite](https://system.data.sqlite.org/)**
+* [TABLE — ALTER](lang_altertable.html)
+* [TABLE — CREATE](lang_createtable.html)
+* [TABLE — CREATE VIRTUAL](lang_createvtab.html)
+* [TABLE — DROP](lang_droptable.html)
+* [Table — Swarmvtab Virtual](swarmvtab.html)
+* [Table — The CSV Virtual](csv.html)
+* [Table — The DBSTAT Virtual](dbstat.html)
+* [Table — The Schema](schematab.html)
+* [Table — The Spellfix1 Virtual](spellfix1.html)
+* [Table — The SQLITE\_DBPAGE Virtual](dbpage.html)
+* [Table — The SQLITE\_MEMSTAT Virtual](memstat.html)
+* [Table — The SQLITE\_STMT Virtual](stmt.html)
+* [Table — The UNION Virtual](unionvtab.html)
+* [Table Mechanism Of SQLite — The Virtual](vtab.html)
+* [Table Valued Function — The Carray()](carray.html)
+* [Table Valued Function — The COMPLETION()](completion.html)
+* [Table Valued Function — The generate\_series](series.html)
+* [Table Valued Functions — The Bytecode() And Tables\_Used()](bytecodevtab.html)
+* [Tables — Imposter](imposter.html)
+* [Tables — List Of Virtual](vtablist.html)
+* [Tables — Rowid](rowidtable.html)
+* [Tables — STRICT](stricttables.html)
+* [Tables\_Used() Table Valued Functions — The Bytecode() And](bytecodevtab.html)
+* [Tcl interface to the SQLite library — The](tclsqlite.html)
+* **[Temporary Files Used By SQLite](tempfiles.html)**
+* [Term Support — Long](lts.html)
+* [Tested — How SQLite Is](testing.html)
+* **[TH3](th3.html)**
+* [Than The Filesystem — 35% Faster](fasterthanfs.html)
+* [That SQLite Does Not Implement — SQL Features](omitted.html)
+* **[The Advantages Of Flexible Typing](flextypegood.html)**
+* **[The Bytecode() And Tables\_Used() Table Valued Functions](bytecodevtab.html)**
+* **[The C language interface to SQLite Version 2](c_interface.html)**
+* **[The Carray() Table Valued Function](carray.html)**
+* **[The Checksum VFS Shim](cksumvfs.html)**
+* **[The COMPLETION() Table Valued Function](completion.html)**
+* **[The CSV Virtual Table](csv.html)**
+* **[The dbhash.exe Utility Program](dbhash.html)**
+* **[The DBSTAT Virtual Table](dbstat.html)**
+* **[The Error And Warning Log](errlog.html)**
+* **[The Fossil Version Control System](https://www.fossil-scm.org/)**
+* **[The generate\_series Table Valued Function](series.html)**
+* **[The Geopoly Interface To The SQLite R\*Tree Module](geopoly.html)**
+* **[The INDEXED BY Clause](lang_indexedby.html)**
+* **[The Lemon LALR(1\) Parser Generator](lemon.html)**
+* **[The Next Generation Query Planner](queryplanner-ng.html)**
+* **[The ON CONFLICT Clause](lang_conflict.html)**
+* **[The RBU Extension](rbu.html)**
+* **[The Schema Table](schematab.html)**
+* **[The Session Extension](sessionintro.html)**
+* **[The Spellfix1 Virtual Table](spellfix1.html)**
+* **[The SQLite Amalgamation](amalgamation.html)**
+* **[The SQLite Bytecode Engine](opcode.html)**
+* **[The SQLite OS Interface or "VFS"](vfs.html)**
+* **[The SQLite Query Optimizer Overview](optoverview.html)**
+* **[The SQLite R\*Tree Module](rtree.html)**
+* **[The SQLite Zipfile Module](zipfile.html)**
+* **[The sqlite3\_analyzer.exe Utility Program](sqlanalyze.html)**
+* **[The SQLITE\_DBPAGE Virtual Table](dbpage.html)**
+* **[The SQLITE\_MEMSTAT Virtual Table](memstat.html)**
+* **[The SQLITE\_STMT Virtual Table](stmt.html)**
+* **[The Tcl interface to the SQLite library](tclsqlite.html)**
+* **[The UINT Collating Sequence](uintcseq.html)**
+* **[The UNION Virtual Table](unionvtab.html)**
+* **[The Use Of assert() In SQLite](assert.html)**
+* **[The Virtual Database Engine of SQLite](vdbe.html)**
+* **[The Virtual Table Mechanism Of SQLite](vtab.html)**
+* **[The WITH Clause](lang_with.html)**
+* [Threaded Applications — Using SQLite In Multi](threadsafe.html)
+* [Time Functions — Date And](lang_datefunc.html)
+* [Time Loadable Extensions — Run](loadext.html)
+* [time Options — Compile](compile.html)
+* **[Transaction](lang_transaction.html)**
+* [Transactional — SQLite Is](transactional.html)
+* [TRIGGER — CREATE](lang_createtrigger.html)
+* [TRIGGER — DROP](lang_droptrigger.html)
+* [Typing — The Advantages Of Flexible](flextypegood.html)
+* [UINT Collating Sequence — The](uintcseq.html)
+* [Understood by SQLite — Query Language](lang.html)
+* [Undo/Redo With SQLite — Automatic](undoredo.html)
+* **[Uniform Resource Identifiers](uri.html)**
+* [UNION Virtual Table — The](unionvtab.html)
+* [Unlock Notify API — SQLite](unlock_notify.html)
+* **[UPDATE](lang_update.html)**
+* **[UPSERT](lang_upsert.html)**
+* [Usage in SQLite — Measuring and Reducing CPU](cpu.html)
+* [Use Git — Why SQLite Does Not](whynotgit.html)
+* [Use Of assert() In SQLite — The](assert.html)
+* [Used By SQLite — Temporary Files](tempfiles.html)
+* [Used SQLite? — What If OpenDocument](affcase1.html)
+* [Users Of SQLite — Well Known](famous.html)
+* [Uses Bytecode — Why SQLite](whybytecode.html)
+* [Uses For SQLite — Appropriate](whentouse.html)
+* **[Using SQLite In Multi Threaded Applications](threadsafe.html)**
+* [UTF Policy — Invalid](invalidutf.html)
+* [Utility — sqldiff.exe: Database Difference](sqldiff.html)
+* [Utility Program — The dbhash.exe](dbhash.html)
+* [Utility Program — The sqlite3\_analyzer.exe](sqlanalyze.html)
+* **[VACUUM](lang_vacuum.html)**
+* [Valued Function — The Carray() Table](carray.html)
+* [Valued Function — The COMPLETION() Table](completion.html)
+* [Valued Function — The generate\_series Table](series.html)
+* [Valued Functions — The Bytecode() And Tables\_Used() Table](bytecodevtab.html)
+* [Values — Row](rowvalue.html)
+* [version 2 — Datatypes In SQLite](datatypes.html)
+* [Version 2 — The C language interface to SQLite](c_interface.html)
+* [Version 3 — C/C\+\+ Interface For SQLite](capi3ref.html)
+* [Version 3 — File Locking And Concurrency In SQLite](lockingv3.html)
+* [Version 3 (old) — C/C\+\+ Interface For SQLite](capi3.html)
+* [Version 3 Overview — SQLite](version3.html)
+* [Version 3\.12\.0 — Change in Default Page Size in SQLite](pgszchng2016.html)
+* [Version 3\.4\.2 To 3\.5\.0 — SQLite Changes From](34to35.html)
+* [Version 3\.5\.9 To 3\.6\.0 — SQLite Changes From](35to36.html)
+* [Version Control System — The Fossil](https://www.fossil-scm.org/)
+* **[Version Numbers in SQLite](versionnumbers.html)**
+* [Versus External BLOBs — Internal](intern-v-extern-blob.html)
+* [VFS — The SQLite OS Interface or](vfs.html)
+* [VFS Shim — The Checksum](cksumvfs.html)
+* [VIEW — CREATE](lang_createview.html)
+* [VIEW — DROP](lang_dropview.html)
+* [Virtual Database Engine of SQLite — The](vdbe.html)
+* [VIRTUAL TABLE — CREATE](lang_createvtab.html)
+* [Virtual Table — Swarmvtab](swarmvtab.html)
+* [Virtual Table — The CSV](csv.html)
+* [Virtual Table — The DBSTAT](dbstat.html)
+* [Virtual Table — The Spellfix1](spellfix1.html)
+* [Virtual Table — The SQLITE\_DBPAGE](dbpage.html)
+* [Virtual Table — The SQLITE\_MEMSTAT](memstat.html)
+* [Virtual Table — The SQLITE\_STMT](stmt.html)
+* [Virtual Table — The UNION](unionvtab.html)
+* [Virtual Table Mechanism Of SQLite — The](vtab.html)
+* [Virtual Tables — List Of](vtablist.html)
+* **[Vulnerabilities](cves.html)**
+* **[WAL mode File Format](walformat.html)**
+* [Warning Log — The Error And](errlog.html)
+* **[Website Keyword Index](keyword_index.html)**
+* **[Well Known Users Of SQLite](famous.html)**
+* **[What If OpenDocument Used SQLite?](affcase1.html)**
+* **[Why Is SQLite Coded In C](whyc.html)**
+* **[Why SQLite Does Not Use Git](whynotgit.html)**
+* **[Why SQLite Uses Bytecode](whybytecode.html)**
+* [Widely Deployed SQL Database Engine — Most](mostdeployed.html)
+* **[Window Functions](windowfunctions.html)**
+* [WITH Clause — The](lang_with.html)
+* [With SQLite — Automatic Undo/Redo](undoredo.html)
+* [WITHOUT ROWID Optimization — Clustered Indexes and the](withoutrowid.html)
+* [Work — How Indexes](queryplanner.html)
+* [Works — How SQLite](howitworks.html)
+* **[Write Ahead Logging](wal.html)**
+* **[Zero Configuration](zeroconf.html)**
+* [Zipfile Module — The SQLite](zipfile.html)
+
+

@@ -1,0 +1,72 @@
+
+
+
+
+
+Find the next prepared statement
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Find the next prepared statement
+
+
+
+
+> ```
+> 
+> sqlite3_stmt *sqlite3_next_stmt(sqlite3 *pDb, sqlite3_stmt *pStmt);
+> 
+> ```
+
+
+
+This interface returns a pointer to the next [prepared statement](../c3ref/stmt.html) after
+pStmt associated with the [database connection](../c3ref/sqlite3.html) pDb. If pStmt is NULL
+then this interface returns a pointer to the first prepared statement
+associated with the database connection pDb. If no prepared statement
+satisfies the conditions of this routine, it returns NULL.
+
+
+The [database connection](../c3ref/sqlite3.html) pointer D in a call to
+[sqlite3\_next\_stmt(D,S)](../c3ref/next_stmt.html) must refer to an open database
+connection and in particular must not be a NULL pointer.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

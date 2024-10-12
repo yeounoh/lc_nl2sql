@@ -1,0 +1,80 @@
+
+
+
+
+
+Close A BLOB Handle
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Close A BLOB Handle
+
+
+
+
+> ```
+> 
+> int sqlite3_blob_close(sqlite3_blob *);
+> 
+> ```
+
+
+
+This function closes an open [BLOB handle](../c3ref/blob.html). The BLOB handle is closed
+unconditionally. Even if this routine returns an error code, the
+handle is still closed.
+
+
+If the blob handle being closed was opened for read\-write access, and if
+the database is in auto\-commit mode and there are no other open read\-write
+blob handles or active write statements, the current transaction is
+committed. If an error occurs while committing the transaction, an error
+code is returned and the transaction rolled back.
+
+
+Calling this function with an argument that is not a NULL pointer or an
+open blob handle results in undefined behavior. Calling this routine
+with a null pointer (such as would be returned by a failed call to
+[sqlite3\_blob\_open()](../c3ref/blob_open.html)) is a harmless no\-op. Otherwise, if this function
+is passed a valid open blob handle, the values returned by the
+sqlite3\_errcode() and sqlite3\_errmsg() functions are set before returning.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

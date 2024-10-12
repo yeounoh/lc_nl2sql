@@ -1,0 +1,89 @@
+
+
+
+
+
+Constants Returned By The Conflict Handler
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+[## Session Module C Interface](../session/intro.html)## Constants Returned By The Conflict Handler
+
+
+> ```
+> #define SQLITE_CHANGESET_OMIT       0
+> #define SQLITE_CHANGESET_REPLACE    1
+> #define SQLITE_CHANGESET_ABORT      2
+> 
+> ```
+
+
+A conflict handler callback must return one of the following three values.
+
+
+
+SQLITE\_CHANGESET\_OMIT
+ If a conflict handler returns this value no special action is taken. The
+ change that caused the conflict is not applied. The session module 
+ continues to the next change in the changeset.
+
+
+SQLITE\_CHANGESET\_REPLACE
+ This value may only be returned if the second argument to the conflict
+ handler was SQLITE\_CHANGESET\_DATA or SQLITE\_CHANGESET\_CONFLICT. If this
+ is not the case, any changes applied so far are rolled back and the 
+ call to sqlite3changeset\_apply() returns SQLITE\_MISUSE.
+
+
+ If CHANGESET\_REPLACE is returned by an SQLITE\_CHANGESET\_DATA conflict
+ handler, then the conflicting row is either updated or deleted, depending
+ on the type of change.
+
+
+ If CHANGESET\_REPLACE is returned by an SQLITE\_CHANGESET\_CONFLICT conflict
+ handler, then the conflicting row is removed from the database and a
+ second attempt to apply the change is made. If this second attempt fails,
+ the original row is restored to the database before continuing.
+
+
+SQLITE\_CHANGESET\_ABORT
+ If this value is returned, any changes applied so far are rolled back 
+ and the call to sqlite3changeset\_apply() returns SQLITE\_ABORT.
+
+
+
+See also lists of
+ [Objects](../session/objlist.html),
+ [Constants](../session/constlist.html), and
+ [Functions](../session/funclist.html).
+
+

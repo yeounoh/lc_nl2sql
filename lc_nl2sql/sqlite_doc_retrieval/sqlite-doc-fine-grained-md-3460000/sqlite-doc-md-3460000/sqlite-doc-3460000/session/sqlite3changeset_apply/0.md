@@ -1,0 +1,262 @@
+
+
+
+
+
+Apply A Changeset To A Database
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+[## Session Module C Interface](../session/intro.html)## Apply A Changeset To A Database
+
+
+> ```
+> int sqlite3changeset_apply(
+>   sqlite3 *db,                    /* Apply change to "main" db of this handle */
+>   int nChangeset,                 /* Size of changeset in bytes */
+>   void *pChangeset,               /* Changeset blob */
+>   int(*xFilter)(
+>     void *pCtx,                   /* Copy of sixth arg to _apply() */
+>     const char *zTab              /* Table name */
+>   ),
+>   int(*xConflict)(
+>     void *pCtx,                   /* Copy of sixth arg to _apply() */
+>     int eConflict,                /* DATA, MISSING, CONFLICT, CONSTRAINT */
+>     sqlite3_changeset_iter *p     /* Handle describing change and conflict */
+>   ),
+>   void *pCtx                      /* First argument passed to xConflict */
+> );
+> int sqlite3changeset_apply_v2(
+>   sqlite3 *db,                    /* Apply change to "main" db of this handle */
+>   int nChangeset,                 /* Size of changeset in bytes */
+>   void *pChangeset,               /* Changeset blob */
+>   int(*xFilter)(
+>     void *pCtx,                   /* Copy of sixth arg to _apply() */
+>     const char *zTab              /* Table name */
+>   ),
+>   int(*xConflict)(
+>     void *pCtx,                   /* Copy of sixth arg to _apply() */
+>     int eConflict,                /* DATA, MISSING, CONFLICT, CONSTRAINT */
+>     sqlite3_changeset_iter *p     /* Handle describing change and conflict */
+>   ),
+>   void *pCtx,                     /* First argument passed to xConflict */
+>   void **ppRebase, int *pnRebase, /* OUT: Rebase data */
+>   int flags                       /* SESSION_CHANGESETAPPLY_* flags */
+> );
+> 
+> ```
+
+
+Apply a changeset or patchset to a database. These functions attempt to
+update the "main" database attached to handle db with the changes found in
+the changeset passed via the second and third arguments. 
+
+
+The fourth argument (xFilter) passed to these functions is the "filter
+callback". If it is not NULL, then for each table affected by at least one
+change in the changeset, the filter callback is invoked with
+the table name as the second argument, and a copy of the context pointer
+passed as the sixth argument as the first. If the "filter callback"
+returns zero, then no attempt is made to apply any changes to the table.
+Otherwise, if the return value is non\-zero or the xFilter argument to
+is NULL, all changes related to the table are attempted.
+
+
+For each table that is not excluded by the filter callback, this function 
+tests that the target database contains a compatible table. A table is 
+considered compatible if all of the following are true:
+
+
+* The table has the same name as the name recorded in the 
+ changeset, and
+ * The table has at least as many columns as recorded in the 
+ changeset, and
+ * The table has primary key columns in the same position as 
+ recorded in the changeset.
+
+
+
+If there is no compatible table, it is not an error, but none of the
+changes associated with the table are applied. A warning message is issued
+via the sqlite3\_log() mechanism with the error code SQLITE\_SCHEMA. At most
+one such warning is issued for each table in the changeset.
+
+
+For each change for which there is a compatible table, an attempt is made 
+to modify the table contents according to the UPDATE, INSERT or DELETE 
+change. If a change cannot be applied cleanly, the conflict handler 
+function passed as the fifth argument to sqlite3changeset\_apply() may be 
+invoked. A description of exactly when the conflict handler is invoked for 
+each type of change is below.
+
+
+Unlike the xFilter argument, xConflict may not be passed NULL. The results
+of passing anything other than a valid function pointer as the xConflict
+argument are undefined.
+
+
+Each time the conflict handler function is invoked, it must return one
+of [SQLITE\_CHANGESET\_OMIT](../session/c_changeset_abort.html), [SQLITE\_CHANGESET\_ABORT](../session/c_changeset_abort.html) or 
+[SQLITE\_CHANGESET\_REPLACE](../session/c_changeset_abort.html). SQLITE\_CHANGESET\_REPLACE may only be returned
+if the second argument passed to the conflict handler is either
+SQLITE\_CHANGESET\_DATA or SQLITE\_CHANGESET\_CONFLICT. If the conflict\-handler
+returns an illegal value, any changes already made are rolled back and
+the call to sqlite3changeset\_apply() returns SQLITE\_MISUSE. Different 
+actions are taken by sqlite3changeset\_apply() depending on the value
+returned by each invocation of the conflict\-handler function. Refer to
+the documentation for the three 
+[available return values](../session/c_changeset_abort.html) for details.
+
+
+
+DELETE Changes
+ For each DELETE change, the function checks if the target database 
+ contains a row with the same primary key value (or values) as the 
+ original row values stored in the changeset. If it does, and the values 
+ stored in all non\-primary key columns also match the values stored in 
+ the changeset the row is deleted from the target database.
+
+
+ If a row with matching primary key values is found, but one or more of
+ the non\-primary key fields contains a value different from the original
+ row value stored in the changeset, the conflict\-handler function is
+ invoked with [SQLITE\_CHANGESET\_DATA](../session/c_changeset_conflict.html) as the second argument. If the
+ database table has more columns than are recorded in the changeset,
+ only the values of those non\-primary key fields are compared against
+ the current database contents \- any trailing database table columns
+ are ignored.
+
+
+ If no row with matching primary key values is found in the database,
+ the conflict\-handler function is invoked with [SQLITE\_CHANGESET\_NOTFOUND](../session/c_changeset_conflict.html)
+ passed as the second argument.
+
+
+ If the DELETE operation is attempted, but SQLite returns SQLITE\_CONSTRAINT
+ (which can only happen if a foreign key constraint is violated), the
+ conflict\-handler function is invoked with [SQLITE\_CHANGESET\_CONSTRAINT](../session/c_changeset_conflict.html)
+ passed as the second argument. This includes the case where the DELETE
+ operation is attempted because an earlier call to the conflict handler
+ function returned [SQLITE\_CHANGESET\_REPLACE](../session/c_changeset_abort.html).
+
+
+INSERT Changes
+ For each INSERT change, an attempt is made to insert the new row into
+ the database. If the changeset row contains fewer fields than the
+ database table, the trailing fields are populated with their default
+ values.
+
+
+ If the attempt to insert the row fails because the database already 
+ contains a row with the same primary key values, the conflict handler
+ function is invoked with the second argument set to 
+ [SQLITE\_CHANGESET\_CONFLICT](../session/c_changeset_conflict.html).
+
+
+ If the attempt to insert the row fails because of some other constraint
+ violation (e.g. NOT NULL or UNIQUE), the conflict handler function is 
+ invoked with the second argument set to [SQLITE\_CHANGESET\_CONSTRAINT](../session/c_changeset_conflict.html).
+ This includes the case where the INSERT operation is re\-attempted because 
+ an earlier call to the conflict handler function returned 
+ [SQLITE\_CHANGESET\_REPLACE](../session/c_changeset_abort.html).
+
+
+UPDATE Changes
+ For each UPDATE change, the function checks if the target database 
+ contains a row with the same primary key value (or values) as the 
+ original row values stored in the changeset. If it does, and the values 
+ stored in all modified non\-primary key columns also match the values
+ stored in the changeset the row is updated within the target database.
+
+
+ If a row with matching primary key values is found, but one or more of
+ the modified non\-primary key fields contains a value different from an
+ original row value stored in the changeset, the conflict\-handler function
+ is invoked with [SQLITE\_CHANGESET\_DATA](../session/c_changeset_conflict.html) as the second argument. Since
+ UPDATE changes only contain values for non\-primary key fields that are
+ to be modified, only those fields need to match the original values to
+ avoid the SQLITE\_CHANGESET\_DATA conflict\-handler callback.
+
+
+ If no row with matching primary key values is found in the database,
+ the conflict\-handler function is invoked with [SQLITE\_CHANGESET\_NOTFOUND](../session/c_changeset_conflict.html)
+ passed as the second argument.
+
+
+ If the UPDATE operation is attempted, but SQLite returns 
+ SQLITE\_CONSTRAINT, the conflict\-handler function is invoked with 
+ [SQLITE\_CHANGESET\_CONSTRAINT](../session/c_changeset_conflict.html) passed as the second argument.
+ This includes the case where the UPDATE operation is attempted after 
+ an earlier call to the conflict handler function returned
+ [SQLITE\_CHANGESET\_REPLACE](../session/c_changeset_abort.html). 
+
+
+
+It is safe to execute SQL statements, including those that write to the
+table that the callback related to, from within the xConflict callback.
+This can be used to further customize the application's conflict
+resolution strategy.
+
+
+All changes made by these functions are enclosed in a savepoint transaction.
+If any other error (aside from a constraint failure when attempting to
+write to the target database) occurs, then the savepoint transaction is
+rolled back, restoring the target database to its original state, and an 
+SQLite error code returned.
+
+
+If the output parameters (ppRebase) and (pnRebase) are non\-NULL and
+the input is a changeset (not a patchset), then sqlite3changeset\_apply\_v2()
+may set (\*ppRebase) to point to a "rebase" that may be used with the 
+sqlite3\_rebaser APIs buffer before returning. In this case (\*pnRebase)
+is set to the size of the buffer in bytes. It is the responsibility of the
+caller to eventually free any such buffer using sqlite3\_free(). The buffer
+is only allocated and populated if one or more conflicts were encountered
+while applying the patchset. See comments surrounding the sqlite3\_rebaser
+APIs for further details.
+
+
+The behavior of sqlite3changeset\_apply\_v2() and its streaming equivalent
+may be modified by passing a combination of
+[supported flags](../session/c_changesetapply_fknoaction.html) as the 9th parameter.
+
+
+Note that the sqlite3changeset\_apply\_v2() API is still **experimental**
+and therefore subject to change.
+
+
+See also lists of
+ [Objects](../session/objlist.html),
+ [Constants](../session/constlist.html), and
+ [Functions](../session/funclist.html).
+
+

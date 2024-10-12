@@ -1,0 +1,83 @@
+
+
+
+
+
+Database Connection Status
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Database Connection Status
+
+
+
+
+> ```
+> 
+> int sqlite3_db_status(sqlite3*, int op, int *pCur, int *pHiwtr, int resetFlg);
+> 
+> ```
+
+
+
+This interface is used to retrieve runtime status information
+about a single [database connection](../c3ref/sqlite3.html). The first argument is the
+database connection object to be interrogated. The second argument
+is an integer constant, taken from the set of
+[SQLITE\_DBSTATUS options](../c3ref/c_dbstatus_options.html), that
+determines the parameter to interrogate. The set of
+[SQLITE\_DBSTATUS options](../c3ref/c_dbstatus_options.html) is likely
+to grow in future releases of SQLite.
+
+
+The current value of the requested parameter is written into \*pCur
+and the highest instantaneous value is written into \*pHiwtr. If
+the resetFlg is true, then the highest instantaneous value is
+reset back down to the current value.
+
+
+The sqlite3\_db\_status() routine returns SQLITE\_OK on success and a
+non\-zero [error code](../rescode.html) on failure.
+
+
+See also: [sqlite3\_status()](../c3ref/status.html) and [sqlite3\_stmt\_status()](../c3ref/stmt_status.html).
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

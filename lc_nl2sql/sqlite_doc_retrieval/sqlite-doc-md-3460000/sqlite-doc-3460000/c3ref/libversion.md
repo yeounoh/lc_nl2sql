@@ -1,0 +1,100 @@
+
+
+
+
+
+Run\-Time Library Version Numbers
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Run\-Time Library Version Numbers
+
+
+
+
+> ```
+> 
+> SQLITE_EXTERN const char sqlite3_version[];
+> const char *sqlite3_libversion(void);
+> const char *sqlite3_sourceid(void);
+> int sqlite3_libversion_number(void);
+> 
+> ```
+
+
+
+These interfaces provide the same information as the [SQLITE\_VERSION](../c3ref/c_source_id.html),
+[SQLITE\_VERSION\_NUMBER](../c3ref/c_source_id.html), and [SQLITE\_SOURCE\_ID](../c3ref/c_source_id.html) C preprocessor macros
+but are associated with the library instead of the header file. Cautious
+programmers might include assert() statements in their application to
+verify that values returned by these interfaces match the macros in
+the header, and thus ensure that the application is
+compiled with matching library and header files.
+
+
+
+> ```
+> 
+> assert( sqlite3_libversion_number()==SQLITE_VERSION_NUMBER );
+> assert( strncmp(sqlite3_sourceid(),SQLITE_SOURCE_ID,80)==0 );
+> assert( strcmp(sqlite3_libversion(),SQLITE_VERSION)==0 );
+> 
+> ```
+
+
+
+
+The sqlite3\_version\[] string constant contains the text of [SQLITE\_VERSION](../c3ref/c_source_id.html)
+macro. The sqlite3\_libversion() function returns a pointer to the
+to the sqlite3\_version\[] string constant. The sqlite3\_libversion()
+function is provided for use in DLLs since DLL users usually do not have
+direct access to string constants within the DLL. The
+sqlite3\_libversion\_number() function returns an integer equal to
+[SQLITE\_VERSION\_NUMBER](../c3ref/c_source_id.html). The sqlite3\_sourceid() function returns
+a pointer to a string constant whose value is the same as the
+[SQLITE\_SOURCE\_ID](../c3ref/c_source_id.html) C preprocessor macro. Except if SQLite is built
+using an edited copy of [the amalgamation](../amalgamation.html), then the last four characters
+of the hash might be different from [SQLITE\_SOURCE\_ID](../c3ref/c_source_id.html).
+
+
+See also: [sqlite\_version()](../lang_corefunc.html#sqlite_version) and [sqlite\_source\_id()](../lang_corefunc.html#sqlite_source_id).
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

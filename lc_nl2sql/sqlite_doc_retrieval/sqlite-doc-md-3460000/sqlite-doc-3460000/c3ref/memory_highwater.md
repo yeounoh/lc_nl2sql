@@ -1,0 +1,84 @@
+
+
+
+
+
+Memory Allocator Statistics
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Memory Allocator Statistics
+
+
+
+
+> ```
+> 
+> sqlite3_int64 sqlite3_memory_used(void);
+> sqlite3_int64 sqlite3_memory_highwater(int resetFlag);
+> 
+> ```
+
+
+
+SQLite provides these two interfaces for reporting on the status
+of the [sqlite3\_malloc()](../c3ref/free.html), [sqlite3\_free()](../c3ref/free.html), and [sqlite3\_realloc()](../c3ref/free.html)
+routines, which form the built\-in memory allocation subsystem.
+
+
+The [sqlite3\_memory\_used()](../c3ref/memory_highwater.html) routine returns the number of bytes
+of memory currently outstanding (malloced but not freed).
+The [sqlite3\_memory\_highwater()](../c3ref/memory_highwater.html) routine returns the maximum
+value of [sqlite3\_memory\_used()](../c3ref/memory_highwater.html) since the high\-water mark
+was last reset. The values returned by [sqlite3\_memory\_used()](../c3ref/memory_highwater.html) and
+[sqlite3\_memory\_highwater()](../c3ref/memory_highwater.html) include any overhead
+added by SQLite in its implementation of [sqlite3\_malloc()](../c3ref/free.html),
+but not overhead added by the any underlying system library
+routines that [sqlite3\_malloc()](../c3ref/free.html) may call.
+
+
+The memory high\-water mark is reset to the current value of
+[sqlite3\_memory\_used()](../c3ref/memory_highwater.html) if and only if the parameter to
+[sqlite3\_memory\_highwater()](../c3ref/memory_highwater.html) is true. The value returned
+by [sqlite3\_memory\_highwater(1\)](../c3ref/memory_highwater.html) is the high\-water mark
+prior to the reset.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

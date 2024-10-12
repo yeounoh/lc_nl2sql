@@ -1,0 +1,68 @@
+
+
+
+
+
+Cancel Automatic Extension Loading
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Cancel Automatic Extension Loading
+
+
+
+
+> ```
+> 
+> int sqlite3_cancel_auto_extension(void(*xEntryPoint)(void));
+> 
+> ```
+
+
+
+The [sqlite3\_cancel\_auto\_extension(X)](../c3ref/cancel_auto_extension.html) interface unregisters the
+initialization routine X that was registered using a prior call to
+[sqlite3\_auto\_extension(X)](../c3ref/auto_extension.html). The [sqlite3\_cancel\_auto\_extension(X)](../c3ref/cancel_auto_extension.html)
+routine returns 1 if initialization routine X was successfully
+unregistered and it returns 0 if X was not on the list of initialization
+routines.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

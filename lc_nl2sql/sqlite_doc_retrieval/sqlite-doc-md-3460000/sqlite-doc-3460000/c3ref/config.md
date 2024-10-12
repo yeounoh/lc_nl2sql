@@ -1,0 +1,96 @@
+
+
+
+
+
+Configuring The SQLite Library
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Configuring The SQLite Library
+
+
+
+
+> ```
+> 
+> int sqlite3_config(int, ...);
+> 
+> ```
+
+
+
+The sqlite3\_config() interface is used to make global configuration
+changes to SQLite in order to tune SQLite to the specific needs of
+the application. The default configuration is recommended for most
+applications and so this routine is usually not necessary. It is
+provided to support rare applications with unusual needs.
+
+
+**The sqlite3\_config() interface is not threadsafe. The application
+must ensure that no other SQLite interfaces are invoked by other
+threads while sqlite3\_config() is running.**
+
+
+The first argument to sqlite3\_config() is an integer
+[configuration option](../c3ref/c_config_covering_index_scan.html) that determines
+what property of SQLite is to be configured. Subsequent arguments
+vary depending on the [configuration option](../c3ref/c_config_covering_index_scan.html)
+in the first argument.
+
+
+For most configuration options, the sqlite3\_config() interface
+may only be invoked prior to library initialization using
+[sqlite3\_initialize()](../c3ref/initialize.html) or after shutdown by [sqlite3\_shutdown()](../c3ref/initialize.html).
+The exceptional configuration options that may be invoked at any time
+are called "anytime configuration options".
+If sqlite3\_config() is called after [sqlite3\_initialize()](../c3ref/initialize.html) and before
+[sqlite3\_shutdown()](../c3ref/initialize.html) with a first argument that is not an anytime
+configuration option, then the sqlite3\_config() call will return SQLITE\_MISUSE.
+Note, however, that sqlite3\_config() can be called as part of the
+implementation of an application\-defined [sqlite3\_os\_init()](../c3ref/initialize.html).
+
+
+When a configuration option is set, sqlite3\_config() returns [SQLITE\_OK](../rescode.html#ok).
+If the option is unknown or SQLite is unable to set the option
+then this routine returns a non\-zero [error code](../rescode.html).
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

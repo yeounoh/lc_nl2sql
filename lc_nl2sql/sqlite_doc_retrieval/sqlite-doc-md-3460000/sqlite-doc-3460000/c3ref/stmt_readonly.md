@@ -1,0 +1,115 @@
+
+
+
+
+
+Determine If An SQL Statement Writes The Database
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Determine If An SQL Statement Writes The Database
+
+
+
+
+> ```
+> 
+> int sqlite3_stmt_readonly(sqlite3_stmt *pStmt);
+> 
+> ```
+
+
+
+The sqlite3\_stmt\_readonly(X) interface returns true (non\-zero) if
+and only if the [prepared statement](../c3ref/stmt.html) X makes no direct changes to
+the content of the database file.
+
+
+Note that [application\-defined SQL functions](../appfunc.html) or
+[virtual tables](../vtab.html) might change the database indirectly as a side effect.
+For example, if an application defines a function "eval()" that
+calls [sqlite3\_exec()](../c3ref/exec.html), then the following SQL statement would
+change the database file through side\-effects:
+
+
+
+> ```
+> 
+> SELECT eval('DELETE FROM t1') FROM t2;
+> 
+> ```
+
+
+
+
+But because the [SELECT](../lang_select.html) statement does not change the database file
+directly, sqlite3\_stmt\_readonly() would still return true.
+
+
+Transaction control statements such as [BEGIN](../lang_transaction.html), [COMMIT](../lang_transaction.html), [ROLLBACK](../lang_transaction.html),
+[SAVEPOINT](../lang_savepoint.html), and [RELEASE](../lang_savepoint.html) cause sqlite3\_stmt\_readonly() to return true,
+since the statements themselves do not actually modify the database but
+rather they control the timing of when other statements modify the
+database. The [ATTACH](../lang_attach.html) and [DETACH](../lang_detach.html) statements also cause
+sqlite3\_stmt\_readonly() to return true since, while those statements
+change the configuration of a database connection, they do not make
+changes to the content of the database files on disk.
+The sqlite3\_stmt\_readonly() interface returns true for [BEGIN](../lang_transaction.html) since
+[BEGIN](../lang_transaction.html) merely sets internal flags, but the [BEGIN IMMEDIATE](../lang_transaction.html) and
+[BEGIN EXCLUSIVE](../lang_transaction.html) commands do touch the database and so
+sqlite3\_stmt\_readonly() returns false for those commands.
+
+
+This routine returns false if there is any possibility that the
+statement might change the database file. A false return does
+not guarantee that the statement will change the database file.
+For example, an UPDATE statement might have a WHERE clause that
+makes it a no\-op, but the sqlite3\_stmt\_readonly() result would still
+be false. Similarly, a CREATE TABLE IF NOT EXISTS statement is a
+read\-only no\-op if the table already exists, but
+sqlite3\_stmt\_readonly() still returns false for such a statement.
+
+
+If prepared statement X is an [EXPLAIN](../lang_explain.html) or [EXPLAIN QUERY PLAN](../eqp.html)
+statement, then sqlite3\_stmt\_readonly(X) returns the same value as
+if the EXPLAIN or EXPLAIN QUERY PLAN prefix were omitted.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

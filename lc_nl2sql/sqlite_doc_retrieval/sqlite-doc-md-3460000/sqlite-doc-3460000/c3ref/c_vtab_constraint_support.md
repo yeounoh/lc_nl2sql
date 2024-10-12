@@ -1,0 +1,139 @@
+
+
+
+
+
+Virtual Table Configuration Options
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Virtual Table Configuration Options
+
+
+
+
+> ```
+> 
+> #define SQLITE_VTAB_CONSTRAINT_SUPPORT 1
+> #define SQLITE_VTAB_INNOCUOUS          2
+> #define SQLITE_VTAB_DIRECTONLY         3
+> #define SQLITE_VTAB_USES_ALL_SCHEMAS   4
+> 
+> ```
+
+
+
+These macros define the various options to the
+[sqlite3\_vtab\_config()](../c3ref/vtab_config.html) interface that [virtual table](../vtab.html) implementations
+can use to customize and optimize their behavior.
+
+
+
+
+SQLITE\_VTAB\_CONSTRAINT\_SUPPORT
+Calls of the form
+[sqlite3\_vtab\_config](../c3ref/vtab_config.html)(db,SQLITE\_VTAB\_CONSTRAINT\_SUPPORT,X) are supported,
+where X is an integer. If X is zero, then the [virtual table](../vtab.html) whose
+[xCreate](../vtab.html#xcreate) or [xConnect](../vtab.html#xconnect) method invoked [sqlite3\_vtab\_config()](../c3ref/vtab_config.html) does not
+support constraints. In this configuration (which is the default) if
+a call to the [xUpdate](../vtab.html#xupdate) method returns [SQLITE\_CONSTRAINT](../rescode.html#constraint), then the entire
+statement is rolled back as if [OR ABORT](../lang_conflict.html) had been
+specified as part of the users SQL statement, regardless of the actual
+ON CONFLICT mode specified.
+
+
+If X is non\-zero, then the virtual table implementation guarantees
+that if [xUpdate](../vtab.html#xupdate) returns [SQLITE\_CONSTRAINT](../rescode.html#constraint), it will do so before
+any modifications to internal or persistent data structures have been made.
+If the [ON CONFLICT](../lang_conflict.html) mode is ABORT, FAIL, IGNORE or ROLLBACK, SQLite
+is able to roll back a statement or database transaction, and abandon
+or continue processing the current SQL statement as appropriate.
+If the ON CONFLICT mode is REPLACE and the [xUpdate](../vtab.html#xupdate) method returns
+[SQLITE\_CONSTRAINT](../rescode.html#constraint), SQLite handles this as if the ON CONFLICT mode
+had been ABORT.
+
+
+Virtual table implementations that are required to handle OR REPLACE
+must do so within the [xUpdate](../vtab.html#xupdate) method. If a call to the
+[sqlite3\_vtab\_on\_conflict()](../c3ref/vtab_on_conflict.html) function indicates that the current ON
+CONFLICT policy is REPLACE, the virtual table implementation should
+silently replace the appropriate rows within the xUpdate callback and
+return SQLITE\_OK. Or, if this is not possible, it may return
+SQLITE\_CONSTRAINT, in which case SQLite falls back to OR ABORT
+constraint handling.
+
+
+
+
+SQLITE\_VTAB\_DIRECTONLY
+Calls of the form
+[sqlite3\_vtab\_config](../c3ref/vtab_config.html)(db,SQLITE\_VTAB\_DIRECTONLY) from within the
+the [xConnect](../vtab.html#xconnect) or [xCreate](../vtab.html#xcreate) methods of a [virtual table](../vtab.html) implementation
+prohibits that virtual table from being used from within triggers and
+views.
+
+
+
+
+SQLITE\_VTAB\_INNOCUOUS
+Calls of the form
+[sqlite3\_vtab\_config](../c3ref/vtab_config.html)(db,SQLITE\_VTAB\_INNOCUOUS) from within the
+the [xConnect](../vtab.html#xconnect) or [xCreate](../vtab.html#xcreate) methods of a [virtual table](../vtab.html) implementation
+identify that virtual table as being safe to use from within triggers
+and views. Conceptually, the SQLITE\_VTAB\_INNOCUOUS tag means that the
+virtual table can do no serious harm even if it is controlled by a
+malicious hacker. Developers should avoid setting the SQLITE\_VTAB\_INNOCUOUS
+flag unless absolutely necessary.
+
+
+
+
+SQLITE\_VTAB\_USES\_ALL\_SCHEMAS
+Calls of the form
+[sqlite3\_vtab\_config](../c3ref/vtab_config.html)(db,SQLITE\_VTAB\_USES\_ALL\_SCHEMA) from within the
+the [xConnect](../vtab.html#xconnect) or [xCreate](../vtab.html#xcreate) methods of a [virtual table](../vtab.html) implementation
+instruct the query planner to begin at least a read transaction on
+all schemas ("main", "temp", and any ATTACH\-ed databases) whenever the
+virtual table is used.
+
+
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

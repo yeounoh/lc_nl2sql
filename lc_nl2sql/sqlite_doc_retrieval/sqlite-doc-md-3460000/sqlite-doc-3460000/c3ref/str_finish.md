@@ -1,0 +1,70 @@
+
+
+
+
+
+Finalize A Dynamic String
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Finalize A Dynamic String
+
+
+
+
+> ```
+> 
+> char *sqlite3_str_finish(sqlite3_str*);
+> 
+> ```
+
+
+
+The [sqlite3\_str\_finish(X)](../c3ref/str_finish.html) interface destroys the sqlite3\_str object X
+and returns a pointer to a memory buffer obtained from [sqlite3\_malloc64()](../c3ref/free.html)
+that contains the constructed string. The calling application should
+pass the returned value to [sqlite3\_free()](../c3ref/free.html) to avoid a memory leak.
+The [sqlite3\_str\_finish(X)](../c3ref/str_finish.html) interface may return a NULL pointer if any
+errors were encountered during construction of the string. The
+[sqlite3\_str\_finish(X)](../c3ref/str_finish.html) interface will also return a NULL pointer if the
+string in [sqlite3\_str](../c3ref/str.html) object X is zero bytes long.
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+

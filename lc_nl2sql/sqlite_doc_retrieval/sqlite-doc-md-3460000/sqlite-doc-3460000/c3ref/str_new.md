@@ -1,0 +1,84 @@
+
+
+
+
+
+Create A New Dynamic String Object
+
+
+
+
+[![SQLite](../images/sqlite370_banner.gif)](../index.html)
+
+
+Small. Fast. Reliable.  
+Choose any three.
+
+
+* [Home](../index.html)* [Menu](javascript:void(0))* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [License](../copyright.html)* [Support](../support.html)* [Purchase](../prosupport.html)* [Search](javascript:void(0))
+
+
+
+
+* [About](../about.html)* [Documentation](../docs.html)* [Download](../download.html)* [Support](../support.html)* [Purchase](../prosupport.html)
+
+
+
+
+
+
+Search Documentation
+Search Changelog
+
+
+
+
+
+
+
+
+
+[## SQLite C Interface](../c3ref/intro.html)
+## Create A New Dynamic String Object
+
+
+
+
+> ```
+> 
+> sqlite3_str *sqlite3_str_new(sqlite3*);
+> 
+> ```
+
+
+
+The [sqlite3\_str\_new(D)](../c3ref/str_new.html) interface allocates and initializes
+a new [sqlite3\_str](../c3ref/str.html) object. To avoid memory leaks, the object returned by
+[sqlite3\_str\_new()](../c3ref/str_new.html) must be freed by a subsequent call to
+[sqlite3\_str\_finish(X)](../c3ref/str_finish.html).
+
+
+The [sqlite3\_str\_new(D)](../c3ref/str_new.html) interface always returns a pointer to a
+valid [sqlite3\_str](../c3ref/str.html) object, though in the event of an out\-of\-memory
+error the returned object might be a special singleton that will
+silently reject new text, always return SQLITE\_NOMEM from
+[sqlite3\_str\_errcode()](../c3ref/str_errcode.html), always return 0 for
+[sqlite3\_str\_length()](../c3ref/str_errcode.html), and always return NULL from
+[sqlite3\_str\_finish(X)](../c3ref/str_finish.html). It is always safe to use the value
+returned by [sqlite3\_str\_new(D)](../c3ref/str_new.html) as the sqlite3\_str parameter
+to any of the other [sqlite3\_str](../c3ref/str.html) methods.
+
+
+The D parameter to [sqlite3\_str\_new(D)](../c3ref/str_new.html) may be NULL. If the
+D parameter in [sqlite3\_str\_new(D)](../c3ref/str_new.html) is not NULL, then the maximum
+length of the string contained in the [sqlite3\_str](../c3ref/str.html) object will be
+the value set for [sqlite3\_limit](../c3ref/limit.html)(D,[SQLITE\_LIMIT\_LENGTH](../c3ref/c_limit_attached.html#sqlitelimitlength)) instead
+of [SQLITE\_MAX\_LENGTH](../limits.html#max_length).
+
+
+See also lists of
+ [Objects](../c3ref/objlist.html),
+ [Constants](../c3ref/constlist.html), and
+ [Functions](../c3ref/funclist.html).
+
+
