@@ -17,6 +17,7 @@ ROOT_PATH = os.path.dirname(
 sys.path.append(ROOT_PATH)
 
 from lc_nl2sql.configs.config import (BASIC_INSTRUCTION_PROMPT,
+                                      BASIC_INSTRUCTION_PROMPT_NO_RULES,
                                       EXAMPLE_GENERATOR, SQL_DATA_INFO,
                                       DATA_PATH, EXAMPLE_GENERATOR2,
                                       COLUMN_SELECTOR_TEMPLATE)
@@ -45,6 +46,7 @@ class ProcessSqlData:
         vertex_ai_project_id="",
         tbr_selection_file="",
         use_hint=True,
+        use_rules=True,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -63,6 +65,7 @@ class ProcessSqlData:
         self.db_tbl_col_vals_file = db_tbl_col_vals_file
         self.tbr_selection_file = tbr_selection_file
         self.use_hint = use_hint
+        self.use_rules = use_rules
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -423,13 +426,22 @@ class ProcessSqlData:
                         raise
 
                 hints = data["evidence"] if "evidence" in data and self.use_hint else ""
-                input_instruction = BASIC_INSTRUCTION_PROMPT.format(
-                    db_name=data[db_id_name],
-                    hints=hints,
-                    schema=filtered_schema if self.use_column_filtering_for_generation else schema,
-                    examples=examples,
-                    documentation="",
-                    question=data["question"])
+                if self.use_rules:
+                    input_instruction = BASIC_INSTRUCTION_PROMPT.format(
+                        db_name=data[db_id_name],
+                        hints=hints,
+                        schema=filtered_schema if self.use_column_filtering_for_generation else schema,
+                        examples=examples,
+                        documentation="",
+                        question=data["question"])
+                else:
+                    input_instruction = BASIC_INSTRUCTION_PROMPT_NO_RULES.format(
+                        db_name=data[db_id_name],
+                        hints=hints,
+                        schema=filtered_schema if self.use_column_filtering_for_generation else schema,
+                        examples=examples,
+                        documentation="",
+                        question=data["question"])
 
                 input_idx = input_instruction.find("###Question###")
                 input = {
@@ -519,7 +531,7 @@ if __name__ == "__main__":
     parser.add_argument("--synthetic_examples", default=False)
     # Use hint & rules
     parser.add_argument("--use_hint", default=True)
-    parser.add_argument("--use_")
+    parser.add_argument("--use_rules", default=True)
     # Table retrieval. Use --tbr_selection_file, for retrieval with TBR simulation.
     parser.add_argument(
         "--extra_top_k",
@@ -559,5 +571,6 @@ if __name__ == "__main__":
         vertex_ai_project_id="400355794761",  # change appropriately
         tbr_selection_file=args.tbr_selection_file,
         use_hint=bool(int(args.use_hint)),
+        use_rules=bool(int(args.use_rules)),
     )
     process.create_sft_raw_data()
