@@ -404,6 +404,11 @@ class ProcessSqlData:
                 filtered_schema = filter_tables(
                     table_schema_map, filtered_col_json)
             return filtered_schema
+        
+        if os.path.exists(self.example_selection_file):
+            with open(self.example_selection_file, 'r') as f:
+                # ['sql_prompt', 'sql']
+                similar_examples = json.load(f)
 
         def _context_packing(data):
             if data[db_id_name] in db_context.keys():
@@ -428,32 +433,29 @@ class ProcessSqlData:
                                 diverse_set=False)
                     else:
                         assert os.path.exists(self.example_selection_file)
-                        with open(self.example_selection_file, 'r') as f:
-                            # ['sql_prompt', 'sql']
-                            similar_examples = json.load(f)
-                            qid = int(data['question_id'])
-                            if self.example_pool_type == 'train':
-                                selected_examples = similar_examples[qid]['selected_train_only_examples']
-                            elif self.example_pool_type == 'dev':
-                                selected_examples = similar_examples[qid]['selected_dev_only_examples']
-                            elif self.example_pool_type == 'synthetic':
-                                selected_examples = similar_examples[qid]['selected_synthetic_only_examples']
-                            else:
-                                raise
-                            
-                            shot_template = r"""
-                            \"input\": \"{sql_prompt}\"\n
-                            \"output\": \"{sql}\"\n
-                            """
-                            selected_examples = selected_examples[:self.num_examples]
-                            shots = list()
-                            for i, eg in enumerate(selected_examples):
-                                if i == len(selected_examples)//2 and self.inject_gt_example:
-                                    shots.append(shot_template.format(sql_prompt=data["question"], sql=data['SQL']))
-                                shots.append(shot_template.format(
-                                    sql_prompt=eg['sql_prompt'], 
-                                    sql=eg['sql']))
-                            examples += '\n'.join(shots)
+                        qid = int(data['question_id'])
+                        if self.example_pool_type == 'train':
+                            selected_examples = similar_examples[qid]['selected_train_only_examples']
+                        elif self.example_pool_type == 'dev':
+                            selected_examples = similar_examples[qid]['selected_dev_only_examples']
+                        elif self.example_pool_type == 'synthetic':
+                            selected_examples = similar_examples[qid]['selected_synthetic_only_examples']
+                        else:
+                            raise
+                        
+                        shot_template = r"""
+                        \"input\": \"{sql_prompt}\"\n
+                        \"output\": \"{sql}\"\n
+                        """
+                        selected_examples = selected_examples[:self.num_examples]
+                        shots = list()
+                        for i, eg in enumerate(selected_examples):
+                            if i == len(selected_examples)//2 and self.inject_gt_example:
+                                shots.append(shot_template.format(sql_prompt=data["question"], sql=data['SQL']))
+                            shots.append(shot_template.format(
+                                sql_prompt=eg['sql_prompt'], 
+                                sql=eg['sql']))
+                        examples += '\n'.join(shots)
 
                 hints = data["evidence"] if "evidence" in data and self.use_hint else ""
                 if self.use_rules:
