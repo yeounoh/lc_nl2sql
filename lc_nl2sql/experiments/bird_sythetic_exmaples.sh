@@ -22,6 +22,7 @@ for k in "${n_examples[@]}"; do
 
   python lc_nl2sql/predict/count_token.py \
   --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
-  --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_synthetic_examples_$k"
+  --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_synthetic_examples_$k" \
+  --expected_num_examples $k
 
 done

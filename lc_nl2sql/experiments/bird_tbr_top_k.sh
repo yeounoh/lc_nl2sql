@@ -5,7 +5,7 @@ echo "Running with top_k = all tables from DB"
 python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
-  --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
+  --db_folder_path lc_nl2sql/data/bird/dev/dev_databases 
 
 python lc_nl2sql/predict/predict.py \
   --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \

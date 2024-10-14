@@ -1,6 +1,8 @@
 lc_nl2sql/data/*
+lc_nl2sql/output/*
 build/
 dist/
 **/lc_nl2sql.egg-info
 **/__pycache__
+**/*.cache
 poetry.lock

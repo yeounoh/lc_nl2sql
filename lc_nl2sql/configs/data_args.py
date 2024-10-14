@@ -182,6 +182,10 @@ class DataArguments:
         default="",
         metadata={"help": "Filename to save extra tokens used for error correction measurements"},
     )
+    expected_num_examples: Optional[int] = field(
+        default=0,
+        metadata={"help": "Expected number of examples, used for token counting."},
+    )
 
     def init_for_training(self):  # support mixing multiple datasets
         dataset_names = [ds.strip() for ds in self.dataset.split(",")]

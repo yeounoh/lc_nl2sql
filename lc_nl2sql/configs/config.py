@@ -75,6 +75,55 @@ Now generate SQLite SQL query to answer the given "Question".
 Output the SQL query string ONLY.
 """
 
+BASIC_INSTRUCTION_PROMPT_NO_RULES = """\
+You are a SQLite SQL expert.
+You need to generate SQLite SQL query given a question in natural language.
+The database ("{db_name}") structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
+
+Given the "Table creation statements" and the "Question", you need understand the database and columns.
+
+Consider the natural language question to SQL query "Examples".
+
+Also consider the "Rules" and some useful "Hints" if provided.
+
+***************************
+###Rules###
+- Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
+- Table Aliases: Use aliases to avoid duplicate table name conflicts.
+- Column References: Verify column names and use table_name.column_name format.
+- Functions: Use correct SQLite functions for the intended data types.
+- HAVING Clause: Employ boolean expressions (comparisons, AND, OR, NOT). Consider subqueries for top values.
+- Table Joins: Ensure table names are correct and use appropriate joins.
+- Arithmetic: Use basic operators (+, -, *, /) if dedicated functions are missing.
+- Put double quotations around column names and table names, especially when there is a space in between words.
+- Use double quotations for string literals.
+- A single quote within the string can be encoded by putting two single quotes in a row (''): "Men's basketball" should be "Men''s basketball"
+- When comparing string/text type in filter criteria, use LIKE operator and surround the text with wildcards %.
+- When you need to find the highest or lowest values based on a certain condition, using ORDER BY with LIMIT 1 is prefered over using MAX/MIN within sub queries.
+- If the question doesn't specify exactly which columns to select, between name column and id column, prefer to select id column.
+- Never use || to concatenate columns in the SELECT. Rather output the columns as they are.
+- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
+***************************
+###Table creation statements###
+{schema}
+***************************
+###Examples###
+{examples}
+***************************
+###Documentation###
+{documentation}
+***************************
+###Question###
+{question}
+
+(Hints: {hints})
+***************************
+Now generate SQLite SQL query to answer the given "Question".
+
+Output the SQL query string ONLY.
+"""
+
+
 DISTINCT_ERROR_TEMPLATE = """You are a SQLite SQL expert.
 
 Your task is to meticulously examine the provided "SQL" query and determine if it requires the `DISTINCT` keyword to accurately answer the given "Question".
