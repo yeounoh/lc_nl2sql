@@ -440,6 +440,8 @@ class ProcessSqlData:
                             selected_examples = similar_examples[qid]['selected_dev_only_examples']
                         elif self.example_pool_type == 'synthetic':
                             selected_examples = similar_examples[qid]['selected_synthetic_only_examples']
+                        elif self.example_pool_type == 'train_synthetic':
+                            selected_examples = similar_examples[qid]['selected_train_and_synthetic_examples']
                         else:
                             raise
                         
