@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import logging
+import math
 
 ROOT_PATH = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -18,8 +19,10 @@ def count_token(model: GeminiModel, predict_data: List[Dict], sample=True):
             # Counting based on every other five questions
             continue
         num_examples = len(item['input'].split("###Examples")[1].split("\"input\":"))
-        if (num_examples < model.data_args.expected_num_examples * 0.93 or 
-            num_examples > model.data_args.expected_num_examples * 1.07):  # give some margin
+        if num_examples == 1 and num_examples != model.data_args.expected_num_examples:
+            num_examples = len(item['input'].split("###Examples")[1].split("\\\"input\\\":"))
+        if (num_examples < math.floor(model.data_args.expected_num_examples * 0.93) or 
+            num_examples > math.ceil(model.data_args.expected_num_examples * 1.07)):  # give some margin
             logging.error(f"Expected {model.data_args.expected_num_examples} but found {num_examples}")
         else:
             tok_cnts.append(model._count_token(item['input']))
