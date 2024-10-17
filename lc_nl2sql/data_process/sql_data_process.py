@@ -47,6 +47,9 @@ class ProcessSqlData:
         tbr_selection_file="",
         use_hint=True,
         use_rules=True,
+        example_pool_type="train",
+        example_selection_file="",
+        inject_gt_example=False,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -66,6 +69,9 @@ class ProcessSqlData:
         self.tbr_selection_file = tbr_selection_file
         self.use_hint = use_hint
         self.use_rules = use_rules
+        self.example_pool_type = example_pool_type
+        self.example_selection_file = example_selection_file
+        self.inject_gt_example = inject_gt_example
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -398,6 +404,11 @@ class ProcessSqlData:
                 filtered_schema = filter_tables(
                     table_schema_map, filtered_col_json)
             return filtered_schema
+        
+        if os.path.exists(self.example_selection_file):
+            with open(self.example_selection_file, 'r') as f:
+                # ['sql_prompt', 'sql']
+                similar_examples = json.load(f)
 
         def _context_packing(data):
             if data[db_id_name] in db_context.keys():
@@ -421,9 +432,32 @@ class ProcessSqlData:
                                 self.num_examples // 2,
                                 diverse_set=False)
                     else:
-                        # TODO: enable example selection
-                        logging.error("Example selection disabled.")
-                        raise
+                        assert os.path.exists(self.example_selection_file)
+                        qid = int(data['question_id'])
+                        if self.example_pool_type == 'train':
+                            selected_examples = similar_examples[qid]['selected_train_only_examples']
+                        elif self.example_pool_type == 'dev':
+                            selected_examples = similar_examples[qid]['selected_dev_only_examples']
+                        elif self.example_pool_type == 'synthetic':
+                            selected_examples = similar_examples[qid]['selected_synthetic_only_examples']
+                        elif self.example_pool_type == 'train_synthetic':
+                            selected_examples = similar_examples[qid]['selected_train_and_synthetic_examples']
+                        else:
+                            raise
+                        
+                        shot_template = r"""
+                        \"input\": \"{sql_prompt}\"\n
+                        \"output\": \"{sql}\"\n
+                        """
+                        selected_examples = selected_examples[:self.num_examples]
+                        shots = list()
+                        for i, eg in enumerate(selected_examples):
+                            if i == len(selected_examples)//2 and self.inject_gt_example:
+                                shots.append(shot_template.format(sql_prompt=data["question"], sql=data['SQL']))
+                            shots.append(shot_template.format(
+                                sql_prompt=eg['sql_prompt'], 
+                                sql=eg['sql']))
+                        examples += '\n'.join(shots)
 
                 hints = data["evidence"] if "evidence" in data and self.use_hint else ""
                 if self.use_rules:
@@ -524,11 +558,22 @@ if __name__ == "__main__":
     parser.add_argument("--input_table_path")
     parser.add_argument("--db_folder_path")
 
-    # Synthetic example generation
+    parser.add_argument("--column_description", default=True)
+    parser.add_argument("--column_examples", default=True)
+    parser.add_argument("--num_col_values", default=50)
+    parser.add_argument("--use_column_filtering_for_generation", default=False)
+    
     parser.add_argument("--num_examples",
                         help="Retrieve relevant examples.",
                         default=0)
+    # Synthetic example generation
     parser.add_argument("--synthetic_examples", default=False)
+    parser.add_argument("--use_column_filtering", default=False)  # for example generation
+    # Example selection
+    # - example_pool_type: train, dev, synthetic
+    parser.add_argument("--example_pool_type", default='train')
+    parser.add_argument("--example_selection_file", default="")
+    parser.add_argument("--inject_gt_example", default=False)
     # Use hint & rules
     parser.add_argument("--use_hint", default=True)
     parser.add_argument("--use_rules", default=True)
@@ -537,11 +582,6 @@ if __name__ == "__main__":
         "--extra_top_k",
         help="Retrieve extra tables outside the DB to guarantee 'k' tables.",
         default=0)
-    parser.add_argument("--column_description", default=True)
-    parser.add_argument("--column_examples", default=True)
-    parser.add_argument("--use_column_filtering", default=False)  # for example generation
-    parser.add_argument("--num_col_values", default=50)
-    parser.add_argument("--use_column_filtering_for_generation", default=False)
     # filtered_schema_file dict (csv) from CHESS column selection
     # column names: question_id,selected_schema_with_connections
     # this contains filtered database schema by question_id (key)
@@ -572,5 +612,8 @@ if __name__ == "__main__":
         tbr_selection_file=args.tbr_selection_file,
         use_hint=bool(int(args.use_hint)),
         use_rules=bool(int(args.use_rules)),
+        example_pool_type=args.example_pool_type,
+        example_selection_file=args.example_selection_file,
+        inject_gt_example=args.inject_gt_example,
     )
     process.create_sft_raw_data()
