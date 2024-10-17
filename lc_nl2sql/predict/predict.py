@@ -77,11 +77,6 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
     extra_tokens = []
     success_count, failure_count = 0, 0
 
-    # Initialization outside the executor
-    pbar = tqdm(total=len(predict_data),
-                desc="Inference Progress",
-                unit="item")
-
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         futures = {
             executor.submit(inference_worker, model, item, input_kwargs): i
@@ -101,14 +96,12 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                     success_count += 1
                 else:
                     failure_count += 1
-                pbar.update(1)
         except TimeoutError as e:
             logging.info(e)
             for i in range(len(predict_data)):
                 if i not in res_dict:
                     res_dict[i] = ""
             executor.shutdown()
-    pbar.close()
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )

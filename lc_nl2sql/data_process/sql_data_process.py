@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 import os
+import pandas as pd
 import json
 import sqlite3
 import sys
@@ -50,6 +51,9 @@ class ProcessSqlData:
         example_pool_type="train",
         example_selection_file="",
         inject_gt_example=False,
+        document_pool_type="long",
+        document_selection_file="",
+        num_documents=0,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -72,6 +76,9 @@ class ProcessSqlData:
         self.example_pool_type = example_pool_type
         self.example_selection_file = example_selection_file
         self.inject_gt_example = inject_gt_example
+        self.document_pool_type = document_pool_type
+        self.document_selection_file = document_selection_file
+        self.num_documents = num_documents
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -106,6 +113,17 @@ class ProcessSqlData:
             for i, v in enumerate(tbr_selection):
                 qid = int(v['question_id'])
                 qid_tbr[qid] = [t.split('/')[-1] for t in v['response_tables']]
+
+        # Example selection result file by question similarity (Gecko)
+        if os.path.exists(self.example_selection_file):
+            with open(self.example_selection_file, 'r') as f:
+                # ['sql_prompt', 'sql']
+                similar_examples = json.load(f)
+
+        # Document selection result file by question-content similarity (Gecko)
+        if os.path.exists(self.document_selection_file):
+            with open(self.document_selection_file, 'r') as f:
+                similar_documents = pd.read_json(f)
 
         def truncate_example(val):
             s = str(val)
@@ -405,10 +423,18 @@ class ProcessSqlData:
                     table_schema_map, filtered_col_json)
             return filtered_schema
         
-        if os.path.exists(self.example_selection_file):
-            with open(self.example_selection_file, 'r') as f:
-                # ['sql_prompt', 'sql']
-                similar_examples = json.load(f)
+        def _extract_k_documents(qid, k):
+            docs = similar_documents.iloc[qid]
+            if self.document_pool_type == 'long':
+                selected_docs = docs['long_knn'][:k]  
+            elif self.document_pool_type == 'short':
+                selected_docs = docs['short_knn'][:k]
+            else:
+                raise
+            k_documents = ""
+            for d in selected_docs:
+                k_documents += d['doc'] + '\n\n'
+            return k_documents
 
         def _context_packing(data):
             if data[db_id_name] in db_context.keys():
@@ -459,6 +485,10 @@ class ProcessSqlData:
                                 sql=eg['sql']))
                         examples += '\n'.join(shots)
 
+                documentation = ""
+                if self.num_documents > 0:
+                    documentation = _extract_k_documents(int(data['question_id']), self.num_documents)
+
                 hints = data["evidence"] if "evidence" in data and self.use_hint else ""
                 if self.use_rules:
                     input_instruction = BASIC_INSTRUCTION_PROMPT.format(
@@ -466,7 +496,7 @@ class ProcessSqlData:
                         hints=hints,
                         schema=filtered_schema if self.use_column_filtering_for_generation else schema,
                         examples=examples,
-                        documentation="",
+                        documentation=documentation,
                         question=data["question"])
                 else:
                     input_instruction = BASIC_INSTRUCTION_PROMPT_NO_RULES.format(
@@ -474,7 +504,7 @@ class ProcessSqlData:
                         hints=hints,
                         schema=filtered_schema if self.use_column_filtering_for_generation else schema,
                         examples=examples,
-                        documentation="",
+                        documentation=documentation,
                         question=data["question"])
 
                 input_idx = input_instruction.find("###Question###")
@@ -574,6 +604,10 @@ if __name__ == "__main__":
     parser.add_argument("--example_pool_type", default='train')
     parser.add_argument("--example_selection_file", default="")
     parser.add_argument("--inject_gt_example", default=False)
+    # Document selection
+    parser.add_argument("--document_pool_type", default="long")
+    parser.add_argument("--document_selection_file", default="")
+    parser.add_argument("--num_documents", default=0)
     # Use hint & rules
     parser.add_argument("--use_hint", default=True)
     parser.add_argument("--use_rules", default=True)
@@ -615,5 +649,8 @@ if __name__ == "__main__":
         example_pool_type=args.example_pool_type,
         example_selection_file=args.example_selection_file,
         inject_gt_example=args.inject_gt_example,
+        document_pool_type=args.document_pool_type,
+        document_selection_file=args.document_selection_file,
+        num_documents=int(args.num_documents),
     )
     process.create_sft_raw_data()
