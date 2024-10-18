@@ -2,7 +2,7 @@
 
 # 1. Use 100 tables
 # 2. Use hint and rules
-# 3. Use 10 col vals
+# 3. Use 50 col vals
 # 4. Use self correction
 # 5. Use expensive disambiguation
 # 6. Use 100 / 500 synthetic examples
@@ -16,7 +16,7 @@ python lc_nl2sql/data_process/sql_data_process.py \
   --extra_top_k 100 \
   --use_hint 1 \
   --use_rules 1 \
-  --num_col_vals 10 \
+  --num_col_values 50 \
   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
   --use_column_filtering 1 \
   --synthetic_examples 1 \
@@ -43,7 +43,7 @@ python lc_nl2sql/data_process/sql_data_process.py \
   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
   --use_hint 1 \
   --use_rules 1 \
-  --num_col_vals 10 \
+  --num_col_values 5 \
   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
   --use_column_filtering 1 \
   --synthetic_examples 1 \

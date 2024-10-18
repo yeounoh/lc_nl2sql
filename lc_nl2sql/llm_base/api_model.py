@@ -95,7 +95,7 @@ class GeminiModel:
                     or "SQL generation failed for: Cannot get the respo"
                     in str(e)):
                 logging.info(f"{str(e)}, retrying in 10 seconds")
-                time.sleep(10)
+                time.sleep(30 // max_retries)
                 if max_retries > 0:
                     return self._generate_sql(query,
                                               temperature + 0.1,
