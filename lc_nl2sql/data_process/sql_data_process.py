@@ -209,7 +209,7 @@ class ProcessSqlData:
 
                             sql = (
                                 f'SELECT DISTINCT `{col[1]}` FROM `{table}` WHERE'
-                                f' `{col[1]}` IS NOT NULL LIMIT {nval_limit}')
+                                f' `{col[1]}` IS NOT NULL ORDER BY RANDOM() LIMIT {nval_limit}')
                             rows = cursor.execute(sql).fetchall()
                             example_vals = [
                                 ','.join(map(truncate_example,
