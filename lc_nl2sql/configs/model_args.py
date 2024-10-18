@@ -140,6 +140,13 @@ class GeneratingArguments:
             "Whether or not to use disambiguation feature with all column values."
         },
     )
+    use_column_filtering_for_correction: Optional[bool] = field(
+        default=False,
+        metadata={
+            "help":
+            "Whether or not to use column selection results for self correction."
+        },
+    )
     use_self_correction: Optional[bool] = field(
         default=True,
         metadata={

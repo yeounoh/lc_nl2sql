@@ -170,6 +170,10 @@ class DataArguments:
         default="db_tbl_col_vals.pickle",
         metadata={"help": "Cache file to hold column values"}
     )
+    filtered_schema_file: Optional[str] = field(
+        default="lc_nl2sql/data/bird/col_selection_schema.csv",
+        metadata={"help": "Column selection result file"}
+    )
     predicted_input_filename: Optional[str] = field(
         default="lc_nl2sql/data/example_text2sql_dev.json",
         metadata={"help": "Predict input filename to do pred"},

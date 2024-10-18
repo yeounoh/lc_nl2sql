@@ -30,7 +30,7 @@ from tqdm import tqdm
 
 
 def inference_worker(
-        model, item,
+        model, item, qid,
         input_kwargs):  # Worker function for a single inference task
 
     def _task():
@@ -42,7 +42,7 @@ def inference_worker(
                                      history=[],
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path)
+                                                model.db_folder_path, qid)
             cands.append(response)
         if n_candidates == 1:
             return (response, extra_tokens)
@@ -79,7 +79,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
 
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         futures = {
-            executor.submit(inference_worker, model, item, input_kwargs): i
+            executor.submit(inference_worker, model, item, i, input_kwargs): i
             for i, item in enumerate(predict_data)
         }
         try:

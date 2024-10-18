@@ -1,11 +1,24 @@
 #!/bin/bash
 
-# 1. Use 100 tables
+# Baseline piepeline for other experiments
+# 1. Use all tables from DB
+# 2. Use hint & rules
+# 4. Use self correction 
+
+# ablation baseline, add in the folloiwng order
+# - add examples
+# - hint
+# - add distinct column values
+# - expensive disambiguation
+# - multiple choice / selection
+
+# Complete piepeline
+# 1. Use all tables from DB
 # 2. Use hint and rules
-# 3. Use 50 col vals
-# 4. Use self correction
-# 5. Use expensive disambiguation
-# 6. Use 100 / 500 synthetic examples
+# 3. Use 50 (distinct) col vals
+# 4. Use self correction 
+# 5. Use expensive disambiguation (all dictinct values (str))
+# 6. Use 100 synthetic examples (<32k vs. >32k)
 # 8. multiple choice and select
 echo "Running full pipeline with larger config together"
 python lc_nl2sql/data_process/sql_data_process.py \
@@ -13,14 +26,12 @@ python lc_nl2sql/data_process/sql_data_process.py \
   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
-  --extra_top_k 100 \
   --use_hint 1 \
   --use_rules 1 \
-  --num_col_values 50 \
   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
   --use_column_filtering 1 \
   --synthetic_examples 1 \
-  --num_examples 500 
+  --num_examples 100 
 
 python lc_nl2sql/predict/predict.py \
   --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
@@ -43,11 +54,10 @@ python lc_nl2sql/data_process/sql_data_process.py \
   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
   --use_hint 1 \
   --use_rules 1 \
-  --num_col_values 5 \
   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
   --use_column_filtering 1 \
   --synthetic_examples 1 \
-  --num_examples 100 
+  --num_examples 500 
 
 python lc_nl2sql/predict/predict.py \
   --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \

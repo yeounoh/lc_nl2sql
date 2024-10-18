@@ -6,6 +6,7 @@ from lc_nl2sql.configs.config import (CHECKER_TEMPLATE, LITERAL_ERROR_TEMPLATE,
                                       COLUMN_SELECTOR_TEMPLATE)
 import random
 import numpy as np
+import pandas as pd
 import os, re
 import time
 from typing import Any, Dict, Generator, List, Optional, Tuple
@@ -43,6 +44,7 @@ class GeminiModel:
             self.generating_args = GeneratingArguments
             self.use_self_correction = args.get("use_self_correction", True)
             self.use_disambiguation = args.get("use_disambiguation", True)
+            self.use_column_filtering_for_correction = args.get("use_column_filtering_for_correction", False)
             self.measure_self_correction_tokens = args.get("measure_self_correction_tokens", False)
             self.db_folder_path = args.get("db_folder_path", "")
             self.temperature = args.get("temperature", 0.5)
@@ -59,6 +61,7 @@ class GeminiModel:
             self.temperature = self.generating_args.temperature
             self.use_self_correction = self.generating_args.use_self_correction
             self.use_disambiguation = self.generating_args.use_disambiguation
+            self.use_column_filtering_for_correction = self.generating_args.use_column_filtering_for_correction
             self.measure_self_correction_tokens = self.generating_args.measure_self_correction_tokens
             self.db_folder_path = self.data_args.db_folder_path
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
@@ -123,7 +126,7 @@ class GeminiModel:
         logging.info("Consensus: " + sql)
         return sql
 
-    def verify_and_correct(self, query, sql, db_folder_path):
+    def verify_and_correct(self, query, sql, db_folder_path, qid):
         if not self.use_self_correction:
             return sql, 0
 
@@ -194,7 +197,19 @@ class GeminiModel:
             def validate_email(email):
                 pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
                 return re.match(pattern, email) is not None
+            
+            def extract_table_info(input_string):
+                table_info = {}
+                tables = re.findall(r"CREATE TABLE (\w+)\s*\((.*?)\);", input_string, re.DOTALL)
 
+                for table_name, table_body in tables:
+                    columns = re.findall(r"(\w+)\s+\w+.*?-- examples:\s*(.*?)\s*\|", table_body, re.DOTALL)
+                    for column_name, example_values in columns:
+                        values = re.findall(r"`(.*?)`", example_values)
+                        table_info[f"{table_name}.{column_name}"] = values
+
+                return table_info
+            
             def format_col_vals(tbl_col_vals):
                 s = ""
                 for tbl, col_vals in tbl_col_vals.items():
@@ -204,10 +219,23 @@ class GeminiModel:
                         if len(vals) > 50 and np.mean(
                             [len(v) for v in random.sample(vals, 10)]) > 90:
                             continue
-                        s += f'* `{tbl}`.`{col}`: [{",".join(vals[:1200])}]\n'
+                        s += f'* `{tbl}`.`{col}`: [{",".join(vals[:])}]\n'
                 return s
-
-            col_vals = format_col_vals(tbl_col_vals)
+            
+            if self.use_column_filtering_for_correction:
+                df = pd.read_csv(self.data_args.filtered_schema_file)
+                id_name, schema_name = 'question_id', 'selected_schema_with_connections'
+                col_selected_schemas = dict()
+                for k, v in zip(df[id_name], df[schema_name]):
+                    col_selected_schemas[int(k)] = v
+                filtered_schema = col_selected_schemas.get(qid, "")
+                if filtered_schema:
+                    table_info = extract_table_info(filtered_schema)
+                    col_vals = ""
+                    for key, value in table_info.items():
+                        col_vals += f"{key}: {value}\n"
+            else:
+                col_vals = format_col_vals(tbl_col_vals)
             context_str = query[query.find("###Table creation statements###"
                                            ):query.find("###Question###")]
             # this should capture the hints.

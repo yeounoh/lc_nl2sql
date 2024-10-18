@@ -41,7 +41,6 @@ class ProcessSqlData:
         column_examples=False,
         use_column_filtering=False,
         num_col_values=50,
-        use_column_filtering_for_generation=False,
         filtered_schema_file="",
         db_tbl_col_vals_file="",
         vertex_ai_project_id="",
@@ -67,7 +66,6 @@ class ProcessSqlData:
         self.column_examples = column_examples
         self.use_column_filtering = use_column_filtering
         self.num_col_values = num_col_values
-        self.use_column_filtering_for_generation = use_column_filtering_for_generation
         self.filtered_schema_file = filtered_schema_file
         self.db_tbl_col_vals_file = db_tbl_col_vals_file
         self.tbr_selection_file = tbr_selection_file
@@ -445,7 +443,7 @@ class ProcessSqlData:
                                               self.extra_top_k,
                                               qid_tbr[int(data['question_id'])] if int(data['question_id']) in qid_tbr else []
                                               )
-                if self.use_column_filtering or self.use_column_filtering_for_generation:
+                if self.use_column_filtering:
                     filtered_schema = _filter_schema(schema)
 
                 examples = ""
@@ -494,7 +492,7 @@ class ProcessSqlData:
                     input_instruction = BASIC_INSTRUCTION_PROMPT.format(
                         db_name=data[db_id_name],
                         hints=hints,
-                        schema=filtered_schema if self.use_column_filtering_for_generation else schema,
+                        schema= schema,
                         examples=examples,
                         documentation=documentation,
                         question=data["question"])
@@ -502,7 +500,7 @@ class ProcessSqlData:
                     input_instruction = BASIC_INSTRUCTION_PROMPT_NO_RULES.format(
                         db_name=data[db_id_name],
                         hints=hints,
-                        schema=filtered_schema if self.use_column_filtering_for_generation else schema,
+                        schema= schema,
                         examples=examples,
                         documentation=documentation,
                         question=data["question"])
@@ -557,7 +555,7 @@ class ProcessSqlData:
         for data_info in SQL_DATA_INFO:
             if data_info['data_source'] in ['bird', 'spider']:
                 col_selected_schemas = dict()
-                if (self.use_column_filtering or self.use_column_filtering_for_generation) and self.filtered_schema_file:
+                if (self.use_column_filtering) and self.filtered_schema_file:
                     df = pd.read_csv(self.filtered_schema_file)
                     id_name, schema_name = 'question_id', 'selected_schema_with_connections'
                     col_selected_schemas = dict()
@@ -591,7 +589,6 @@ if __name__ == "__main__":
     parser.add_argument("--column_description", default=True)
     parser.add_argument("--column_examples", default=True)
     parser.add_argument("--num_col_values", default=50)
-    parser.add_argument("--use_column_filtering_for_generation", default=False)
     
     parser.add_argument("--num_examples",
                         help="Retrieve relevant examples.",
@@ -639,7 +636,6 @@ if __name__ == "__main__":
         column_examples=bool(int(args.column_examples)),
         use_column_filtering=bool(int(args.use_column_filtering)),
         num_col_values=int(args.num_col_values),
-        use_column_filtering_for_generation=bool(int(args.use_column_filtering_for_generation)),
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
         vertex_ai_project_id="400355794761",  # change appropriately
