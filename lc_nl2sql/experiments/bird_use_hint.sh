@@ -24,7 +24,7 @@ python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
-  --use_hint 1
+  --use_hint 1 \
   --use_rules 0
 
 python lc_nl2sql/predict/predict.py \
@@ -44,7 +44,7 @@ python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
-  --use_hint 0
+  --use_hint 0 \
   --use_rules 0
 
 python lc_nl2sql/predict/predict.py \
