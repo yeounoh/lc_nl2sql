@@ -585,6 +585,8 @@ if __name__ == "__main__":
     parser.add_argument("--input_data_path")
     parser.add_argument("--input_table_path")
     parser.add_argument("--db_folder_path")
+    all_in_one_dev_file = os.path.join(DATA_PATH, "example_text2sql_dev.json")
+    parser.add_argument("--output_file_path", default=all_in_one_dev_file)
 
     parser.add_argument("--column_description", default=True)
     parser.add_argument("--column_examples", default=True)
@@ -622,13 +624,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    all_in_one_dev_file = os.path.join(DATA_PATH, "example_text2sql_dev.json")
+    
     process = ProcessSqlData(
         input_data_file=args.input_data_path,
         input_table_file=args.input_table_path,
         db_folder_path=args.db_folder_path,
         train_file="",
-        dev_file=all_in_one_dev_file,  # output data file
+        dev_file=args.output_file_path,  # output data file
         extra_top_k=int(args.extra_top_k),
         num_examples=int(args.num_examples),
         synthetic_examples=bool(int(args.synthetic_examples)),

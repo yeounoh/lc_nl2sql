@@ -6,6 +6,7 @@ for k in "${n_examples[@]}"; do
   echo "Running with $k synthetic examples"
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
+  --output_file_path "lc_nl2sql/data/dev_example_with_synthetic_examples_$k.json" \
   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
@@ -14,7 +15,7 @@ for k in "${n_examples[@]}"; do
   --num_examples "$k"
 
   python lc_nl2sql/predict/predict.py \
-  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+  --predicted_input_filename "lc_nl2sql/data/dev_example_with_synthetic_examples_$k.json" \
   --num_beams 1 \
   --temperature 0.5 \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
