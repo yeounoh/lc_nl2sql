@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example selection experiments
-n_examples=(5 10 25 50 75 100 125 200)
+n_examples=(5 20 50 100 150 200)
 for k in "${n_examples[@]}"; do
   echo "Running with $k train examples"
   python lc_nl2sql/data_process/sql_data_process.py \
@@ -76,19 +76,4 @@ for k in "${n_examples[@]}"; do
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --predicted_out_filename "lc_nl2sql/output/pred/bird_example_selection_synthetic_$k"
 
-  echo "Running with $k train & synthetic examples"
-  python lc_nl2sql/data_process/sql_data_process.py \
-  --input_data_path lc_nl2sql/data/bird/dev/dev.json \
-  --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
-  --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
-  --example_pool_type train_synthetic \
-  --example_selection_file lc_nl2sql/data/bird/similar_examples.json \
-  --num_examples "$k"
-
-  python lc_nl2sql/predict/predict.py \
-  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
-  --num_beams 1 \
-  --temperature 0.5 \
-  --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
-  --predicted_out_filename "lc_nl2sql/output/pred/bird_example_selection_train_synthetic_$k"
 done

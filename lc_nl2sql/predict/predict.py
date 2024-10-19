@@ -64,7 +64,7 @@ def inference_worker(
                                      history=[],
                                      **input_kwargs)
         response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path)
+                                                model.db_folder_path, qid)
         return (response, extra_tokens)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
@@ -118,7 +118,7 @@ def inference(model: GeminiModel, predict_data: List[Dict], **input_kwargs):
                                      history=[],
                                      **input_kwargs)
             response = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path)
+                                                model.db_folder_path, i)
             cands.append(response)
         if n_candidates == 1:
             res.append(response)

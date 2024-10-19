@@ -3,7 +3,8 @@
 # Baseline piepeline for other experiments
 # 1. Use all tables from DB
 # 2. Use hint & rules
-# 4. Use self correction 
+# 3. Use self correction 
+# 4. 50 col vals
 
 # ablation baseline, add in the folloiwng order
 # - add examples

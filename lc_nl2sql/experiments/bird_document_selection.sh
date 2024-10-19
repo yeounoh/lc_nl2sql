@@ -26,7 +26,7 @@ for k in "${n_documents[@]}"; do
 done
 
 # short document selection experiment
-n_documents=(1 2 3 5 10 20)
+n_documents=(1 5 10 15)
 for k in "${n_documents[@]}"; do
   echo "Running with $k short document chunks"
   python lc_nl2sql/data_process/sql_data_process.py \

@@ -8,7 +8,6 @@ import sys
 import re
 import argparse
 import random
-import math
 import pickle
 import numpy as np
 from tqdm import tqdm
@@ -196,7 +195,7 @@ class ProcessSqlData:
                                                 len(r) for r in random.sample(
                                                     rows, 10)
                                             ]) > 95):
-                                            nval_limit = math.min(5, nval_limit)
+                                            nval_limit = min(5, nval_limit)
                                         else:
                                             tbl_col_vals[
                                                 table][col[1]] = [

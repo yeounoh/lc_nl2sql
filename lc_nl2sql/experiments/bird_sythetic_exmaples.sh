@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Generate difference number of synthetic examples
-n_examples=(5 10 25 50 75 100 125 200 500 1000)
+n_examples=(5 10 25 50 100 200 500 1000)
 for k in "${n_examples[@]}"; do
   echo "Running with $k synthetic examples"
   python lc_nl2sql/data_process/sql_data_process.py \
