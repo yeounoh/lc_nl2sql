@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # long document selection experiment
-n_documents=(1 2 3 4)
+n_documents=(1 2 3)
 for k in "${n_documents[@]}"; do
   echo "Running with $k long document chunks"
   python lc_nl2sql/data_process/sql_data_process.py \
