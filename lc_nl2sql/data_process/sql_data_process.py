@@ -40,7 +40,7 @@ class ProcessSqlData:
         column_description=False,
         column_examples=False,
         use_column_filtering=False,
-        num_col_values=50,
+        num_col_values=10,
         filtered_schema_file="",
         db_tbl_col_vals_file="",
         vertex_ai_project_id="",
@@ -595,7 +595,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--column_description", default=True)
     parser.add_argument("--column_examples", default=True)
-    parser.add_argument("--num_col_values", default=50)
+    parser.add_argument("--num_col_values", default=10)
     
     parser.add_argument("--num_examples",
                         help="Retrieve relevant examples.",

@@ -117,7 +117,7 @@ cp lc_nl2sql/output/pred/token_count/bird_self_correction_no_correction \
 #   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
 #   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
 #   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
-#   --num_col_values 50 \
+#   --num_col_values 10 \
 #   --use_hint 1 \
 #   --use_rules 1 \
 #   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
@@ -149,7 +149,7 @@ cp lc_nl2sql/output/pred/token_count/bird_ablation_4_col_values \
 #   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
 #   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
 #   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
-#   --num_col_values 50 \
+#   --num_col_values 10 \
 #   --use_hint 1 \
 #   --use_rules 1 \
 #   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
@@ -181,7 +181,7 @@ cp lc_nl2sql/output/pred/token_count/bird_synthetic_examples_100 \
 #   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
 #   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
 #   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
-#   --num_col_values 50 \
+#   --num_col_values 10 \
 #   --use_hint 1 \
 #   --use_rules 1 \
 #   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
@@ -212,7 +212,7 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --output_file_path "$input_file_sk100" \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
-  --num_col_values 50 \
+  --num_col_values 10 \
   --use_hint 1 \
   --use_rules 1 \
   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \

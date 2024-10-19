@@ -25,8 +25,7 @@ def count_token(model: GeminiModel, predict_data: List[Dict], sample=True):
             if (num_examples < math.floor(model.data_args.expected_num_examples * 0.93) or 
                 num_examples > math.ceil(model.data_args.expected_num_examples * 1.07)):  # give some margin
                 logging.error(f"Expected {model.data_args.expected_num_examples} but found {num_examples}")
-        else:
-            tok_cnts.append(model._count_token(item['input']))
+        tok_cnts.append(model._count_token(item['input']))
     return tok_cnts
 
 

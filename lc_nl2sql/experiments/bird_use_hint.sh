@@ -51,7 +51,7 @@ python lc_nl2sql/predict/predict.py \
   --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
   --num_beams 1 \
   --temperature 0.5 \
-  --db_folder_verpath lc_nl2sql/data/bird/dev/dev_databases \
+  --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --predicted_out_filename "lc_nl2sql/output/pred/bird_use_hint_no_rules_and_no_hint"
 
 python lc_nl2sql/predict/count_token.py \
