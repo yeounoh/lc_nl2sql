@@ -97,7 +97,7 @@ class GeminiModel:
             if ("Quota exceeded" in str(e)
                     or "SQL generation failed for: Cannot get the respo"
                     in str(e)):
-                logging.info(f"{str(e)}, retrying in 10 seconds")
+                logging.info(f"{str(e)}, retrying in {30 // max_retries} seconds")
                 time.sleep(30 // max_retries)
                 if max_retries > 0:
                     return self._generate_sql(query,
@@ -296,7 +296,7 @@ class GeminiModel:
             tried_sql.append(_sql)
             valid, err, row_cnt = isValidSQL(_sql, db_path)
             retry_cnt += 1
-        if retry_cnt == max_retries:
+        if retry_cnt >= max_retries:
             logging.info(f"Correction failed due to {err}: {_sql}")
         return _sql, accumulated_token_count
 

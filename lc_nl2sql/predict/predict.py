@@ -60,12 +60,7 @@ def inference_worker(
     try:
         return func_timeout(300, _task, args=())
     except FunctionTimedOut:
-        response, _ = model.chat(query=item["input"],
-                                     history=[],
-                                     **input_kwargs)
-        response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path, qid)
-        return (response, extra_tokens)
+        return ("", 0)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
@@ -101,7 +96,6 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
             for i in range(len(predict_data)):
                 if i not in res_dict:
                     res_dict[i] = ""
-            executor.shutdown()
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )
