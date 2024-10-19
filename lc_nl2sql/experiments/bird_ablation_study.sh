@@ -204,9 +204,12 @@ cp lc_nl2sql/output/pred/token_count/bird_synthetic_examples_100 \
 
 echo "Ablation 7. + disambiguation"
 # share the data from 6.
-python lc_nl2sql/data_process/sql_data_process.py \
+input_file_sk100="lc_nl2sql/data/dev_example_with_synthetic_examples_100.json"
+if [[ ! -f "$input_file_sk100" ]]; then
+  python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
+  --output_file_path "$input_file_sk100" \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
   --num_col_values 50 \
@@ -216,9 +219,10 @@ python lc_nl2sql/data_process/sql_data_process.py \
   --use_column_filtering 1 \
   --synthetic_examples 1 \
   --num_examples 100
+fi
 
 python lc_nl2sql/predict/predict.py \
-  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+  --predicted_input_filename "$input_file_sk100" \
   --num_beams 1 \
   --temperature 0.5 \
   --use_self_correction 1 \
@@ -233,7 +237,7 @@ python lc_nl2sql/predict/count_token.py \
 echo "Ablation 8. + multi-choice"
 # share the data from 6 & 7.
 python lc_nl2sql/predict/predict.py \
-  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+  --predicted_input_filename "$input_file_sk100" \
   --num_beams 10 \
   --temperature 0.5 \
   --use_self_correction 1 \

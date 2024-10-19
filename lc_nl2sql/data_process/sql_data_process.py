@@ -303,8 +303,11 @@ class ProcessSqlData:
                         db_tbl_col_vals[futures[future]] = tbl_col_vals
                         db_context[futures[future]] = table_creation_statements
                         db_table_schema_map[futures[future]] = table_schema_map
+                        if len(db_context) == len(futures):
+                            executor.shutdown(wait=False)
                 except TimeoutError as e:
                     logging.error(e)
+                    executor.shutdown(wait=False)
                     raise
 
             # Caching for faster experimentation.
@@ -400,12 +403,14 @@ class ProcessSqlData:
                                    desc="Generate examples",
                                    unit="item"):
                     db_examples[futures[future]] = future.result()
+                    if len(db_examples) == len(futures):
+                        executor.shutdown(wait=False)
             except TimeoutError as e:
                 logging.error(e)
                 for k in db_context.keys():
                     if k not in db_examples:
                         db_examples[k] = ""
-                executor.shutdown()
+                executor.shutdown(wait=False)
 
         def _filter_schema(schema):
             filtered_schema =""
@@ -534,7 +539,7 @@ class ProcessSqlData:
                 for i in range(len(datas)):
                     if i not in res_dict:
                         res_dict[i] = ""
-                executor.shutdown()
+                executor.shutdown(wait=False)
 
         # dump examples
         if False:
