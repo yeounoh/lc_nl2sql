@@ -64,7 +64,7 @@ def inference_worker(
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
-    num_threads = 50 if model.generating_args.num_beams < 3 else 25
+    num_threads = 50 if model.generating_args.num_beams < 3 else 30
     if model.generating_args.num_beams > 10:
         num_threads = 10
 
@@ -79,7 +79,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
         }
         try:
             for future in tqdm(as_completed(futures,
-                                            timeout=7200),
+                                            timeout=1200),
                                total=len(futures),
                                desc="Inference Progress",
                                unit="item"):
@@ -96,6 +96,8 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
             for i in range(len(predict_data)):
                 if i not in res_dict:
                     res_dict[i] = ""
+                    failure_count += 1
+            executor.shutdown(wait=False)
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )
