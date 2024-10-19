@@ -134,7 +134,7 @@ class GeneratingArguments:
         },
     )
     use_disambiguation: Optional[bool] = field(
-        default=True,
+        default=False,
         metadata={
             "help":
             "Whether or not to use disambiguation feature with all column values."
