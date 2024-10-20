@@ -1,6 +1,6 @@
 #!/bin/bash
 
-k_values=(1 3 5 7 10 13) 
+k_values=(1 5 10 12) 
 for k in "${k_values[@]}"; do
   echo "Running with $k candidates"
   python lc_nl2sql/data_process/sql_data_process.py \
