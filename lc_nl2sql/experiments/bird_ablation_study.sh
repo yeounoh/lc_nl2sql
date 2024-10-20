@@ -231,7 +231,7 @@ python lc_nl2sql/predict/predict.py \
   --predicted_out_filename "lc_nl2sql/output/pred/bird_ablation_7_disambiguation"
 
 python lc_nl2sql/predict/count_token.py \
-  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+  --predicted_input_filename "$input_file_sk100" \
   --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_ablation_7_disambiguation"
 
 echo "Ablation 8. + multi-choice"
@@ -246,5 +246,5 @@ python lc_nl2sql/predict/predict.py \
   --predicted_out_filename "lc_nl2sql/output/pred/bird_ablation_8_multi_choice"
 
 python lc_nl2sql/predict/count_token.py \
-  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+  --predicted_input_filename "$input_file_sk100" \
   --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_ablation_8_multi_choice"

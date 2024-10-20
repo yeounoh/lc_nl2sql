@@ -55,10 +55,10 @@ def inference_worker(
             new_cands = list()
             for i in range(n_repeat):
                 new_cands.append(model.majority_voting(query, cands))
-            return model.majority_voting(query, new_cands)
+            return (model.majority_voting(query, new_cands), 0)
 
     try:
-        return func_timeout(300, _task, args=())
+        return func_timeout(600, _task, args=())
     except FunctionTimedOut:
         return ("", 0)
 
@@ -79,7 +79,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
         }
         try:
             for future in tqdm(as_completed(futures,
-                                            timeout=3000),
+                                            timeout=8000),
                                total=len(futures),
                                desc="Inference Progress",
                                unit="item"):
