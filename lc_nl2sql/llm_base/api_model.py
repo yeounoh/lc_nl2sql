@@ -74,28 +74,29 @@ class GeminiModel:
                       query,
                       temperature=0.5,
                       use_flash=False,
-                      max_retries=5):
+                      max_retries=3):
         model = self.model2 if use_flash else self.model
 
-        before_tokens = self._count_token(query)
-        if before_tokens >= 1000000:
-            processed_lines = []
-            for line in query.splitlines():
-                # limit to ~18000 tokens / column
-                if len(line) > 60000:
-                    processed_lines.append(line[:60000])
-                else:
-                    processed_lines.append(line)
-            query = "\n".join(processed_lines)
-            after_tokens = self._count_token(query)
-            if after_tokens > 1000000:
-                logging.debug("Removing schema comments after clipping...")
-                query = re.sub(r"--.*$", "", query, flags=re.MULTILINE)
+        if len(query) > 2000000:
+            before_tokens = self._count_token(query)
+            if before_tokens >= 1000000:
+                processed_lines = []
+                for line in query.splitlines():
+                    # limit to ~18000 tokens / column
+                    if len(line) > 60000:
+                        processed_lines.append(line[:60000])
+                    else:
+                        processed_lines.append(line)
+                query = "\n".join(processed_lines)
                 after_tokens = self._count_token(query)
-            logging.debug(f"Clipped the prompt from {before_tokens} to {after_tokens} tokens.")
-            if after_tokens >= 1000000:
-                logging.debug(f"We are still over the limit by {after_tokens - 1000000}: {query[:220]}...")
-                return ""
+                if after_tokens > 1000000:
+                    logging.debug("Removing schema comments after clipping...")
+                    query = re.sub(r"--.*$", "", query, flags=re.MULTILINE)
+                    after_tokens = self._count_token(query)
+                logging.debug(f"Clipped the prompt from {before_tokens} to {after_tokens} tokens.")
+                if after_tokens >= 1000000:
+                    logging.debug(f"We are still over the limit by {after_tokens - 1000000}: {query[:220]}...")
+                    return ""
         try:
             resp = model.generate_content(query,
                                           generation_config={
@@ -114,16 +115,13 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            if ("Quota exceeded" in str(e)
-                    or "SQL generation failed for: Cannot get the respo"
-                    in str(e)):
-                logging.info(f"{str(e)}, retrying in {30 // max_retries} seconds")
-                time.sleep(30 // max_retries)
-                if max_retries > 0:
-                    return self._generate_sql(query,
-                                              temperature + 0.1,
-                                              use_flash,
-                                              max_retries=max_retries - 1)
+            logging.info(f"{str(e)}, retrying in {20 // max_retries} seconds")
+            time.sleep(30 // max_retries)
+            if max_retries > 0:
+                return self._generate_sql(query,
+                                            temperature + 0.1,
+                                            use_flash,
+                                            max_retries=max_retries - 1)
             else:
                 logging.error(f"SQL generation failed for: {str(e)}")
             return ""

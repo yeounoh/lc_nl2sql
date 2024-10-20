@@ -205,7 +205,7 @@ class ProcessSqlData:
                                                             r)).replace(
                                                                 '\n', ',')
                                                     for r in rows
-                                                ]
+                                                ][:60000]
 
                             sql = (
                                 f'SELECT DISTINCT `{col[1]}` FROM `{table}` WHERE'
