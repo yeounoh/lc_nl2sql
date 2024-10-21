@@ -66,7 +66,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
     num_threads = 50 if model.generating_args.num_beams < 3 else 30
     if model.generating_args.num_beams > 10:
-        num_threads = 10
+        num_threads = 25
 
     res_dict = {}
     extra_tokens = []

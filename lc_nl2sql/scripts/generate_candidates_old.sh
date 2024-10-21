@@ -10,7 +10,7 @@ while [ $counter -le 12 ]; do
         inp_file="lc_nl2sql/data/dev_example_with_synthetic_examples_100.json"
         # python lc_nl2sql/data_process/sql_data_process.py \
         # --use_column_filtering 1 \
-        # --num_examples 50 \
+        # --num_examples 100 \
         # --synthetic_examples 1 \
         # --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
         # --db_tbl_col_vals_file lc_nl2sql/data/bird/db_tbl_col_vals.pickle \

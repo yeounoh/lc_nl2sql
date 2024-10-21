@@ -67,7 +67,14 @@ class GeminiModel:
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
 
     def _count_token(self, prompt):
-        response = self.model.count_tokens(prompt)
+        try:
+            if len(prompt) > 1000000 * 4:
+                logging.debug("Over 1m token, returning 1000001 as size")
+                return 100001 
+            response = self.model.count_tokens(prompt).total_tokens
+        except Exception as e:
+            logging.debug("Token counting failed, returning 1000001 as size")
+            return 1000001
         return response.total_tokens
 
     def _generate_sql(self,
@@ -82,9 +89,8 @@ class GeminiModel:
             if before_tokens >= 1000000:
                 processed_lines = []
                 for line in query.splitlines():
-                    # limit to ~18000 tokens / column
-                    if len(line) > 60000:
-                        processed_lines.append(line[:60000])
+                    if len(line) > 50000:
+                        processed_lines.append(line[:50000])
                     else:
                         processed_lines.append(line)
                 query = "\n".join(processed_lines)

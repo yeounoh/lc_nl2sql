@@ -109,9 +109,9 @@ python lc_nl2sql/predict/count_token.py \
 echo "Ablation 4. + distinct column values"
 # bird_self_correction_no_correction
 cp lc_nl2sql/output/pred/bird_self_correction_no_correction \
-  lc_nl2sql/ouput/pred/bird_ablation_4_col_values
+  lc_nl2sql/output/pred/bird_ablation_4_col_values
 cp lc_nl2sql/output/pred/token_count/bird_self_correction_no_correction \
-  lc_nl2sql/ouput/pred/token_count/bird_ablation_4_col_values
+  lc_nl2sql/output/pred/token_count/bird_ablation_4_col_values
 # python lc_nl2sql/data_process/sql_data_process.py \
 #   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
 #   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
