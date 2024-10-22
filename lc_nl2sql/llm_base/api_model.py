@@ -80,10 +80,10 @@ class GeminiModel:
                       query,
                       temperature=0.5,
                       use_flash=False,
-                      max_retries=3):
+                      max_retries=5):
         model = self.model2 if use_flash else self.model
 
-        if len(query) > 2000000:
+        if len(query) > 1000000 * 3:
             before_tokens = self._count_token(query)
             if before_tokens >= 1000000:
                 processed_lines = []

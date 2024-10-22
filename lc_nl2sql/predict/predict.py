@@ -3,6 +3,7 @@ import os
 import json
 import sys
 import numpy as np
+import time
 
 from func_timeout import func_timeout, FunctionTimedOut
 
@@ -43,6 +44,7 @@ def inference_worker(
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid)
+            time.sleep(2)
             cands.append(response)
         if n_candidates == 1:
             return (response, extra_tokens)
@@ -77,6 +79,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
             executor.submit(inference_worker, model, item, i, input_kwargs): i
             for i, item in enumerate(predict_data)
         }
+        n_total = len(futures)
         try:
             for future in tqdm(as_completed(futures,
                                             timeout=8000),
@@ -91,8 +94,9 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                     success_count += 1
                 else:
                     failure_count += 1
-                if (success_count + failure_count) == len(futures):
+                if (success_count + failure_count) == n_total:
                     executor.shutdown(wait=False)
+                    break
         except TimeoutError as e:
             logging.info(e)
             for i in range(len(predict_data)):
