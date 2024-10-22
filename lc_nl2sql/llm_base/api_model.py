@@ -120,8 +120,8 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            logging.info(f"{str(e)}, retrying in {20 // max_retries} seconds")
-            time.sleep(30 // max_retries)
+            logging.info(f"{str(e)}, retrying in {30 // max(max_retries,1)} seconds")
+            time.sleep(30 // max(max_retries, 1))
             if max_retries > 0:
                 return self._generate_sql(query,
                                             temperature + 0.1,
