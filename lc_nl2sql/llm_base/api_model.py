@@ -77,6 +77,9 @@ class GeminiModel:
             return 1000001
         
     def _compress(self, query, multiplier=4):
+        # Remove GitHub URLs using re.sub()
+        pattern = r"https?://(www\.)?github\.com/[^ ]*"
+        query = re.sub(pattern, "", query)
         n_reduction = 0
         while len(query) > 1000000 * multiplier and n_reduction < 6:
             processed_lines = []
