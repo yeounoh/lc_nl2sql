@@ -75,15 +75,10 @@ class GeminiModel:
         except Exception as e:
             logging.debug("Token counting failed, returning 1000001 as size")
             return 1000001
-
-    def _generate_sql(self,
-                      query,
-                      temperature=0.5,
-                      use_flash=False,
-                      max_retries=5):
-        model = self.model2 if use_flash else self.model
+        
+    def _compress(self, query, multiplier=4):
         n_reduction = 0
-        while len(query) > 1000000 * 4:
+        while len(query) > 1000000 * multiplier and n_reduction < 6:
             processed_lines = []
             for line in query.splitlines():
                 if len(line) > 50000:
@@ -92,6 +87,15 @@ class GeminiModel:
                     processed_lines.append(line)
             query = "\n".join(processed_lines)
             n_reduction += 1
+        return query
+
+    def _generate_sql(self,
+                      query,
+                      temperature=0.5,
+                      use_flash=False,
+                      max_retries=5):
+        model = self.model2 if use_flash else self.model
+        query = self._compress(query)
         try:
             resp = model.generate_content(query,
                                           generation_config={
@@ -113,6 +117,8 @@ class GeminiModel:
             logging.info(f"{str(e)}, retrying in {30 // max(max_retries,1)} seconds")
             time.sleep(30 // max(max_retries, 1))
             if max_retries > 0:
+                if "SQL generation failed for: 400" in str(e):
+                    query = self._compress(query, multiplier=3)
                 return self._generate_sql(query,
                                             temperature + 0.1,
                                             use_flash,
