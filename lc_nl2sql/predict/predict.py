@@ -62,7 +62,7 @@ def inference_worker(
             return (model.majority_voting(query, new_cands), 0)
 
     try:
-        return func_timeout(600, _task, args=())
+        return func_timeout(1200, _task, args=())
     except FunctionTimedOut:
         return ("", 0)
 
