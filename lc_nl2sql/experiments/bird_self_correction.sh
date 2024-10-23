@@ -50,7 +50,6 @@ python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
   --input_table_path lc_nl2sql/data/bird/dev/dev_tables.json \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
-  --use_column_filtering_for_generation 1 \
   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv
 
 python lc_nl2sql/predict/predict.py \
@@ -59,6 +58,7 @@ python lc_nl2sql/predict/predict.py \
   --temperature 0.5 \
   --use_self_correction 1 \
   --measure_self_correction_tokens 1 \
+  --use_column_filtering_for_correction 1 \
   --use_disambiguation 0 \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --predicted_out_filename "lc_nl2sql/output/pred/bird_self_correction_filtered_columns" \

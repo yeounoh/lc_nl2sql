@@ -1,5 +1,4 @@
 import json
-import torch
 from dataclasses import dataclass, field, asdict
 from typing import Optional, Any, Dict, Literal
 from transformers import Seq2SeqTrainingArguments
@@ -80,12 +79,6 @@ class ModelArguments:
     hf_auth_token: Optional[str] = field(
         default=None, metadata={"help": "Auth token to log in with Hugging Face Hub."}
     )
-    compute_dtype: Optional[torch.dtype] = field(
-        default=None,
-        metadata={
-            "help": "Used in quantization configs. Do not specify this argument manually."
-        },
-    )
     model_max_length: Optional[int] = field(
         default=None,
         metadata={
@@ -103,8 +96,6 @@ class ModelArguments:
     )
 
     def __post_init__(self):
-        if self.compute_dtype is not None or self.model_max_length is not None:
-            raise ValueError("These arguments cannot be specified.")
 
         if self.checkpoint_dir is not None:  # support merging multiple lora weights
             self.checkpoint_dir = [cd.strip() for cd in self.checkpoint_dir.split(",")]
@@ -134,10 +125,17 @@ class GeneratingArguments:
         },
     )
     use_disambiguation: Optional[bool] = field(
-        default=True,
+        default=False,
         metadata={
             "help":
             "Whether or not to use disambiguation feature with all column values."
+        },
+    )
+    use_column_filtering_for_correction: Optional[bool] = field(
+        default=False,
+        metadata={
+            "help":
+            "Whether or not to use column selection results for self correction."
         },
     )
     use_self_correction: Optional[bool] = field(

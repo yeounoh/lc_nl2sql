@@ -2,7 +2,7 @@
 do evaluate about the predict sql in dataset BIRD,compare with default dev.sql
 --db
 """
-import sys
+import os, sys
 import json
 import argparse
 import sqlite3
@@ -43,12 +43,35 @@ def execute_sql(predicted_sql, ground_truth, db_path, gt_tied_sql=""):
         return execute_sql(predicted_sql, gt_tied_sql, db_path, "")
     return res, time_ratio
 
+def execute_sqls(predicted_sqls, ground_truth, db_path, gt_tied_sql=""):
+    conn = sqlite3.connect(db_path)
+    # Connect to the database
+    cursor = conn.cursor()
+    res = 0
+    for predicted_sql in predicted_sqls:
+        if res == 1:
+            return res, 0
+        cursor.execute(predicted_sql)
+        predicted_res = cursor.fetchall()
+        cursor.execute(ground_truth)
+        ground_truth_res = cursor.fetchall()
+        if set(predicted_res) == set(ground_truth_res):
+            res = 1
+        if res == 0 and gt_tied_sql != "":
+            res = execute_sql(predicted_sql, gt_tied_sql, db_path, "")[0]
+    return res, 0
+
 
 def execute_model(predicted_sql, ground_truth, db_place, idx, meta_time_out, gt_tied_sql=""):
     try:
-        res, time_ratio = func_timeout(
-            meta_time_out, execute_sql, args=(predicted_sql, ground_truth, db_place, gt_tied_sql)
-        )
+        if isinstance(predicted_sql, list):
+            res, time_ratio = func_timeout(
+                meta_time_out * len(predicted_sql), execute_sqls, args=(predicted_sql, ground_truth, db_place, gt_tied_sql)
+            )
+        else:
+            res, time_ratio = func_timeout(
+                meta_time_out, execute_sql, args=(predicted_sql, ground_truth, db_place, gt_tied_sql)
+            )
     except KeyboardInterrupt:
         sys.exit(0)
     except FunctionTimedOut:
@@ -71,26 +94,38 @@ def execute_model(predicted_sql, ground_truth, db_place, idx, meta_time_out, gt_
     return result
 
 
-def package_sqls(sql_path, db_root_path, mode="gpt", data_mode="dev"):
+def package_sqls(sql_path, db_root_path, mode="gpt", data_mode="dev", multi_sqls=False):
     clean_sqls = []
     db_path_list = []
     if mode == "gpt":
-        # sql_data = json.load(open(sql_path + 'predict_' + data_mode + '.json', "r'))
-        # for idx, sql_str in sql_data.items():
-        #     if type(sql_str) == str:
-        #         sql, db_name = sql_str.split('\t----- bird -----\t')
-        #     else:
-        #         sql, db_name = " ", "financial"
-        #     clean_sqls.append(sql)
-        #     db_path_list.append(db_root_path + db_name + '/' + db_name + '.sqlite')
-        with open(sql_path) as f:
-            for l in f.readlines():
-                # if len(l.strip()) == 0:
-                #     sql, db_name = " ", "financial"
-                # else:
-                #     sql, db_name = l.split('\t')
-                clean_sqls.append(l.strip())
-                # db_path_list.append(db_root_path + db_name + '/' + db_name + '.sqlite')
+        if multi_sqls:
+            files = []
+            for filename in os.listdir(sql_path):
+                if filename.startswith("cand_"):
+                    filepath = os.path.join(sql_path, filename)
+                    with open(filepath, 'r') as f:
+                        candidates = []
+                        for l in f.readlines():
+                            # if len(l.strip()) == 0:
+                            #     sql, db_name = " ", "financial"
+                            # else:
+                            #     sql, db_name = l.split('\t')
+                            candidates.append(l.strip())
+                        files.append(candidates)
+            for i in range(len(files[0])):
+                candidates = []
+                for file in files:
+                    candidates.append(file[i])
+                clean_sqls.append(candidates)
+        else:
+            with open(sql_path) as f:
+                for l in f.readlines():
+                    # if len(l.strip()) == 0:
+                    #     sql, db_name = " ", "financial"
+                    # else:
+                    #     sql, db_name = l.split('\t')
+                    clean_sqls.append(l.strip())
+                    # db_path_list.append(db_root_path + db_name + '/' + db_name + '.sqlite')
     elif mode == "gt":
         sqls = open(sql_path)
         sql_txt = sqls.readlines()
@@ -227,16 +262,27 @@ if __name__ == "__main__":
         choices=("all", "exec", "match", "ves"),
     )
     args_parser.add_argument("--gt_tied_json_path", type=str, default="")
+    # SQL candidate files directory, each prefixed with "cand_"
+    args_parser.add_argument("--sql_candidates_path", type=str, default="")
 
     args = args_parser.parse_args()
     exec_result = []
 
-    pred_queries, db_paths = package_sqls(
-        args.predicted_sql_path,
-        args.db_root_path,
-        mode=args.mode_predict,
-        data_mode=args.data_mode,
-    )
+    if args.sql_candidates_path:
+        pred_queries, db_paths = package_sqls(
+            args.sql_candidates_path,
+            args.db_root_path,
+            mode=args.mode_predict,
+            data_mode=args.data_mode,
+            multi_sqls=True,
+        )
+    else:
+        pred_queries, db_paths = package_sqls(
+            args.predicted_sql_path,
+            args.db_root_path,
+            mode=args.mode_predict,
+            data_mode=args.data_mode,
+        )
     # generate gt sqls:
     gt_queries, db_paths_gt = package_sqls(
         args.ground_truth_path, args.db_root_path, mode="gt", data_mode=args.data_mode

@@ -3,6 +3,8 @@ import os
 import json
 import sys
 import numpy as np
+import time
+import random
 
 from func_timeout import func_timeout, FunctionTimedOut
 
@@ -30,7 +32,7 @@ from tqdm import tqdm
 
 
 def inference_worker(
-        model, item,
+        model, item, qid,
         input_kwargs):  # Worker function for a single inference task
 
     def _task():
@@ -42,8 +44,9 @@ def inference_worker(
                                      history=[],
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path)
+                                                model.db_folder_path, qid)
             cands.append(response)
+            time.sleep(random.randint(1,3))
         if n_candidates == 1:
             return (response, extra_tokens)
         else:
@@ -55,21 +58,17 @@ def inference_worker(
             new_cands = list()
             for i in range(n_repeat):
                 new_cands.append(model.majority_voting(query, cands))
-            return model.majority_voting(query, new_cands)
+                time.sleep(random.randint(1,3))
+            return (model.majority_voting(query, new_cands), 0)
 
     try:
-        return func_timeout(300, _task, args=())
+        return func_timeout(1200, _task, args=())
     except FunctionTimedOut:
-        response, _ = model.chat(query=item["input"],
-                                     history=[],
-                                     **input_kwargs)
-        response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path)
-        return (response, extra_tokens)
+        return ("", 0)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
-    num_threads = 50 if model.generating_args.num_beams < 3 else 25
+    num_threads = 50 if model.generating_args.num_beams < 3 else 20
     if model.generating_args.num_beams > 10:
         num_threads = 10
 
@@ -77,19 +76,15 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
     extra_tokens = []
     success_count, failure_count = 0, 0
 
-    # Initialization outside the executor
-    pbar = tqdm(total=len(predict_data),
-                desc="Inference Progress",
-                unit="item")
-
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         futures = {
-            executor.submit(inference_worker, model, item, input_kwargs): i
+            executor.submit(inference_worker, model, item, i, input_kwargs): i
             for i, item in enumerate(predict_data)
         }
+        n_total = len(futures)
         try:
             for future in tqdm(as_completed(futures,
-                                            timeout=7200),
+                                            timeout=8000),
                                total=len(futures),
                                desc="Inference Progress",
                                unit="item"):
@@ -101,14 +96,16 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                     success_count += 1
                 else:
                     failure_count += 1
-                pbar.update(1)
+                if (success_count + failure_count) == n_total:
+                    executor.shutdown(wait=False)
+                    break
         except TimeoutError as e:
             logging.info(e)
             for i in range(len(predict_data)):
                 if i not in res_dict:
                     res_dict[i] = ""
-            executor.shutdown()
-    pbar.close()
+                    failure_count += 1
+            executor.shutdown(wait=False)
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )
@@ -125,7 +122,7 @@ def inference(model: GeminiModel, predict_data: List[Dict], **input_kwargs):
                                      history=[],
                                      **input_kwargs)
             response = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path)
+                                                model.db_folder_path, i)
             cands.append(response)
         if n_candidates == 1:
             res.append(response)

@@ -6,6 +6,7 @@ from lc_nl2sql.configs.config import (CHECKER_TEMPLATE, LITERAL_ERROR_TEMPLATE,
                                       COLUMN_SELECTOR_TEMPLATE)
 import random
 import numpy as np
+import pandas as pd
 import os, re
 import time
 from typing import Any, Dict, Generator, List, Optional, Tuple
@@ -43,6 +44,7 @@ class GeminiModel:
             self.generating_args = GeneratingArguments
             self.use_self_correction = args.get("use_self_correction", True)
             self.use_disambiguation = args.get("use_disambiguation", True)
+            self.use_column_filtering_for_correction = args.get("use_column_filtering_for_correction", False)
             self.measure_self_correction_tokens = args.get("measure_self_correction_tokens", False)
             self.db_folder_path = args.get("db_folder_path", "")
             self.temperature = args.get("temperature", 0.5)
@@ -59,13 +61,36 @@ class GeminiModel:
             self.temperature = self.generating_args.temperature
             self.use_self_correction = self.generating_args.use_self_correction
             self.use_disambiguation = self.generating_args.use_disambiguation
+            self.use_column_filtering_for_correction = self.generating_args.use_column_filtering_for_correction
             self.measure_self_correction_tokens = self.generating_args.measure_self_correction_tokens
             self.db_folder_path = self.data_args.db_folder_path
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
 
     def _count_token(self, prompt):
-        response = self.model.count_tokens(prompt)
-        return response.total_tokens
+        try:
+            if len(prompt) > 1000000 * 4:
+                logging.debug("Over 1m token, returning 1000001 as size")
+                return 100001 
+            return self.model.count_tokens(prompt).total_tokens
+        except Exception as e:
+            logging.debug("Token counting failed, returning 1000001 as size")
+            return 1000001
+        
+    def _compress(self, query, multiplier=4):
+        # Remove GitHub URLs using re.sub()
+        pattern = r"https?://(www\.)?github\.com/[^ ]*"
+        query = re.sub(pattern, "", query)
+        n_reduction = 0
+        while len(query) > 1000000 * multiplier and n_reduction < 6:
+            processed_lines = []
+            for line in query.splitlines():
+                if len(line) > 50000:
+                    processed_lines.append(line[:(100000 - n_reduction * 10000)])
+                else:
+                    processed_lines.append(line)
+            query = "\n".join(processed_lines)
+            n_reduction += 1
+        return query
 
     def _generate_sql(self,
                       query,
@@ -73,6 +98,7 @@ class GeminiModel:
                       use_flash=False,
                       max_retries=5):
         model = self.model2 if use_flash else self.model
+        query = self._compress(query)
         try:
             resp = model.generate_content(query,
                                           generation_config={
@@ -91,16 +117,15 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            if ("Quota exceeded" in str(e)
-                    or "SQL generation failed for: Cannot get the respo"
-                    in str(e)):
-                logging.info(f"{str(e)}, retrying in 10 seconds")
-                time.sleep(10)
-                if max_retries > 0:
-                    return self._generate_sql(query,
-                                              temperature + 0.1,
-                                              use_flash,
-                                              max_retries=max_retries - 1)
+            logging.info(f"{str(e)}, retrying in {30 // max(max_retries,1)} seconds")
+            time.sleep(30 // max(max_retries, 1))
+            if max_retries > 0:
+                if "SQL generation failed for: 400" in str(e):
+                    query = self._compress(query, multiplier=3)
+                return self._generate_sql(query,
+                                            temperature + 0.1,
+                                            use_flash,
+                                            max_retries=max_retries - 1)
             else:
                 logging.error(f"SQL generation failed for: {str(e)}")
             return ""
@@ -123,7 +148,7 @@ class GeminiModel:
         logging.info("Consensus: " + sql)
         return sql
 
-    def verify_and_correct(self, query, sql, db_folder_path):
+    def verify_and_correct(self, query, sql, db_folder_path, qid):
         if not self.use_self_correction:
             return sql, 0
 
@@ -194,7 +219,19 @@ class GeminiModel:
             def validate_email(email):
                 pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
                 return re.match(pattern, email) is not None
+            
+            def extract_table_info(input_string):
+                table_info = {}
+                tables = re.findall(r"CREATE TABLE (\w+)\s*\((.*?)\);", input_string, re.DOTALL)
 
+                for table_name, table_body in tables:
+                    columns = re.findall(r"(\w+)\s+\w+.*?-- examples:\s*(.*?)\s*\|", table_body, re.DOTALL)
+                    for column_name, example_values in columns:
+                        values = re.findall(r"`(.*?)`", example_values)
+                        table_info[f"{table_name}.{column_name}"] = values
+
+                return table_info
+            
             def format_col_vals(tbl_col_vals):
                 s = ""
                 for tbl, col_vals in tbl_col_vals.items():
@@ -204,10 +241,23 @@ class GeminiModel:
                         if len(vals) > 50 and np.mean(
                             [len(v) for v in random.sample(vals, 10)]) > 90:
                             continue
-                        s += f'* `{tbl}`.`{col}`: [{",".join(vals[:1200])}]\n'
+                        s += f'* `{tbl}`.`{col}`: [{",".join(vals[:])}]\n'
                 return s
-
-            col_vals = format_col_vals(tbl_col_vals)
+            
+            if self.use_column_filtering_for_correction:
+                df = pd.read_csv(self.data_args.filtered_schema_file)
+                id_name, schema_name = 'question_id', 'selected_schema_with_connections'
+                col_selected_schemas = dict()
+                for k, v in zip(df[id_name], df[schema_name]):
+                    col_selected_schemas[int(k)] = v
+                filtered_schema = col_selected_schemas.get(qid, "")
+                if filtered_schema:
+                    table_info = extract_table_info(filtered_schema)
+                    col_vals = ""
+                    for key, value in table_info.items():
+                        col_vals += f"{key}: {value}\n"
+            else:
+                col_vals = format_col_vals(tbl_col_vals)
             context_str = query[query.find("###Table creation statements###"
                                            ):query.find("###Question###")]
             # this should capture the hints.
@@ -268,7 +318,7 @@ class GeminiModel:
             tried_sql.append(_sql)
             valid, err, row_cnt = isValidSQL(_sql, db_path)
             retry_cnt += 1
-        if retry_cnt == max_retries:
+        if retry_cnt >= max_retries:
             logging.info(f"Correction failed due to {err}: {_sql}")
         return _sql, accumulated_token_count
 
