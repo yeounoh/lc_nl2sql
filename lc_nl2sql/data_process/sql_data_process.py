@@ -152,7 +152,7 @@ class ProcessSqlData:
                         tbl_col_vals[table][col[1]] = list()
                         example_vals = list()
                         try:
-                            nval_limit = self.num_col_values
+                            nval_limit = 5
 
                             extend_text_examples = True
                             if extend_text_examples:
@@ -205,7 +205,7 @@ class ProcessSqlData:
                                                             r)).replace(
                                                                 '\n', ',')
                                                     for r in rows
-                                                ][:50000]
+                                                ]
 
                             sql = (
                                 f'SELECT DISTINCT `{col[1]}` FROM `{table}` WHERE'

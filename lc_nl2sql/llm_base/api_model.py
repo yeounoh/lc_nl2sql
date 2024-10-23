@@ -82,26 +82,16 @@ class GeminiModel:
                       use_flash=False,
                       max_retries=5):
         model = self.model2 if use_flash else self.model
-
-        if len(query) > 1000000 * 3:
-            before_tokens = self._count_token(query)
-            if before_tokens >= 1000000:
-                processed_lines = []
-                for line in query.splitlines():
-                    if len(line) > 50000:
-                        processed_lines.append(line[:50000])
-                    else:
-                        processed_lines.append(line)
-                query = "\n".join(processed_lines)
-                after_tokens = self._count_token(query)
-                if after_tokens > 1000000:
-                    logging.debug("Removing schema comments after clipping...")
-                    query = re.sub(r"--.*$", "", query, flags=re.MULTILINE)
-                    after_tokens = self._count_token(query)
-                logging.debug(f"Clipped the prompt from {before_tokens} to {after_tokens} tokens.")
-                if after_tokens >= 1000000:
-                    logging.debug(f"We are still over the limit by {after_tokens - 1000000}: {query[:220]}...")
-                    return ""
+        n_reduction = 0
+        while len(query) > 1000000 * 4:
+            processed_lines = []
+            for line in query.splitlines():
+                if len(line) > 50000:
+                    processed_lines.append(line[:(100000 - n_reduction * 10000)])
+                else:
+                    processed_lines.append(line)
+            query = "\n".join(processed_lines)
+            n_reduction += 1
         try:
             resp = model.generate_content(query,
                                           generation_config={
