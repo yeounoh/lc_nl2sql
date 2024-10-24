@@ -76,7 +76,7 @@ class GeminiModel:
             logging.debug("Token counting failed, returning 1000001 as size")
             return 1000001
         
-    def _compress(self, query, multiplier=3.8):
+    def _compress(self, query, multiplier=3.4):
         # Remove GitHub URLs using re.sub()
         pattern = r"https?://(www\.)?github\.com/[^ ]*"
         query = re.sub(pattern, "", query)
