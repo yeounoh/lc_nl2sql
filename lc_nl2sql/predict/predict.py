@@ -107,11 +107,11 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                     break
         except TimeoutError as e:
             logging.info(e)
-            for i in range(len(predict_data)):
-                if i not in res_dict:
-                    res_dict[i] = ""
-                    failure_count += 1
             executor.shutdown(wait=False)
+    for i in range(len(predict_data)):
+        if i not in res_dict:
+            res_dict[i] = ""
+            failure_count += 1
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )
