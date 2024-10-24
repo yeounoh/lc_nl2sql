@@ -45,18 +45,27 @@ def inference_worker(
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid)
-            cands.append(response)
-        if n_candidates == 1:
+            if response != "":
+                cands.append(response)
+        if len(cands) <= 1:
             return (response, extra_tokens)
         else:
-            query = item["input"].split(
-                '- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.'
-            )[1].split(
-                'Now generate SQLite SQL query to answer the given "Question".'
-            )[0]
+            schema = item["input"].split(
+                "###Table creation statements###")[1].split(
+                    "***************************")[0]
+            question = item["input"].split("###Question###")[1].split(
+                "***************************"
+            )
+            query = ("###Table creation statements###\n" + schema 
+                     + "\n***************************\n" + "###Question###\n"
+                     + question + "\n***************************")
             new_cands = list()
             for i in range(n_repeat):
-                new_cands.append(model.majority_voting(query, cands))
+                resp = model.majority_voting(query, cands)
+                if resp != "" and resp not in new_cands:
+                    new_cands.append(resp)
+            if len(new_cands) <= 1:
+                return cands[0]
             return (model.majority_voting(query, new_cands), 0)
 
     try:
