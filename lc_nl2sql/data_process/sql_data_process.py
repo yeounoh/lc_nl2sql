@@ -443,8 +443,10 @@ class ProcessSqlData:
             for d in selected_docs:
                 k_documents += d['doc'] + '\n\n'
             return k_documents
-        with open(f'qid_examples.pickle', 'rb') as file:
-            qid_examples = pickle.load(file)
+        if self.challenging_example_only:
+            assert os.path.exists(f'qid_examples.pickle')
+            with open(f'qid_examples.pickle', 'rb') as file:
+                qid_examples = pickle.load(file)
         def _context_packing(data):
             if data[db_id_name] in db_context.keys():
                 # all tables and columns with primary and foreign keys.
@@ -458,6 +460,7 @@ class ProcessSqlData:
                     filtered_schema = _filter_schema(schema)
 
                 examples = ""
+                # experimental flag
                 if self.challenging_example_only:
                     elist = qid_examples[data['question_id']]
                     shots = []

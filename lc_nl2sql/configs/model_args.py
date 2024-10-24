@@ -1,7 +1,6 @@
 import json
 from dataclasses import dataclass, field, asdict
 from typing import Optional, Any, Dict, Literal
-from lc_nl2sql.configs.config import ADAPTER_PATH
 
 
 @dataclass
