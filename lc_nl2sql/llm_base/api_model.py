@@ -76,7 +76,7 @@ class GeminiModel:
             logging.debug("Token counting failed, returning 1000001 as size")
             return 1000001
         
-    def _compress(self, query, multiplier=4):
+    def _compress(self, query, multiplier=3.8):
         # Remove GitHub URLs using re.sub()
         pattern = r"https?://(www\.)?github\.com/[^ ]*"
         query = re.sub(pattern, "", query)
@@ -120,7 +120,8 @@ class GeminiModel:
             logging.info(f"{str(e)}, retrying in {30 // max(max_retries,1)} seconds")
             time.sleep(30 // max(max_retries, 1))
             if max_retries > 0:
-                if "SQL generation failed for: 400" in str(e):
+                if ("SQL generation failed for: 400" in str(e) 
+                    or "400 Unable to submit request" in str(e)):
                     query = self._compress(query, multiplier=3)
                 return self._generate_sql(query,
                                             temperature + 0.1,
