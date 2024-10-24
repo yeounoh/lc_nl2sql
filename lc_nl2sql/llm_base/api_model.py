@@ -8,6 +8,7 @@ import random
 import numpy as np
 import pandas as pd
 import os, re
+import json
 import time
 from typing import Any, Dict, Generator, List, Optional, Tuple
 
@@ -119,6 +120,17 @@ class GeminiModel:
         except Exception as e:
             logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
             time.sleep(30 // max(max_retries, 1))
+            if "RECITATION" in {str(e)}:
+                json_response = str(e).split("Response:")[1]
+                try:
+                    response_data = json.loads(json_response)
+                    start_index = response_data['candidates'][0]['citation_metadata']['citations'][0]['start_index']
+                    end_index = response_data['candidates'][0]['citation_metadata']['citations'][0]['end_index']
+                    # Remove the cited portion from the input string
+                    query = query[:start_index] + query[end_index:]
+                    logging.info("Fixed RECITATION error")
+                except (json.JSONDecodeError, KeyError, IndexError) as e:
+                    logging.debug(f"Error processing JSON response: {e}")
             if max_retries > 0:
                 if ("SQL generation failed for: 400" in str(e) 
                     or "400 Unable to submit request" in str(e)):
