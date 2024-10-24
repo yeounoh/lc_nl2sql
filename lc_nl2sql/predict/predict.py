@@ -62,30 +62,33 @@ def inference_worker(
                 return re.match(pattern, email) is not None
             
             db_id = item["input"].split("The database (\"")[1].split("\") structure")[0]
-            with open(model.data_args.db_tbl_col_vals_file, 'rb') as file:
-                try:
-                    tbl_col_vals = pickle.load(file)[db_id]
-                except:
-                    tbl_col_vals = dict()
-            tcv = ""
-            for tbl, col_vals in tbl_col_vals.items():
-                for col, vals in col_vals.items():
-                    if len(vals) > 0 and validate_email(vals[0]):
-                        continue
-                    if len(vals) > 50 and np.mean(
-                        [len(v) for v in random.sample(vals, 10)]) > 90:
-                        continue
-                    tcv += f'* `{tbl}`.`{col}`: [{",".join(vals[:])}]\n'
+            # with open(model.data_args.db_tbl_col_vals_file, 'rb') as file:
+            #     try:
+            #         tbl_col_vals = pickle.load(file)[db_id]
+            #     except:
+            #         tbl_col_vals = dict()
+            # tcv = ""
+            # for tbl, col_vals in tbl_col_vals.items():
+            #     for col, vals in col_vals.items():
+            #         if len(vals) > 0 and validate_email(vals[0]):
+            #             continue
+            #         if len(vals) > 50 and np.mean(
+            #             [len(v) for v in random.sample(vals, 10)]) > 90:
+            #             continue
+            #         tcv += f'* `{tbl}`.`{col}`: [{",".join(vals[:])}]\n'
             
+            rules = item["input"].split("###Rules###")[1].split(
+                "***************************")[0]
             schema = item["input"].split(
                 "###Table creation statements###")[1].split(
                     "***************************")[0]
             question = item["input"].split("###Question###")[1].split(
                 "***************************"
             )[0]
-            query = ("###Table creation statements###\n" + schema 
+            query = ("###Rules###\n" + rules
+                     + "\n###Table creation statements###\n" + schema 
                      + "\n***************************\n" 
-                     + "###Table column example values###\n" + tcv 
+                     #+ "###Table column example values###\n" + tcv 
                      + "\n***************************\n" 
                      + "###Question###\n" + question 
                      + "\n***************************")
