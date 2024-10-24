@@ -46,7 +46,6 @@ def inference_worker(
             response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid)
             cands.append(response)
-            time.sleep(random.randint(1,3))
         if n_candidates == 1:
             return (response, extra_tokens)
         else:
@@ -58,11 +57,10 @@ def inference_worker(
             new_cands = list()
             for i in range(n_repeat):
                 new_cands.append(model.majority_voting(query, cands))
-                time.sleep(random.randint(1,3))
             return (model.majority_voting(query, new_cands), 0)
 
     try:
-        return func_timeout(1200, _task, args=())
+        return func_timeout(1800, _task, args=())
     except FunctionTimedOut:
         return ("", 0)
 
