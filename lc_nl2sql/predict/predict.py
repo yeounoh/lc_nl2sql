@@ -4,6 +4,7 @@ import json
 import sys
 import numpy as np
 import time
+import re
 import random
 import pickle
 
