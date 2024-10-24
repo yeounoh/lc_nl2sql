@@ -280,9 +280,9 @@ Example 3)
 "output": "SELECT T2.Description FROM Country AS T1 INNER JOIN CountryNotes AS T2 ON T1.CountryCode = T2.Countrycode WHERE T1.ShortName = 'Aruba' AND T2.Seriescode = 'SM.POP.TOTL'"
 
 Example 4)
-"input": "Please list the countries in Latin America & Caribbean with a note on the series code SM.POP.TOTL.\n\n(Hints: Countries refer to the ShortName; Latin America & Caribbean is the name of the region)"
+"input": "What are the special notes for the country whose average adolescent fertility rate is the highest?\n\n(Hints: the average adolescent fertility rate is DIVIDE(SUM(value), SUM(IndicatorName like 'adolescent fertility rate%')); MAX(average adolescent fertility rate))"
 
-"output": "SELECT T1.SHORTNAME, T2.Description FROM Country AS T1 INNER JOIN CountryNotes AS T2 ON T1.CountryCode = T2.Countrycode WHERE T1.Region = 'Latin America & Caribbean' AND T2.Seriescode = 'SM.POP.TOTL'"
+"output": "SELECT DISTINCT T1.SpecialNotes FROM Country AS T1 INNER JOIN Indicators AS T2 ON T1.CountryCode = T2.CountryCode WHERE T2.Value = ( SELECT Value FROM Indicators WHERE IndicatorName LIKE 'Adolescent fertility rate%' ORDER BY Value DESC LIMIT 1 )"
 
 Example 5)
 "input": "Among the countries with note on the series code SM.POP.TOTL, how many of them are in the low-income group?\n\n(Hints: countries refer to Countrycode; low-income group refers to incomegroup = 'Low income'; with notes refers to description IS NOT NULL; series code SM.POP.TOTL refers to Seriescode = 'SM.POP.TOTL')"
@@ -313,6 +313,16 @@ Example 10)
 "input": "What is the description of the footnote on the series code AG.LND.FRST.K2 in 1990 for Aruba?\n\n(Hints: Year = 1990; Aruba is the name of country where ShortName = 'Aruba')"
 
 "output": "SELECT T2.Description FROM Country AS T1 INNER JOIN FootNotes AS T2 ON T1.CountryCode = T2.Countrycode WHERE T1.ShortName = 'Aruba' AND T2.Seriescode = 'AG.LND.FRST.K2' AND T2.Year = 'YR1990'"
+
+Example 11)
+"input": "What is the average value of Adjusted net enrolment rate, primary, both sexes (%) indicator in Algeria from 1975 to 1980?\n\n(Hints: the average value of Adjusted net enrolment rate, primary, both sexes (%) is DIVIDE(SUM(Value), SUM(IndicatorName = 'Adjusted net enrolment rate, primary, both sexes (%)')); Year BETWEEN 1975 AND 1980; Algeria is the name of country where CountryName = 'Algeria'")"
+
+"output": "SELECT CAST(SUM(Value) AS REAL) / COUNT(CountryCode) FROM Indicators WHERE CountryName = 'Algeria' AND Year > 1974 AND Year < 1981 AND IndicatorName = 'Adjusted net enrolment rate, primary, both sexes (%)'"
+
+Example 12)
+"input": "In 1970, how many Middle Eastern & North African countries whose value for CO2 emissions from gaseous fuel consumption (kt) indicator is more than 600?\n\n(Hints: Year = 1970; Middle East & North Africa is the name of the region where Region = 'Middle East & North Africa'; CO2 emissions from gaseous fuel consumption (kt) is the name of indicator where IndicatorName = 'CO2 emissions from gaseous fuel consumption (kt)')"
+
+"output": "SELECT COUNT(T2.CountryCode)  FROM Indicators AS T1 INNER JOIN Country AS T2 ON T1.CountryCode = T2.CountryCode WHERE T2.Region = 'Middle East & North Africa' AND T1.IndicatorName = 'CO2 emissions FROM gaseous fuel consumption (kt)' AND T1.Year = 1970 AND T1.Value > 600"
 
 **************************
 
