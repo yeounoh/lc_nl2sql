@@ -78,7 +78,7 @@ class GeminiModel:
         
     def _compress(self, query, multiplier=3.4):
         # Remove GitHub URLs using re.sub()
-        pattern = r"https?://(www\.)?github\.com/[^ ]*"
+        pattern = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         query = re.sub(pattern, "", query)
         n_reduction = 0
         while len(query) > 1000000 * multiplier and n_reduction < 6:
