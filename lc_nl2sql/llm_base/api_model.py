@@ -117,7 +117,7 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            logging.info(f"{str(e)}, retrying in {30 // max(max_retries,1)} seconds")
+            logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
             time.sleep(30 // max(max_retries, 1))
             if max_retries > 0:
                 if ("SQL generation failed for: 400" in str(e) 
@@ -146,7 +146,8 @@ class GeminiModel:
         sql = self._generate_sql(MAJORITY_VOTING.format(input=query,
                                                         candidates=candidates),
                                  use_flash=False)
-        logging.info("Consensus: " + sql)
+        if sql == "":
+            logging.error("**** Majority voting resulted in empty SQL")
         return sql
 
     def verify_and_correct(self, query, sql, db_folder_path, qid):
