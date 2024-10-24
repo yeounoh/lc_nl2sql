@@ -56,6 +56,10 @@ def inference_worker(
             # )[1].split(
             #     'Now generate SQLite SQL query to answer the given "Question".'
             # )[0]
+            def validate_email(email):
+                pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+                return re.match(pattern, email) is not None
+            
             db_id = item["input"].split("The database (\"")[1].split("\") structure")[0]
             with open(model.data_args.db_tbl_col_vals_file, 'rb') as file:
                 try:

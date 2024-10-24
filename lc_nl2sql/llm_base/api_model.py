@@ -25,7 +25,7 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 class GeminiModel:
@@ -147,7 +147,7 @@ class GeminiModel:
                                                         candidates=candidates),
                                  use_flash=False)
         if sql == "":
-            logging.error("**** Majority voting resulted in empty SQL")
+            logging.debug("**** Majority voting resulted in empty SQL")
         return sql
 
     def verify_and_correct(self, query, sql, db_folder_path, qid):
@@ -176,9 +176,9 @@ class GeminiModel:
                             has_null = True
                             break
             except sqlite3.Warning as warning:
-                logging.error(f"SQLite Warning: {warning}")
+                logging.debug(f"SQLite Warning: {warning}")
             except sqlite3.Error as e:
-                logging.error(e)
+                logging.debug(e)
             finally:
                 if conn:
                     conn.close()
@@ -286,11 +286,11 @@ class GeminiModel:
                     is_valid = False
                     err = "empty results"
             except sqlite3.Warning as warning:
-                logging.error(f"SQLite Warning: {warning}")
+                logging.debug(f"SQLite Warning: {warning}")
                 err = str(warning)
                 is_valid = False
             except sqlite3.Error as e:
-                logging.error(e)
+                logging.debug(e)
                 err = str(e)
                 is_valid = False
             finally:
