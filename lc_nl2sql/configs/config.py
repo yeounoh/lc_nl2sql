@@ -150,6 +150,11 @@ Specifically, you should follow this rule to fix the SQL query:
 Fix the SQL query and just return the SQL query string.
 """
 
+# Plus, I will provide additional table column example values in a separate section, "Table column example values" in the following format:
+# * `table_name`.`column_name`: [val1, val2, val3, ...]
+# * `table_name`.`column_name`: [val1, val2, val3, ...]
+
+# Consider the natural language question to SQL query "Examples".
 MAJORITY_VOTING = """You are a SQLite SQL expert.
 
 You need to the most likely or correct SQLite SQL from a set of candidates that answers a question in natural language.
@@ -157,11 +162,6 @@ You need to the most likely or correct SQLite SQL from a set of candidates that 
 The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
 
 Given the "Table creation statements" and the "Question", you need understand the database and columns.
-Plus, I will provide additional table column example values in a separate section, "Table column example values" in the following format:
-* `table_name`.`column_name`: [val1, val2, val3, ...]
-* `table_name`.`column_name`: [val1, val2, val3, ...]
-
-Consider the natural language question to SQL query "Examples".
 
 Also consider the "Rules" and some useful "Hints" if provided.
 
