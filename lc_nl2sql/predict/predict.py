@@ -117,6 +117,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
             for i, item in enumerate(predict_data)
         }
         n_total = len(futures)
+        n_completed = 0
         try:
             for future in tqdm(as_completed(futures,
                                             timeout=8000),
@@ -131,9 +132,12 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                     success_count += 1
                 else:
                     failure_count += 1
-                if (success_count + failure_count) == n_total:
+                n_completed = success_count + failure_count
+                if n_completed == n_total:
                     executor.shutdown(wait=False)
                     break
+                elif n_completed % 100 == 0:
+                    logging.info(f"{n_total - n_completed} items remaining...")
         except TimeoutError as e:
             logging.info(e)
             executor.shutdown(wait=False)
