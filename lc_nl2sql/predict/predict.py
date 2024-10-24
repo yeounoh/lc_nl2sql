@@ -65,9 +65,8 @@ def inference_worker(
                 if resp != "" and resp not in new_cands:
                     new_cands.append(resp)
             if len(new_cands) <= 1:
-                return cands[0]
+                return (cands[0], 0)
             return (model.majority_voting(query, new_cands), 0)
-
     try:
         return func_timeout(1800, _task, args=())
     except FunctionTimedOut:
