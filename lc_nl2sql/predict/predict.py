@@ -45,7 +45,7 @@ def inference_worker(
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid)
-            if response != "":
+            if response != "" and response not in cands:
                 cands.append(response)
         if len(cands) <= 1:
             return (response, extra_tokens)
@@ -55,7 +55,7 @@ def inference_worker(
                     "***************************")[0]
             question = item["input"].split("###Question###")[1].split(
                 "***************************"
-            )
+            )[0]
             query = ("###Table creation statements###\n" + schema 
                      + "\n***************************\n" + "###Question###\n"
                      + question + "\n***************************")
