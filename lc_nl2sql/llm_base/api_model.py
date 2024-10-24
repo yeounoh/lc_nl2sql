@@ -303,7 +303,7 @@ class GeminiModel:
 
         _sql = sql
         _sql = enforce_rules(_sql, db_path)
-        retry_cnt, max_retries = 0, 3
+        retry_cnt, max_retries = 0, 5
         valid, err, row_cnt = isValidSQL(_sql, db_path)
 
         # this will tick if --measure_self_correction_tokens is set.
