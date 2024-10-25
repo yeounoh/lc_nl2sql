@@ -385,7 +385,6 @@ DONT FORGET Additional rules to generate correct SQLite SQL dialect:
 - Use double quotations for string literals.
 - A single quote within the string can be encoded by putting two single quotes in a row (''): "Men's basketball" should be "Men''s basketball"
 - When comparing string/text type in filter criteria, use LIKE operator and surround the text with wildcards %.
-- When you need to find the highest or lowest values based on a certain condition, using ORDER BY and LIMIT 1 is prefered over using MAX/MIN within sub queries.
 - If the question doesn't specify exactly which columns to select between name column and id column, prefer to select id column.
 - Never use || to concatenate columns in the SELECT. Rather output the columns as they are.
 
@@ -436,7 +435,6 @@ DONT FORGET Additional rules to generate correct SQLite SQL dialect:
 - Use double quotations for string literals.
 - A single quote within the string can be encoded by putting two single quotes in a row (''): "Men's basketball" should be "Men''s basketball"
 - When comparing string/text type in filter criteria, use LIKE operator and surround the text with wildcards %.
-- When you need to find the highest or lowest values based on a certain condition, using ORDER BY and LIMIT 1 is prefered over using MAX/MIN within sub queries.
 - If the question doesn't specify exactly which columns to select between name column and id column, prefer to select the id column.
 - Never use || to concatenate columns in the SELECT. Rather output the columns as they are.
 
