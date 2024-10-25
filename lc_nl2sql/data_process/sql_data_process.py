@@ -389,11 +389,10 @@ class ProcessSqlData:
             schema = db_context[db_id_key]
             examples = ""
             if self.num_examples > 0 and self.synthetic_examples:
-                examples = generate_k_examples(schema,
-                            self.num_examples // 2 + self.num_examples % 2)
+                examples = generate_k_examples(schema, int(self.num_examples/3*2))
                 if not self.use_column_filtering:
                     examples += "\n" + generate_k_examples(
-                        schema, self.num_examples // 2, diverse_set=False)
+                        schema, int(self.num_examples/3), diverse_set=False)
             return examples
 
         db_examples = dict()
@@ -447,6 +446,7 @@ class ProcessSqlData:
             assert os.path.exists(f'qid_examples.pickle')
             with open(f'qid_examples.pickle', 'rb') as file:
                 qid_examples = pickle.load(file)
+        
         def _context_packing(data):
             if data[db_id_name] in db_context.keys():
                 # all tables and columns with primary and foreign keys.
@@ -478,7 +478,7 @@ class ProcessSqlData:
                         if self.use_column_filtering:
                             examples += "\n" + generate_k_examples(
                                 filtered_schema,
-                                self.num_examples // 2,
+                                int(self.num_examples/3),
                                 diverse_set=False)
                     else:
                         assert os.path.exists(self.example_selection_file)
