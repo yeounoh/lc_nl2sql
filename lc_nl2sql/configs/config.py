@@ -320,11 +320,6 @@ Example 10)
 
 "output": "SELECT T2.Description FROM Country AS T1 INNER JOIN FootNotes AS T2 ON T1.CountryCode = T2.Countrycode WHERE T1.ShortName = 'Aruba' AND T2.Seriescode = 'AG.LND.FRST.K2' AND T2.Year = 'YR1990'"
 
-Example 11)
-"input": "What are the special notes for the country whose average adolescent fertility rate is the highest?\n\n(Hints: the average adolescent fertility rate is DIVIDE(SUM(value), SUM(IndicatorName like 'adolescent fertility rate%')); MAX(average adolescent fertility rate))"
-
-"output": "SELECT DISTINCT T1.SpecialNotes FROM Country AS T1 INNER JOIN Indicators AS T2 ON T1.CountryCode = T2.CountryCode WHERE T2.Value = ( SELECT Value FROM Indicators WHERE IndicatorName LIKE 'Adolescent fertility rate%' ORDER BY Value DESC LIMIT 1 )"
-
 **************************
 
 Now similarly, generate examples (question input and SQL output pairs) for the table schemas defined below, in "Table creation statements".
