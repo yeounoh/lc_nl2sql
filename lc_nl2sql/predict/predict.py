@@ -47,23 +47,28 @@ def inference_worker(
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid)
-            if response != "" and response not in cands:
+            if response != "":
                 cands.append(response)
-        if len(cands) <= 1:
-            return (response, extra_tokens)
+        if len(cands) == 0:
+            return ("", 0)
+        elif len(cands) == 1:
+            return (cands[0], extra_tokens)
         else:
             query = item["input"].split(
-                '- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.'
+                '###Table creation statements###'
             )[1].split(
                 'Now generate SQLite SQL query to answer the given "Question".'
             )[0]
+            query = "***************************\n###Table creation statements###\n" + query
             new_cands = list()
             for i in range(n_repeat):
                 resp = model.majority_voting(query, cands)
-                if resp != "" and resp not in new_cands:
+                if resp != "" and resp:
                     new_cands.append(resp)
-            if len(new_cands) <= 1:
-                return (cands[0], 0)
+            if len(new_cands) == 0:
+                return ("", 0)
+            elif len(new_cands) == 1:
+                return(new_cands[0], 0)
             return (model.majority_voting(query, new_cands), 0)
     try:
         return func_timeout(1800, _task, args=())

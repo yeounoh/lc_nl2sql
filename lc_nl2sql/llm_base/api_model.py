@@ -156,7 +156,7 @@ class GeminiModel:
         return sql
 
     def verify_and_correct(self, query, sql, db_folder_path, qid):
-        if not self.use_self_correction:
+        if not self.use_self_correction or query == "":
             return sql, 0
 
         def syntax_fix(s):
