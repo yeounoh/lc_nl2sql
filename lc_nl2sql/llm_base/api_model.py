@@ -120,7 +120,7 @@ class GeminiModel:
         except Exception as e:
             logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
             time.sleep(30 // max(max_retries, 1))
-            if "RECITATION" in {str(e)}:
+            if "RECITATION" in str(e):
                 json_response = str(e).split("Response:")[1]
                 try:
                     response_data = json.loads(json_response)
@@ -131,6 +131,9 @@ class GeminiModel:
                     logging.info("Fixed RECITATION error")
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
+            elif "PROHIBITED_CONTENT" in str(e):
+                logging.error("PROHIBITED_CONTENT: {query}")
+                return ""
             if max_retries > 0:
                 if ("SQL generation failed for: 400" in str(e) 
                     or "400 Unable to submit request" in str(e)):
