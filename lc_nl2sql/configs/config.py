@@ -26,6 +26,15 @@ SQL_DATA_INFO = [
     }
 ]
 
+SAFETY_SETTING = {
+    0: HarmBlockThreshold.OFF,
+    1: HarmBlockThreshold.OFF,
+    2: HarmBlockThreshold.OFF,
+    3: HarmBlockThreshold.OFF,
+    4: HarmBlockThreshold.OFF,
+    5: HarmBlockThreshold.OFF,
+}
+
 #### ICL Experimentation ####
 BASIC_INSTRUCTION_PROMPT = """\
 You are a SQLite SQL expert.

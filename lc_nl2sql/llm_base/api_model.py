@@ -3,7 +3,7 @@ import sqlite3
 from lc_nl2sql.configs.config import (CHECKER_TEMPLATE, LITERAL_ERROR_TEMPLATE,
                                       MAJORITY_VOTING, NOT_NULL_ERROR_TEMPLATE,
                                       DISTINCT_ERROR_TEMPLATE,
-                                      COLUMN_SELECTOR_TEMPLATE)
+                                      COLUMN_SELECTOR_TEMPLATE, SAFETY_SETTING)
 import random
 import numpy as np
 import pandas as pd
@@ -101,19 +101,9 @@ class GeminiModel:
         model = self.model2 if use_flash else self.model
         query = self._compress(query)
         try:
-            resp = model.generate_content(query,
-                                          generation_config={
-                                              "temperature": temperature
-                                          },
-                                          safety_settings={
-                                              0: HarmBlockThreshold.BLOCK_NONE,
-                                              1: HarmBlockThreshold.BLOCK_NONE,
-                                              2: HarmBlockThreshold.BLOCK_NONE,
-                                              3: HarmBlockThreshold.BLOCK_NONE,
-                                              4: HarmBlockThreshold.BLOCK_NONE,
-                                          }).text.replace("```sql",
-                                                          "").replace(
-                                                              "```", "\n")
+            resp = model.generate_content(query, generation_config={"temperature": temperature}, 
+                                          safety_settings=SAFETY_SETTING).text.replace(
+                                              "```sql","").replace("```", "\n")
             if "<FINAL_ANSWER>" in resp:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
