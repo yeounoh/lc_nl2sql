@@ -369,10 +369,8 @@ class ProcessSqlData:
                     prompt = EXAMPLE_GENERATOR2.format(schema=schema, k=_k)
                 else:
                     prompt = EXAMPLE_GENERATOR.format(schema, _k)
-                _examples = self.model._generate_sql(prompt, temperature=1.0)
-                _examples_list = list(set(_examples.split("\"input\":")))
-                _examples = "\"input\":".join(_examples_list)
-                num_generated_examples += len(_examples_list)
+                _examples = self.model._generate_sql(prompt)
+                num_generated_examples += len(_examples.split("\"input\":"))
                 examples += "\n" + _examples
             return examples
             
