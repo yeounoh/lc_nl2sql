@@ -53,6 +53,7 @@ class ProcessSqlData:
         document_pool_type="long",
         document_selection_file="",
         num_documents=0,
+        challenging_example_only=False,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -77,6 +78,8 @@ class ProcessSqlData:
         self.document_pool_type = document_pool_type
         self.document_selection_file = document_selection_file
         self.num_documents = num_documents
+
+        self.challenging_example_only = challenging_example_only
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -440,7 +443,10 @@ class ProcessSqlData:
             for d in selected_docs:
                 k_documents += d['doc'] + '\n\n'
             return k_documents
-
+        if self.challenging_example_only:
+            assert os.path.exists(f'qid_examples.pickle')
+            with open(f'qid_examples.pickle', 'rb') as file:
+                qid_examples = pickle.load(file)
         def _context_packing(data):
             if data[db_id_name] in db_context.keys():
                 # all tables and columns with primary and foreign keys.
@@ -454,6 +460,18 @@ class ProcessSqlData:
                     filtered_schema = _filter_schema(schema)
 
                 examples = ""
+                # experimental flag
+                if self.challenging_example_only:
+                    elist = qid_examples[data['question_id']]
+                    shots = []
+                    for e in elist:
+                        shot_template = r"""
+                        \"input\": \"{sql_prompt}\"\n
+                        \"output\": \"{sql}\"\n
+                        """
+                        shots.append(shot_template.format(sql_prompt=e['question'], sql=e['SQL']))
+                    examples += '\n'.join(shots)
+            
                 if self.num_examples > 0:
                     if self.synthetic_examples:
                         examples = db_examples[data[db_id_name]]
@@ -629,6 +647,9 @@ if __name__ == "__main__":
     parser.add_argument("--db_tbl_col_vals_file", default="db_tbl_col_vals.pickle")
     parser.add_argument("--tbr_selection_file", default="")
 
+    # experimental flag
+    parser.add_argument("--challenging_example_only", default=False)
+
     args = parser.parse_args()
 
     
@@ -657,5 +678,6 @@ if __name__ == "__main__":
         document_pool_type=args.document_pool_type,
         document_selection_file=args.document_selection_file,
         num_documents=int(args.num_documents),
+        challenging_example_only=bool(args.challenging_example_only),
     )
     process.create_sft_raw_data()

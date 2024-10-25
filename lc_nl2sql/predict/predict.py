@@ -4,7 +4,9 @@ import json
 import sys
 import numpy as np
 import time
+import re
 import random
+import pickle
 
 from func_timeout import func_timeout, FunctionTimedOut
 
@@ -45,9 +47,9 @@ def inference_worker(
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid)
-            cands.append(response)
-            time.sleep(random.randint(1,3))
-        if n_candidates == 1:
+            if response != "" and response not in cands:
+                cands.append(response)
+        if len(cands) <= 1:
             return (response, extra_tokens)
         else:
             query = item["input"].split(
@@ -57,12 +59,14 @@ def inference_worker(
             )[0]
             new_cands = list()
             for i in range(n_repeat):
-                new_cands.append(model.majority_voting(query, cands))
-                time.sleep(random.randint(1,3))
+                resp = model.majority_voting(query, cands)
+                if resp != "" and resp not in new_cands:
+                    new_cands.append(resp)
+            if len(new_cands) <= 1:
+                return (cands[0], 0)
             return (model.majority_voting(query, new_cands), 0)
-
     try:
-        return func_timeout(1200, _task, args=())
+        return func_timeout(1800, _task, args=())
     except FunctionTimedOut:
         return ("", 0)
 
@@ -82,6 +86,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
             for i, item in enumerate(predict_data)
         }
         n_total = len(futures)
+        n_completed = 0
         try:
             for future in tqdm(as_completed(futures,
                                             timeout=8000),
@@ -96,16 +101,19 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                     success_count += 1
                 else:
                     failure_count += 1
-                if (success_count + failure_count) == n_total:
+                n_completed = success_count + failure_count
+                if n_completed == n_total:
                     executor.shutdown(wait=False)
                     break
+                elif n_completed % 100 == 0:
+                    logging.info(f"{n_total - n_completed} items remaining...")
         except TimeoutError as e:
             logging.info(e)
-            for i in range(len(predict_data)):
-                if i not in res_dict:
-                    res_dict[i] = ""
-                    failure_count += 1
             executor.shutdown(wait=False)
+    for i in range(len(predict_data)):
+        if i not in res_dict:
+            res_dict[i] = ""
+            failure_count += 1
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )

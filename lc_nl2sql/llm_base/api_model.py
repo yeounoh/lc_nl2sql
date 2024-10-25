@@ -8,6 +8,7 @@ import random
 import numpy as np
 import pandas as pd
 import os, re
+import json
 import time
 from typing import Any, Dict, Generator, List, Optional, Tuple
 
@@ -25,16 +26,16 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 class GeminiModel:
 
     def __init__(self, project_id="400355794761") -> None:
         vertexai.init(project=project_id, location="us-central1")
-        self.model = GenerativeModel(model_name="gemini-1.5-pro-preview-0514")
+        self.model = GenerativeModel(model_name="gemini-1.5-pro-002")  # preview-0514
         self.model2 = GenerativeModel(
-            model_name="gemini-1.5-flash-preview-0514")
+            model_name="gemini-1.5-flash-002")
 
     def _infer_args(self, args: Optional[Dict[str, Any]] = None):
         parser = HfArgumentParser((ModelArguments, DataArguments,
@@ -76,9 +77,9 @@ class GeminiModel:
             logging.debug("Token counting failed, returning 1000001 as size")
             return 1000001
         
-    def _compress(self, query, multiplier=4):
+    def _compress(self, query, multiplier=3.4):
         # Remove GitHub URLs using re.sub()
-        pattern = r"https?://(www\.)?github\.com/[^ ]*"
+        pattern = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         query = re.sub(pattern, "", query)
         n_reduction = 0
         while len(query) > 1000000 * multiplier and n_reduction < 6:
@@ -117,10 +118,22 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            logging.info(f"{str(e)}, retrying in {30 // max(max_retries,1)} seconds")
+            logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
             time.sleep(30 // max(max_retries, 1))
+            if "RECITATION" in {str(e)}:
+                json_response = str(e).split("Response:")[1]
+                try:
+                    response_data = json.loads(json_response)
+                    start_index = response_data['candidates'][0]['citation_metadata']['citations'][0]['start_index']
+                    end_index = response_data['candidates'][0]['citation_metadata']['citations'][0]['end_index']
+                    # Remove the cited portion from the input string
+                    query = query[:start_index] + query[end_index:]
+                    logging.info("Fixed RECITATION error")
+                except (json.JSONDecodeError, KeyError, IndexError) as e:
+                    logging.debug(f"Error processing JSON response: {e}")
             if max_retries > 0:
-                if "SQL generation failed for: 400" in str(e):
+                if ("SQL generation failed for: 400" in str(e) 
+                    or "400 Unable to submit request" in str(e)):
                     query = self._compress(query, multiplier=3)
                 return self._generate_sql(query,
                                             temperature + 0.1,
@@ -145,7 +158,8 @@ class GeminiModel:
         sql = self._generate_sql(MAJORITY_VOTING.format(input=query,
                                                         candidates=candidates),
                                  use_flash=False)
-        logging.info("Consensus: " + sql)
+        if sql == "":
+            logging.debug("**** Majority voting resulted in empty SQL")
         return sql
 
     def verify_and_correct(self, query, sql, db_folder_path, qid):
@@ -174,9 +188,9 @@ class GeminiModel:
                             has_null = True
                             break
             except sqlite3.Warning as warning:
-                logging.error(f"SQLite Warning: {warning}")
+                logging.debug(f"SQLite Warning: {warning}")
             except sqlite3.Error as e:
-                logging.error(e)
+                logging.debug(e)
             finally:
                 if conn:
                     conn.close()
@@ -284,11 +298,11 @@ class GeminiModel:
                     is_valid = False
                     err = "empty results"
             except sqlite3.Warning as warning:
-                logging.error(f"SQLite Warning: {warning}")
+                logging.debug(f"SQLite Warning: {warning}")
                 err = str(warning)
                 is_valid = False
             except sqlite3.Error as e:
-                logging.error(e)
+                logging.debug(e)
                 err = str(e)
                 is_valid = False
             finally:
@@ -301,7 +315,7 @@ class GeminiModel:
 
         _sql = sql
         _sql = enforce_rules(_sql, db_path)
-        retry_cnt, max_retries = 0, 3
+        retry_cnt, max_retries = 0, 5
         valid, err, row_cnt = isValidSQL(_sql, db_path)
 
         # this will tick if --measure_self_correction_tokens is set.

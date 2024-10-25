@@ -40,6 +40,7 @@ Also consider the "Rules" and some useful "Hints" if provided.
 
 ***************************
 ###Rules###
+- You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
 - Column References: Verify column names and use table_name.column_name format.
@@ -72,7 +73,7 @@ Also consider the "Rules" and some useful "Hints" if provided.
 ***************************
 Now generate SQLite SQL query to answer the given "Question".
 
-Output the SQL query string ONLY.
+Output the SQL query string ONLY, and make sure it is a single SQL statement.
 """
 
 BASIC_INSTRUCTION_PROMPT_NO_RULES = """\
@@ -84,26 +85,8 @@ Given the "Table creation statements" and the "Question", you need understand th
 
 Consider the natural language question to SQL query "Examples".
 
-Also consider the "Rules" and some useful "Hints" if provided.
+Also consider some useful "Hints" if provided.
 
-***************************
-###Rules###
-- Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
-- Table Aliases: Use aliases to avoid duplicate table name conflicts.
-- Column References: Verify column names and use table_name.column_name format.
-- Functions: Use correct SQLite functions for the intended data types.
-- HAVING Clause: Employ boolean expressions (comparisons, AND, OR, NOT). Consider subqueries for top values.
-- Table Joins: Ensure table names are correct and use appropriate joins.
-- Arithmetic: Use basic operators (+, -, *, /) if dedicated functions are missing.
-- Put double quotations around column names and table names, especially when there is a space in between words.
-- Use double quotations for string literals.
-- A single quote within the string can be encoded by putting two single quotes in a row (''): "Men's basketball" should be "Men''s basketball"
-- When comparing string/text type in filter criteria, use LIKE operator and surround the text with wildcards %.
-- When you need to find the highest or lowest values based on a certain condition, using ORDER BY with LIMIT 1 is prefered over using MAX/MIN within sub queries.
-- If the question doesn't specify exactly which columns to select, between name column and id column, prefer to select id column.
-- Never use || to concatenate columns in the SELECT. Rather output the columns as they are.
-- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
-***************************
 ###Table creation statements###
 {schema}
 ***************************
@@ -294,9 +277,9 @@ Example 3)
 "output": "SELECT T2.Description FROM Country AS T1 INNER JOIN CountryNotes AS T2 ON T1.CountryCode = T2.Countrycode WHERE T1.ShortName = 'Aruba' AND T2.Seriescode = 'SM.POP.TOTL'"
 
 Example 4)
-"input": "Please list the countries in Latin America & Caribbean with a note on the series code SM.POP.TOTL.\n\n(Hints: Countries refer to the ShortName; Latin America & Caribbean is the name of the region)"
+"input": "What are the special notes for the country whose average adolescent fertility rate is the highest?\n\n(Hints: the average adolescent fertility rate is DIVIDE(SUM(value), SUM(IndicatorName like 'adolescent fertility rate%')); MAX(average adolescent fertility rate))"
 
-"output": "SELECT T1.SHORTNAME, T2.Description FROM Country AS T1 INNER JOIN CountryNotes AS T2 ON T1.CountryCode = T2.Countrycode WHERE T1.Region = 'Latin America & Caribbean' AND T2.Seriescode = 'SM.POP.TOTL'"
+"output": "SELECT DISTINCT T1.SpecialNotes FROM Country AS T1 INNER JOIN Indicators AS T2 ON T1.CountryCode = T2.CountryCode WHERE T2.Value = ( SELECT Value FROM Indicators WHERE IndicatorName LIKE 'Adolescent fertility rate%' ORDER BY Value DESC LIMIT 1 )"
 
 Example 5)
 "input": "Among the countries with note on the series code SM.POP.TOTL, how many of them are in the low-income group?\n\n(Hints: countries refer to Countrycode; low-income group refers to incomegroup = 'Low income'; with notes refers to description IS NOT NULL; series code SM.POP.TOTL refers to Seriescode = 'SM.POP.TOTL')"
@@ -327,6 +310,16 @@ Example 10)
 "input": "What is the description of the footnote on the series code AG.LND.FRST.K2 in 1990 for Aruba?\n\n(Hints: Year = 1990; Aruba is the name of country where ShortName = 'Aruba')"
 
 "output": "SELECT T2.Description FROM Country AS T1 INNER JOIN FootNotes AS T2 ON T1.CountryCode = T2.Countrycode WHERE T1.ShortName = 'Aruba' AND T2.Seriescode = 'AG.LND.FRST.K2' AND T2.Year = 'YR1990'"
+
+Example 11)
+"input": "What is the average value of Adjusted net enrolment rate, primary, both sexes (%) indicator in Algeria from 1975 to 1980?\n\n(Hints: the average value of Adjusted net enrolment rate, primary, both sexes (%) is DIVIDE(SUM(Value), SUM(IndicatorName = 'Adjusted net enrolment rate, primary, both sexes (%)')); Year BETWEEN 1975 AND 1980; Algeria is the name of country where CountryName = 'Algeria'")"
+
+"output": "SELECT CAST(SUM(Value) AS REAL) / COUNT(CountryCode) FROM Indicators WHERE CountryName = 'Algeria' AND Year > 1974 AND Year < 1981 AND IndicatorName = 'Adjusted net enrolment rate, primary, both sexes (%)'"
+
+Example 12)
+"input": "In 1970, how many Middle Eastern & North African countries whose value for CO2 emissions from gaseous fuel consumption (kt) indicator is more than 600?\n\n(Hints: Year = 1970; Middle East & North Africa is the name of the region where Region = 'Middle East & North Africa'; CO2 emissions from gaseous fuel consumption (kt) is the name of indicator where IndicatorName = 'CO2 emissions from gaseous fuel consumption (kt)')"
+
+"output": "SELECT COUNT(T2.CountryCode)  FROM Indicators AS T1 INNER JOIN Country AS T2 ON T1.CountryCode = T2.CountryCode WHERE T2.Region = 'Middle East & North Africa' AND T1.IndicatorName = 'CO2 emissions FROM gaseous fuel consumption (kt)' AND T1.Year = 1970 AND T1.Value > 600"
 
 **************************
 
@@ -379,6 +372,7 @@ The SQL query executed was:
 Based on the question, table schemas, the example column values and the executed query, analyze what the query was trying to achieve and fix the query.
 
 DONT FORGET Additional rules to generate correct SQLite SQL dialect:
+- You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
 - Try to use all the pieces of information provided in the hints.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
@@ -398,6 +392,7 @@ DONT FORGET Additional rules to generate correct SQLite SQL dialect:
 
 If there is no error you can find or fix, just output the original SQL query.
 Output the sqlite query string ONLY. It should be the query in plain text.
+Your answer must be a single SQL statement.
 """
 
 CHECKER_TEMPLATE = """You are a SQLite SQL expert.
@@ -428,6 +423,7 @@ Otherwise, think step by step about generating correct SQLite SQL result!
 Analyze the error and how to fix.
 
 DONT FORGET Additional rules to generate correct SQLite SQL dialect:
+- You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
 - Try to use all the pieces of information provided in the hints.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
@@ -445,5 +441,6 @@ DONT FORGET Additional rules to generate correct SQLite SQL dialect:
 - Never use || to concatenate columns in the SELECT. Rather output the columns as they are.
 
 
-When you are OK with the fixed query, output the sqlite query string ONLY. It should be the query in plain text.
+When you are OK with the fixed query, output the sqlite query string ONLY. It should be the query in plain text. 
+Your answer must be a single SQL statement.
 """
