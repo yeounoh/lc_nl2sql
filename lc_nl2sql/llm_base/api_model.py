@@ -22,7 +22,7 @@ from transformers import HfArgumentParser
 
 import vertexai
 from vertexai.generative_models import GenerativeModel
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
+
 
 import logging
 
