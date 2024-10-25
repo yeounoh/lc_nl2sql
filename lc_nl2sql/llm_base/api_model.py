@@ -114,10 +114,16 @@ class GeminiModel:
                 json_response = str(e).split("Response:")[1]
                 try:
                     response_data = json.loads(json_response)
-                    start_index = response_data['candidates'][0]['citation_metadata']['citations'][0]['start_index']
-                    end_index = response_data['candidates'][0]['citation_metadata']['citations'][0]['end_index']
-                    # Remove the cited portion from the input string
-                    query = query[:start_index] + query[end_index:]
+                    citations = response_data['candidates'][0]['citation_metadata']['citations']
+
+                    # Sort citations by start_index in descending order to avoid index issues
+                    citations.sort(key=lambda x: x['start_index'], reverse=True)
+
+                    modified_string = query
+                    for citation in citations:
+                        start_index = citation['start_index']
+                        end_index = citation['end_index']
+                        modified_string = modified_string[:start_index] + modified_string[end_index:]
                     logging.info("Fixed RECITATION error")
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
