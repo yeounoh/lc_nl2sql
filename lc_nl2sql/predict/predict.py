@@ -63,7 +63,7 @@ def inference_worker(
             new_cands = list()
             for i in range(n_repeat):
                 resp = model.majority_voting(query, cands)
-                if resp != "" and resp:
+                if resp != "":
                     new_cands.append(resp)
             if len(new_cands) == 0:
                 return ("", 0)
