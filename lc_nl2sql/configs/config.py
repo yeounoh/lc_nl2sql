@@ -51,6 +51,8 @@ Also consider the "Rules" and some useful "Hints" if provided.
 ***************************
 ###Rules###
 - You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
+- Hints, if provided, is very important for correct column references and mathematical computation.
+- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
 - Column References: Verify column names and use table_name.column_name format.
@@ -62,10 +64,8 @@ Also consider the "Rules" and some useful "Hints" if provided.
 - Use double quotations for string literals.
 - A single quote within the string can be encoded by putting two single quotes in a row (''): "Men's basketball" should be "Men''s basketball"
 - When comparing string/text type in filter criteria, use LIKE operator and surround the text with wildcards %.
-- When you need to find the highest or lowest values based on a certain condition, using ORDER BY with LIMIT 1 is prefered over using MAX/MIN within sub queries.
 - If the question doesn't specify exactly which columns to select, between name column and id column, prefer to select id column.
 - Never use || to concatenate columns in the SELECT. Rather output the columns as they are.
-- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
 ***************************
 ###Table creation statements###
 {schema}
@@ -373,7 +373,8 @@ Based on the question, table schemas, the example column values and the executed
 
 DONT FORGET Additional rules to generate correct SQLite SQL dialect:
 - You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
-- Try to use all the pieces of information provided in the hints.
+- Hints, if provided, is very important for correct column references and mathematical computation.
+- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
 - Column References: Verify column names and use table_name.column_name format.
@@ -423,7 +424,8 @@ Analyze the error and how to fix.
 
 DONT FORGET Additional rules to generate correct SQLite SQL dialect:
 - You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
-- Try to use all the pieces of information provided in the hints.
+- Hints, if provided, is very important for correct column references and mathematical computation.
+- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
 - Column References: Verify column names and use table_name.column_name format.

@@ -161,7 +161,7 @@ class GeminiModel:
             logging.debug("**** Majority voting resulted in empty SQL")
         return sql
 
-    def verify_and_correct(self, query, sql, db_folder_path, qid):
+    def verify_and_correct(self, query, sql, db_folder_path, qid, return_invalid=True):
         if not self.use_self_correction or query == "":
             return sql, 0
 
@@ -333,6 +333,8 @@ class GeminiModel:
             retry_cnt += 1
         if retry_cnt >= max_retries:
             logging.info(f"Correction failed due to {err}: {_sql}")
+            if not return_invalid:
+                return "", accumulated_token_count
         return _sql, accumulated_token_count
 
     def chat(self,
