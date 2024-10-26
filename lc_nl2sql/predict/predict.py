@@ -41,16 +41,18 @@ def inference_worker(
         n_candidates = model.generating_args.num_beams
         n_repeat = 3 if n_candidates > 1 else 1
         cands = []
+        cached_response = ""
         for i in range(n_candidates):
             response, _ = model.chat(query=item["input"],
                                      history=[],
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path, qid)
+                                                model.db_folder_path, qid, return_invalid=False)
             if response != "":
+                cached_response = response
                 cands.append(response)
         if len(cands) == 0:
-            return ("", 0)
+            return (cached_response, 0)
         elif len(cands) == 1:
             return (cands[0], extra_tokens)
         else:
@@ -66,7 +68,7 @@ def inference_worker(
                 if resp != "":
                     new_cands.append(resp)
             if len(new_cands) == 0:
-                return ("", 0)
+                return (cached_response, 0)
             elif len(new_cands) == 1:
                 return(new_cands[0], 0)
             return (model.majority_voting(query, new_cands), 0)
@@ -77,7 +79,10 @@ def inference_worker(
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
-    num_threads = 50 if model.generating_args.num_beams < 3 else 20
+    num_threads = 50
+    if model.generating_args.num_beams > 3:
+        model.set_temperature(1.0)
+        num_threads = 20
     if model.generating_args.num_beams > 10:
         num_threads = 10
 

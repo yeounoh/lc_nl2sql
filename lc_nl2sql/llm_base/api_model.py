@@ -67,6 +67,9 @@ class GeminiModel:
             self.db_folder_path = self.data_args.db_folder_path
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
 
+    def set_temperature(self, temperature):
+        self.temperature = temperature
+        
     def _count_token(self, prompt):
         try:
             if len(prompt) > 1000000 * 4:
