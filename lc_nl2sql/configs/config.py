@@ -186,7 +186,7 @@ VERIFY_ANSWER = """You are a SQLite SQL expert.
 
 Your job is to verify the correctness of a given SQL query both syntactically and semantically. That means you would have to ensure the SQL query is syntatically correct, and also it does return what the user is asking for in the natural language "Question."
 
-Given the "Table creation statements" and the "Question", you need understand the database and the relevant table columns. The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
+Given the "Table creation statements" and the "Question and Hints", you need understand the database and the relevant table columns. The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
 
 Also pay close attention to the "Hints" as they contain very important information to answer the question correctly.
 
@@ -200,6 +200,8 @@ Also pay close attention to the "Hints" as they contain very important informati
 ###Table Creation Statements###
 {schema}
 ***************************
+
+Remember, following hints very closely is the key to the correct answer!!!
 
 If you think the SQL query is incorrect, then return an emtpry string "".
 If you are confident that the SQL query is correct, return it as-is.
