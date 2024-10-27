@@ -186,9 +186,7 @@ VERIFY_ANSWER = """You are a SQLite SQL expert.
 
 Your job is to verify the correctness of a given SQL query both syntactically and semantically. That means you would have to ensure the SQL query is syntatically correct, and also it does return what the user is asking for in the natural language "Question."
 
-Given the "Table creation statements" and the "Question and Hints", you need understand the database and the relevant table columns. The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions). On top of the table schema and a few example values in the comments, I will provide additional table column example values in a separate section, "Table column example values" in the following format:
-* `table_name`.`column_name`: [val1, val2, val3, ...]
-* `table_name`.`column_name`: [val1, val2, val3, ...]
+Given the "Table creation statements" and the "Question and Hints", you need understand the database and the relevant table columns. The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions). 
 
 Use all these information to identify the correct literals, table column names and also the correct join path.
 
@@ -204,15 +202,11 @@ Also pay close attention to the "Hints" as they contain very important informati
 ###Table Creation Statements###
 {schema}
 ***************************
-###Table column example values###
-{columns}
-***************************
 
 Remember, following hints very closely is the key to the correct answer!!!
 
 If you think the SQL query is incorrect, then return an emtpry string "".
 If you are confident that the SQL query is correct, return it as-is.
-The correct SQL must be a single statement. Only return a single SQL query as a string.
 """
 
 EXAMPLE_GENERATOR2 = """You are a SQLite SQL expert.

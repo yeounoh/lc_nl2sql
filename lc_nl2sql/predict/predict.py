@@ -24,7 +24,6 @@ from lc_nl2sql.llm_base.api_model import GeminiModel
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
-db_tbl_col_vals = dict()
 
 def prepare_dataset(predict_file_path: Optional[str] = None, ) -> List[Dict]:
     with open(predict_file_path, "r") as fp:
@@ -91,14 +90,11 @@ def inference_worker(
         
     def _task2():
         # verify and retry
-        n_candidates = model.generating_args.num_beams  
-        db_name = item["input"].split("The database (\"")[1].split("\") structure")[0]      
+        n_candidates = model.generating_args.num_beams     
         schema = item["input"].split('###Table creation statements###'
             )[1].split('***************************')[0]
         question = item["input"].split("###Question###"
                                        )[1].split('***************************')[0]
-        assert len(db_tbl_col_vals) > 0
-        col_vals = format_col_vals(db_tbl_col_vals[db_name])
         cached_response = ""
         for i in range(n_candidates):
             model.set_temperature(model.generating_args.temperature + 0.1 * i)
@@ -109,7 +105,7 @@ def inference_worker(
                                                 model.db_folder_path, qid, return_invalid=False)
             
             if response != "":
-                cached_response = model.verify_answer(response, question, schema, col_vals)
+                cached_response = model.verify_answer(response, question, schema)
                 if cached_response != "":
                     return cached_response, 0
         model.set_temperature(model.generating_args.temperature)
@@ -216,7 +212,4 @@ def predict(model: GeminiModel, dump_file=True):
 if __name__ == "__main__":
     model = GeminiModel()
     model._infer_args()
-    assert os.path.exists(model.data_args.db_tbl_col_vals_file)
-    with open(model.data_args.db_tbl_col_vals_file, "rb") as file:
-        db_tbl_col_vals = pickle.load(file)
     predict(model)
