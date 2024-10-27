@@ -24,15 +24,13 @@ from lc_nl2sql.llm_base.api_model import GeminiModel
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
+db_tbl_col_vals = dict()
+
 def prepare_dataset(predict_file_path: Optional[str] = None, ) -> List[Dict]:
     with open(predict_file_path, "r") as fp:
         data = json.load(fp)
     predict_data = [extract_sql_prompt_dataset(item) for item in data]
     return predict_data
-
-assert os.path.exists(model.data_args.db_tbl_col_vals_file)
-with open(model.data_args.db_tbl_col_vals_file, "rb") as file:
-    db_tbl_col_vals = pickle.load(file)
 
 def inference_worker(
         model, item, qid,
@@ -99,6 +97,7 @@ def inference_worker(
             )[1].split('***************************')[0]
         question = item["input"].split("###Question###"
                                        )[1].split('***************************')[0]
+        assert len(db_tbl_col_vals) > 0
         col_vals = format_col_vals(db_tbl_col_vals[db_name])
         cached_response = ""
         for i in range(n_candidates):
@@ -217,4 +216,7 @@ def predict(model: GeminiModel, dump_file=True):
 if __name__ == "__main__":
     model = GeminiModel()
     model._infer_args()
+    assert os.path.exists(model.data_args.db_tbl_col_vals_file)
+    with open(model.data_args.db_tbl_col_vals_file, "rb") as file:
+        db_tbl_col_vals = pickle.load(file)
     predict(model)
