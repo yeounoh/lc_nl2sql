@@ -182,6 +182,30 @@ answers the given "Question":
 Only return a single SQL query from the candidates and the SQL only as a string.
 """
 
+VERIFY_ANSWER = """You are a SQLite SQL expert.
+
+Your job is to verify the correctness of a given SQL query both syntactically and semantically. That means you would have to ensure the SQL query is syntatically correct, and also it does return what the user is asking for in the natural language "Question."
+
+Given the "Table creation statements" and the "Question", you need understand the database and the relevant table columns. The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
+
+Also pay close attention to the "Hints" as they contain very important information to answer the question correctly.
+
+***************************
+###SQL to verify###
+{sql}
+***************************
+###Question and Hints###
+{question}
+***************************
+###Table Creation Statements###
+{schema}
+***************************
+
+If you think the SQL query is incorrect, then return an emtpry string "".
+If you are confident that the SQL query is correct, return it as-is.
+The correct SQL must be a single statement. Only return a single SQL query as a string.
+"""
+
 EXAMPLE_GENERATOR2 = """You are a SQLite SQL expert.
 Your job is to create {k} examples, where each example consists of a question and a SQL query to fetch the data for it.
 I want each example to look like this, question input and SQL ouput pairs:

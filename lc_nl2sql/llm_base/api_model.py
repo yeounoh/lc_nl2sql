@@ -2,7 +2,7 @@ import pickle
 import sqlite3
 from lc_nl2sql.configs.config import (CHECKER_TEMPLATE, LITERAL_ERROR_TEMPLATE,
                                       MAJORITY_VOTING, NOT_NULL_ERROR_TEMPLATE,
-                                      DISTINCT_ERROR_TEMPLATE,
+                                      DISTINCT_ERROR_TEMPLATE, VERIFY_ANSWER,
                                       COLUMN_SELECTOR_TEMPLATE, SAFETY_SETTING)
 import random
 import numpy as np
@@ -163,6 +163,10 @@ class GeminiModel:
         if sql == "":
             logging.debug("**** Majority voting resulted in empty SQL")
         return sql
+    
+    def verify_answer(self, sql, question, schema):
+        prompt = VERIFY_ANSWER.format(sql=sql, question=question, schema=schema)
+        return self._generate_sql(prompt, use_flash=False)
 
     def verify_and_correct(self, query, sql, db_folder_path, qid, return_invalid=True):
         if not self.use_self_correction or query == "":

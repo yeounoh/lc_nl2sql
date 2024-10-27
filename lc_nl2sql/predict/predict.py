@@ -72,8 +72,28 @@ def inference_worker(
             elif len(new_cands) == 1:
                 return(new_cands[0], 0)
             return (model.majority_voting(query, new_cands), 0)
+        
+    def _task2():
+        n_candidates = model.generating_args.num_beams        
+        schema = item["input"].split('###Table creation statements###'
+            )[1].split('***************************')[0]
+        question = item["input"].split("###Question###"
+                                       )[1].split('***************************')[0]
+        cached_response = ""
+        for i in range(n_candidates):
+            response, _ = model.chat(query=item["input"],
+                                     history=[],
+                                     **input_kwargs)
+            response, _ = model.verify_and_correct(item["input"], response,
+                                                model.db_folder_path, qid, return_invalid=False)
+            
+            if response != "":
+                cached_response = model.verify_answer(response, question, schema)
+                if cached_response != "":
+                    return cached_response, 0
+        return cached_response, 0
     try:
-        return func_timeout(1800, _task, args=())
+        return func_timeout(1800, _task2, args=())
     except FunctionTimedOut:
         return ("", 0)
 
