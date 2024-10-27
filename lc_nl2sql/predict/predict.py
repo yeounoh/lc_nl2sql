@@ -83,6 +83,7 @@ def inference_worker(
                                        )[1].split('***************************')[0]
         cached_response = ""
         for i in range(n_candidates):
+            model.set_temperature(model.generating_args.temperature + 0.1 * i)
             response, _ = model.chat(query=item["input"],
                                      history=[],
                                      **input_kwargs)
@@ -93,6 +94,7 @@ def inference_worker(
                 cached_response = model.verify_answer(response, question, schema)
                 if cached_response != "":
                     return cached_response, 0
+        model.set_temperature(model.generating_args.temperature)
         return cached_response, 0
     try:
         return func_timeout(1800, _task2, args=())
