@@ -116,50 +116,6 @@ Now generate SQLite SQL query to answer the given "Question".
 Output the SQL query string ONLY.
 """
 
-
-DISTINCT_ERROR_TEMPLATE = """You are a SQLite SQL expert.
-
-Your task is to meticulously examine the provided "SQL" query and determine if it requires the `DISTINCT` keyword to accurately answer the given "Question".
-
-***************************
-###SQL query###
-{sql}
-***************************
-###Question###
-{question}
-***************************
-
-Here are some tips to help you make the right decision:
-1. Look at the question and the result and see if the result respects the intent of the question. If the question expects distinct results, but the result is not distinct, then `DISTINCT` is required.
-2. For aggregate functions, like count adding distinct helps in case user is expecting us to not do double counting.
-3. If you think adding `DISTINCT` would not change the result, add it. It is better to add it.
-4. Do not make any assumption about the primary key.
-
-Return the updated SQL query. Make sure that the SQL query is in SQLite dialect.
-If the SQL already satisfies the rules or the rules are not applicable, then just return the original SQL.
-
-Just return the SQL query string.
-"""
-
-NOT_NULL_ERROR_TEMPLATE = """You are a SQLite SQL exeprt.
-
-You have written a SQL query, "SQL", to answer a user question, "Question".
-The SQL query contains None and it is likely because you did not filter NULL values.
-
-Specifically, you should follow this rule to fix the SQL query:
-- If you are doing a logical operation on a column, such as mathematical operations and sorting, make sure to filter NULL values within those columns
-
-***************************
-###SQL###
-{sql}
-***************************
-###Question###
-{question}
-***************************
-
-Fix the SQL query and just return the SQL query string.
-"""
-
 MAJORITY_VOTING = """You are a SQLite SQL expert.
 
 You need to the most likely or correct SQLite SQL from a set of candidates that answers a question in natural language.
@@ -236,47 +192,6 @@ Generate total of {k} examples.
 Only outputs the examples (question input and SQL output pairs), and each eaxmple can be separated by a new line.
 """
 
-COLUMN_SELECTOR_TEMPLATE= """
-You are a SQLite SQL expert.
-Your task is to examine the provided database schema, understand the posed question, and use the hint to pinpoint the specific columns within tables that are essential for crafting a SQL query to answer the question.
-
-Database Schema Overview:
-{DATABASE_SCHEMA}
-
-This schema offers an in-depth description of the database's architecture, detailing tables, columns, primary keys, foreign keys, and any pertinent information regarding relationships or constraints. Special attention should be given to the examples listed beside each column, as they directly hint at which columns are relevant to our query.
-
-For key phrases mentioned in the question, we have provided the most similar values within the columns denoted by "-- examples" in front of the corresponding column names. This is a critical hint to identify the columns that will be used in the SQL query.
-
-Question:
-{QUESTION}
-
-Hint:
-{HINT}
-
-The hint aims to direct your focus towards the specific elements of the database schema that are crucial for answering the question effectively.
-
-Task:
-Based on the database schema, question, and hint provided, your task is to identify all and only the columns that are essential for crafting a SQL query to answer the question.
-For each of the selected columns, explain why exactly it is necessary for answering the question. Your reasoning should be concise and clear, demonstrating a logical connection between the columns and the question asked.
-
-Tip: If you are choosing a column for filtering a value within that column, make sure that column has the value as an example.
-
-
-Please respond with a JSON object structured as follows:
-
-```json
-{{
-  "table_name1": ["column1", "column2", ...],
-  "table_name2": ["column1", "column2", ...],
-  ...
-}}
-```
-
-Make sure your response includes the table names as keys, each associated with a list of column names that are necessary for writing a SQL query to answer the question.
-Take a deep breath and think logically. If you do the task correctly, I will give you 1 million dollars.
-
-Only output a json as your response.
-"""
 
 EXAMPLE_GENERATOR = """You are a SQLite SQL expert.
 Your job is to create a set of examples, where each example consists of a question and a SQL query to fetch the data for it.

@@ -1,9 +1,7 @@
 import pickle
 import sqlite3
 from lc_nl2sql.configs.config import (CHECKER_TEMPLATE, LITERAL_ERROR_TEMPLATE,
-                                      MAJORITY_VOTING, NOT_NULL_ERROR_TEMPLATE,
-                                      DISTINCT_ERROR_TEMPLATE, VERIFY_ANSWER,
-                                      COLUMN_SELECTOR_TEMPLATE, SAFETY_SETTING)
+                                      MAJORITY_VOTING, VERIFY_ANSWER, SAFETY_SETTING)
 import random
 import numpy as np
 import pandas as pd
@@ -170,48 +168,6 @@ class GeminiModel:
         if not self.use_self_correction or query == "":
             return sql, 0
 
-        def syntax_fix(s):
-            pattern = r"(?<!\\)'"
-
-            def replace_func(match):
-                return match.group().replace("'", '"')
-
-            modified_sql = re.sub(pattern, replace_func, r"{}".format(s))
-            return modified_sql
-
-        def enforce_rules(s, db_path):
-            conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            err = ""
-            has_null = False
-            try:
-                rows = cursor.execute(sql).fetchall()
-                if len(rows) > 0:
-                    for r in rows[0]:
-                        if 'None' in str(r):
-                            has_null = True
-                            break
-            except sqlite3.Warning as warning:
-                logging.debug(f"SQLite Warning: {warning}")
-            except sqlite3.Error as e:
-                logging.debug(e)
-            finally:
-                if conn:
-                    conn.close()
-
-            context_str = query[query.find("###Table creation statements###"
-                                           ):query.find("###Question###")]
-            input_str = query[query.find("###Question###"):query.find(
-                "Now generate SQLite SQL query to answer the given")]
-            if has_null:
-                _sql = self._generate_sql(NOT_NULL_ERROR_TEMPLATE.format(
-                    sql=s, question=input_str),
-                                          use_flash=True)
-            _sql = self._generate_sql(DISTINCT_ERROR_TEMPLATE.format(
-                sql=s, question=input_str),
-                                      use_flash=True)
-            return _sql
-
         def fix_error(s, err):
             context_str = query[query.find("###Table creation statements###"
                                            ):query.find("###Question###")]
@@ -317,14 +273,12 @@ class GeminiModel:
         db_name = query.split("The database (\"")[1].split("\") structure")[0]
         db_path = os.path.join(db_folder_path, db_name) + f"/{db_name}.sqlite"
 
-        _sql = sql
-        _sql = enforce_rules(_sql, db_path)
-        retry_cnt, max_retries = 0, 5
-        valid, err, row_cnt = isValidSQL(_sql, db_path)
-
         # this will tick if --measure_self_correction_tokens is set.
         accumulated_token_count = 0
 
+        _sql = sql
+        retry_cnt, max_retries = 0, 5
+        valid, err, row_cnt = isValidSQL(_sql, db_path)
         tried_sql = [_sql]
         while not valid and retry_cnt < max_retries:
             if err == "empty results" and self.use_disambiguation:
@@ -332,7 +286,6 @@ class GeminiModel:
             else:
                 _sql, extra_tokens = fix_error(_sql, err)
             accumulated_token_count += extra_tokens
-            _sql = enforce_rules(_sql, db_path)
             tried_sql.append(_sql)
             valid, err, row_cnt = isValidSQL(_sql, db_path)
             retry_cnt += 1
