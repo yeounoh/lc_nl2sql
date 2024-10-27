@@ -632,7 +632,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_documents", default=0)
     # Use hint & rules
     parser.add_argument("--use_hint", default=True)
-    parser.add_argument("--use_rules", default=True)
+    parser.add_argument("--use_rules", default=False)  # for the first generation
     # Table retrieval. Use --tbr_selection_file, for retrieval with TBR simulation.
     parser.add_argument(
         "--extra_top_k",
