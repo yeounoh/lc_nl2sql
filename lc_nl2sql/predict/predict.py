@@ -21,6 +21,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from lc_nl2sql.data_process.data_utils import extract_sql_prompt_dataset
 from lc_nl2sql.llm_base.api_model import GeminiModel
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 
 def prepare_dataset(predict_file_path: Optional[str] = None, ) -> List[Dict]:
     with open(predict_file_path, "r") as fp:
@@ -28,14 +30,29 @@ def prepare_dataset(predict_file_path: Optional[str] = None, ) -> List[Dict]:
     predict_data = [extract_sql_prompt_dataset(item) for item in data]
     return predict_data
 
-
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from tqdm import tqdm
-
+assert os.path.exists(model.data_args.db_tbl_col_vals_file)
+with open(model.data_args.db_tbl_col_vals_file, "rb") as file:
+    db_tbl_col_vals = pickle.load(file)
 
 def inference_worker(
         model, item, qid,
         input_kwargs):  # Worker function for a single inference task
+    
+    def validate_email(email):
+                pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+                return re.match(pattern, email) is not None
+    
+    def format_col_vals(tbl_col_vals):
+        s = ""
+        for tbl, col_vals in tbl_col_vals.items():
+            for col, vals in col_vals.items():
+                if len(vals) > 0 and validate_email(vals[0]):
+                    continue
+                if len(vals) > 50 and np.mean(
+                    [len(v) for v in random.sample(vals, 10)]) > 90:
+                    continue
+                s += f'* `{tbl}`.`{col}`: [{",".join(vals[:])}]\n'
+        return s
 
     def _task():
         # multiple choice and pick
@@ -76,11 +93,13 @@ def inference_worker(
         
     def _task2():
         # verify and retry
-        n_candidates = model.generating_args.num_beams        
+        n_candidates = model.generating_args.num_beams  
+        db_name = item["input"].split("The database (\"")[1].split("\") structure")[0]      
         schema = item["input"].split('###Table creation statements###'
             )[1].split('***************************')[0]
         question = item["input"].split("###Question###"
                                        )[1].split('***************************')[0]
+        col_vals = format_col_vals(db_tbl_col_vals[db_name])
         cached_response = ""
         for i in range(n_candidates):
             model.set_temperature(model.generating_args.temperature + 0.1 * i)
@@ -91,7 +110,7 @@ def inference_worker(
                                                 model.db_folder_path, qid, return_invalid=False)
             
             if response != "":
-                cached_response = model.verify_answer(response, question, schema)
+                cached_response = model.verify_answer(response, question, schema, col_vals)
                 if cached_response != "":
                     return cached_response, 0
         model.set_temperature(model.generating_args.temperature)

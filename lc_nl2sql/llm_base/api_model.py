@@ -162,8 +162,8 @@ class GeminiModel:
                                  use_flash=False)
         return sql
     
-    def verify_answer(self, sql, question, schema):
-        prompt = VERIFY_ANSWER.format(sql=sql, question=question, schema=schema)
+    def verify_answer(self, sql, question, schema, col_vals):
+        prompt = VERIFY_ANSWER.format(sql=sql, question=question, schema=schema, columns=col_vals)
         return self._generate_sql(prompt, use_flash=False)
 
     def verify_and_correct(self, query, sql, db_folder_path, qid, return_invalid=True):
