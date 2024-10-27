@@ -160,8 +160,6 @@ class GeminiModel:
         sql = self._generate_sql(MAJORITY_VOTING.format(input=query,
                                                         candidates=candidates),
                                  use_flash=False)
-        if sql == "":
-            logging.debug("**** Majority voting resulted in empty SQL")
         return sql
     
     def verify_answer(self, sql, question, schema):

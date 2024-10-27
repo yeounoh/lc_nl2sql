@@ -38,6 +38,7 @@ def inference_worker(
         input_kwargs):  # Worker function for a single inference task
 
     def _task():
+        # multiple choice and pick
         n_candidates = model.generating_args.num_beams
         n_repeat = 3 if n_candidates > 1 else 1
         cands = []
@@ -74,6 +75,7 @@ def inference_worker(
             return (model.majority_voting(query, new_cands), 0)
         
     def _task2():
+        # verify and retry
         n_candidates = model.generating_args.num_beams        
         schema = item["input"].split('###Table creation statements###'
             )[1].split('***************************')[0]
@@ -100,9 +102,6 @@ def inference_worker(
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
     num_threads = 50
-    if model.generating_args.num_beams > 3:
-        model.set_temperature(1.0)
-        num_threads = 20
     if model.generating_args.num_beams > 10:
         num_threads = 10
 
