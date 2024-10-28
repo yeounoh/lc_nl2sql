@@ -176,7 +176,7 @@ def predict(model: GeminiModel, dump_file=True):
         if model.measure_self_correction_tokens:
             with open(args.extra_token_measurement_filename, "w") as f:
                 f.write(str(np.mean(extra_tokens)) + ", " + str(np.std(extra_tokens)))
-        with open("stats.txt", 'w') as f:  
+        with open(f"stats_{args.predicted_out_filename}.txt", 'w') as f:  
             try:
                 tm, ts = np.mean(n_tries), np.std(n_tries)
             except:
