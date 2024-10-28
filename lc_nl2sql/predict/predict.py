@@ -50,43 +50,6 @@ def inference_worker(
                     continue
                 s += f'* `{tbl}`.`{col}`: [{",".join(vals[:])}]\n'
         return s
-
-    def _task():
-        # multiple choice and pick
-        n_candidates = model.generating_args.num_beams
-        n_repeat = 3 if n_candidates > 1 else 1
-        cands = []
-        cached_response = ""
-        for i in range(n_candidates):
-            response, _ = model.chat(query=item["input"],
-                                     history=[],
-                                     **input_kwargs)
-            response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path, qid, return_invalid=False)
-            if response != "":
-                cached_response = response
-                cands.append(response)
-        if len(cands) == 0:
-            return (cached_response, 0)
-        elif len(cands) == 1:
-            return (cands[0], extra_tokens)
-        else:
-            query = item["input"].split(
-                '###Table creation statements###'
-            )[1].split(
-                'Now generate SQLite SQL query to answer the given "Question".'
-            )[0]
-            query = "***************************\n###Table creation statements###\n" + query
-            new_cands = list()
-            for i in range(n_repeat):
-                resp = model.majority_voting(query, cands)
-                if resp != "":
-                    new_cands.append(resp)
-            if len(new_cands) == 0:
-                return (cached_response, 0)
-            elif len(new_cands) == 1:
-                return(new_cands[0], 0)
-            return (model.majority_voting(query, new_cands), 0)
         
     def _task2():
         # verify and retry
