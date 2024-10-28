@@ -168,7 +168,7 @@ python lc_nl2sql/predict/count_token.py \
   --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_ablation_6_synthetic_examples"
 
 
-echo "Ablation 7. + multi-choice"
+echo "Ablation 7. + verify & retry"
 # share the data from 6.
 python lc_nl2sql/predict/predict.py \
   --predicted_input_filename "$input_file_sk100" \

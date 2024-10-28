@@ -192,7 +192,6 @@ Generate total of {k} examples.
 Only outputs the examples (question input and SQL output pairs), and each eaxmple can be separated by a new line.
 """
 
-
 EXAMPLE_GENERATOR = """You are a SQLite SQL expert.
 Your job is to create a set of examples, where each example consists of a question and a SQL query to fetch the data for it.
 
