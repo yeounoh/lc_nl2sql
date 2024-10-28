@@ -161,7 +161,7 @@ Also pay close attention to the "Hints" as they contain very important informati
 
 Remember, following hints very closely is the key to the correct answer!!!
 
-If you think the SQL query is incorrect, then return an emtpry string "".
+If you think the SQL query is incorrect, then return an empty string "".
 If you are confident that the SQL query is correct, return it as-is.
 """
 

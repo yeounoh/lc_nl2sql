@@ -173,15 +173,17 @@ def predict(model: GeminiModel, dump_file=True):
         if model.measure_self_correction_tokens:
             with open(args.extra_token_measurement_filename, "w") as f:
                 f.write(str(np.mean(extra_tokens)) + ", " + str(np.std(extra_tokens)))
-        with open("stats.txt", 'wb') as f:  
+        with open("stats.txt", 'w') as f:  
             try:
                 tm, ts = np.mean(n_tries), np.std(n_tries)
             except:
                 tm, ts = 0, 0
             try:
                 lm, ls = np.mean(latency), np.std(latency)
-            f.write((f"avg(n_tries): {tm}, std(n_tries): {ts}, "
-                    + f"avg(latency): {lm}, std(latency): {ls}"))
+            except:
+                lm, ls = 0, 0
+            f.write(f"avg(n_tries): {tm}, std(n_tries): {ts}, "
+                    + f"avg(latency): {lm}, std(latency): {ls}")
     else:
         return result
 
