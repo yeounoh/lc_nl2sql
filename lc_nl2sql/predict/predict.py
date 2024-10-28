@@ -63,17 +63,19 @@ def inference_worker(
         for i in range(n_candidates):
             n_tries += 1
             model.set_temperature(model.generating_args.temperature + 0.1 * i)
+            start_time = time.time()  # tracks output generation time
             response, _ = model.chat(query=item["input"],
                                      history=[],
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid, return_invalid=False)
+            generation_latency = time.time() - start_time
             if response != "":
                 cached_response = model.verify_answer(response, question, schema)
                 if cached_response != "":
-                    return cached_response, extra_tokens, n_tries
+                    return cached_response, extra_tokens, n_tries, generation_latency
         model.set_temperature(model.generating_args.temperature)
-        return cached_response, extra_tokens, n_tries
+        return cached_response, extra_tokens, n_tries, generation_latency
     try:
         return func_timeout(1800, _task2, args=())
     except FunctionTimedOut:
@@ -86,7 +88,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
         num_threads = 10
 
     res_dict = {}
-    extra_tokens, n_tries = [], []
+    extra_tokens, n_tries, latency = [], [], []
     success_count, failure_count = 0, 0
 
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
@@ -106,6 +108,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                 result = future.result()  # (sql, token_count)
                 extra_tokens.append(result[1])
                 n_tries.append(result[2])
+                latency.append(result[3])
                 res_dict[index] = result[0]
                 if result[0] != "":
                     success_count += 1
@@ -127,7 +130,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )
-    return [res_dict[i] for i in range(len(predict_data))], extra_tokens, n_tries
+    return [res_dict[i] for i in range(len(predict_data))], extra_tokens, n_tries, latency
 
 
 def inference(model: GeminiModel, predict_data: List[Dict], **input_kwargs):
@@ -158,7 +161,7 @@ def predict(model: GeminiModel, dump_file=True):
     args = model.data_args
     ## predict file can be give by param --predicted_input_filename ,output_file can be gived by param predicted_out_filename
     predict_data = prepare_dataset(args.predicted_input_filename)
-    result, extra_tokens, n_tries = parallelized_inference(model, predict_data)
+    result, extra_tokens, n_tries, latency = parallelized_inference(model, predict_data)
 
     if dump_file:
         with open(args.predicted_out_filename, "w") as f:
@@ -172,11 +175,13 @@ def predict(model: GeminiModel, dump_file=True):
                 f.write(str(np.mean(extra_tokens)) + ", " + str(np.std(extra_tokens)))
         with open("stats.txt", 'wb') as f:  
             try:
-                m = np.mean(n_tries)
-                s = np.std(n_tries)
+                tm, ts = np.mean(n_tries), np.std(n_tries)
             except:
-                m, s = 0, 0
-            f.write(f"avg(n_tries): {m}, std(n_tries): {s}")
+                tm, ts = 0, 0
+            try:
+                lm, ls = np.mean(latency), np.std(latency)
+            f.write((f"avg(n_tries): {tm}, std(n_tries): {ts}, "
+                    + f"avg(latency): {lm}, std(latency): {ls}"))
     else:
         return result
 
