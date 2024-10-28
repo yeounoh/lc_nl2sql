@@ -79,7 +79,7 @@ def inference_worker(
     try:
         return func_timeout(1800, _task2, args=())
     except FunctionTimedOut:
-        return ("", 0)
+        return ("", 0, 0, 0)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
@@ -106,10 +106,13 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                                unit="item"):
                 index = futures[future]
                 result = future.result()  # (sql, token_count)
-                extra_tokens.append(result[1])
-                n_tries.append(result[2])
-                latency.append(result[3])
                 res_dict[index] = result[0]
+                if result[1] > 0:
+                    extra_tokens.append(result[1])
+                if result[2] > 0:
+                    n_tries.append(result[2])
+                if result[3] > 0:
+                    latency.append(result[3])
                 if result[0] != "":
                     success_count += 1
                 else:
