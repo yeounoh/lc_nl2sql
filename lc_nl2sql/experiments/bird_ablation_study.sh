@@ -177,8 +177,12 @@ python lc_nl2sql/predict/predict.py \
   --use_self_correction 1 \
   --use_disambiguation 1 \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
-  --predicted_out_filename "lc_nl2sql/output/pred/bird_ablation_7_multi_choice"
+  --predicted_out_filename "lc_nl2sql/output/pred/bird_ablation_7_verify_retry"
 
 python lc_nl2sql/predict/count_token.py \
   --predicted_input_filename "$input_file_sk100" \
-  --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_ablation_7_multi_choice"
+  --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_ablation_7_verify_retry"
+
+python lc_nl2sql/predict/count_verify_token.py \
+  --predicted_input_filename "$input_file_sk100" \
+  --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_ablation_7_verify_retry_verify"

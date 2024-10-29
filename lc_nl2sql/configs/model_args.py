@@ -137,7 +137,7 @@ class GeneratingArguments:
         },
     )
     use_self_correction: Optional[bool] = field(
-        default=True,
+        default=False,
         metadata={
             "help":
             "Whether or not to use self error correction feature."

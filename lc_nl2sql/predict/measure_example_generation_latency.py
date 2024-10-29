@@ -32,8 +32,10 @@ def measure_example_generaitn_latency(model: GeminiModel, predict_data: List[Dic
     
     latency = []
     for i, item in enumerate(predict_data):
-        if i % 5 != 0:
-            # Counting based on every other five questions
+        if i % 100 != 0:
+            # Counting based on every other 100 samples
+            # Example generation is decoding bound at the fixed length,
+            # so the latency should be around the same.
             continue
         schema = item["input"].split('###Table creation statements###'
             )[1].split('***************************')[0]
