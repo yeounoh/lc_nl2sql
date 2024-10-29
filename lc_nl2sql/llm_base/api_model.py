@@ -78,16 +78,16 @@ class GeminiModel:
             logging.debug("Token counting failed, returning 1000001 as size")
             return 1000001
         
-    def _compress(self, query, multiplier=3.4):
+    def _compress(self, query, multiplier=3):
         # Remove GitHub URLs using re.sub()
         pattern = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         query = re.sub(pattern, "", query)
         n_reduction = 0
-        while len(query) > 1000000 * multiplier and n_reduction < 6:
+        while len(query) > 1000000 * multiplier and n_reduction < 8:
             processed_lines = []
             for line in query.splitlines():
-                if len(line) > 50000:
-                    processed_lines.append(line[:(100000 - n_reduction * 10000)])
+                if len(line) > 20000:
+                    processed_lines.append(line[:-10000])
                 else:
                     processed_lines.append(line)
             query = "\n".join(processed_lines)
@@ -110,7 +110,18 @@ class GeminiModel:
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
             logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
-            time.sleep(30 // max(max_retries, 1))
+            
+            if "400 Unable to submit request" in str(e):
+                prefix = query.split(
+                    "###Table column example values###")[0]
+                postfix = "**************************".join(
+                        query.split().split(
+                        "###Table column example values###")[1].split(
+                        "**************************")[1:]
+                    )
+                query = prefix + "**************************" + postfix
+            else:
+                time.sleep(30 // max(max_retries, 1))
             if "RECITATION" in str(e):
                 json_response = str(e).split("Response:")[1]
                 try:
