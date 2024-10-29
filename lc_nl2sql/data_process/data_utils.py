@@ -69,8 +69,8 @@ def extract_sql_prompt_dataset(example: Dict[str, Any]) -> Dict[str, str]:
 
     # clip if more than 1m tokens
     s = prompt_format.format(**example)
-    if len(s) >= 1000000:
-        s = s[:999500] + "\n" + example['input']
+    # if len(s) >= 1000000:
+    #     s = s[:999500] + "\n" + example['input']
     return {"input": prompt_format.format(**example)}
 
 
