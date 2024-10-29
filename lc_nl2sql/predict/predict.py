@@ -21,9 +21,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from lc_nl2sql.data_process.data_utils import extract_sql_prompt_dataset
 from lc_nl2sql.llm_base.api_model import GeminiModel
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from tqdm import tqdm
-
 
 def prepare_dataset(predict_file_path: Optional[str] = None, ) -> List[Dict]:
     with open(predict_file_path, "r") as fp:

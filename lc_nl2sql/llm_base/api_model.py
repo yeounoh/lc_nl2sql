@@ -160,11 +160,11 @@ class GeminiModel:
                                  use_flash=False)
         return sql
     
-    def verify_answer(self, sql, question, schema):
+    def verify_answer(self, sql, question, schema, use_flash=False):
         prompt = VERIFY_ANSWER.format(sql=sql, question=question, schema=schema)
-        return self._generate_sql(prompt, use_flash=False)
+        return self._generate_sql(prompt, use_flash=use_flash)
 
-    def verify_and_correct(self, query, sql, db_folder_path, qid, return_invalid=True):
+    def verify_and_correct(self, query, sql, db_folder_path, qid, return_invalid=True, use_flash=False):
         if not self.use_self_correction or query == "":
             return sql, 0
 
@@ -177,7 +177,7 @@ class GeminiModel:
             new_prompt = CHECKER_TEMPLATE.format(context_str, input_str, s,
                                                  err)
             new_sql = self._generate_sql(new_prompt,
-                                         use_flash=False,
+                                         use_flash=use_flash,
                                          temperature=self.temperature)
             return new_sql, self._count_token(new_prompt) if self.measure_self_correction_tokens else 0
 
@@ -241,7 +241,7 @@ class GeminiModel:
                                                        input_str,
                                                        "\n".join(tried_sql))
             new_sql = self._generate_sql(new_prompt,
-                                         use_flash=False,
+                                         use_flash=use_flash,
                                          temperature=0.9)
             return new_sql, self._count_token(new_prompt) if self.measure_self_correction_tokens else 0
 
@@ -301,8 +301,11 @@ class GeminiModel:
              system: Optional[str] = None,
              **input_kwargs) -> Tuple[str, Tuple[int, int]]:
         try:
+            use_flash = False
+            if 'use_flash' in input_kwargs and input_kwargs['use_flash']:
+                use_flalsh = True
             resp = self._generate_sql(query,
-                                      use_flash=False,
+                                      use_flash=use_flash,
                                       temperature=self.temperature)
         except:
             print(f'\n*** {query} resulted in API error...\n')

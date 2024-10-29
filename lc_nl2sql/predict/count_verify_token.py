@@ -4,11 +4,11 @@ import numpy as np
 import logging
 import math
 
-from lc_nl2sql.configs.config import VERIFY_ANSWER
-
 ROOT_PATH = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(ROOT_PATH)
+
+from lc_nl2sql.configs.config import VERIFY_ANSWER
 
 from typing import List, Dict
 from lc_nl2sql.llm_base.api_model import GeminiModel

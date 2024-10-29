@@ -150,6 +150,13 @@ class GeneratingArguments:
             "Whether or not to measure and record additional tokens used for self-correction loop."
         },
     )
+    use_flash: Optional[bool] = field(
+        default=False,
+        metadata={
+            "help":
+            "Whether or not to use gemini flash model."
+        },
+    )
     temperature: Optional[float] = field(
         default=0.5,
         metadata={
