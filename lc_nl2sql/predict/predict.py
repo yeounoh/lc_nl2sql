@@ -56,11 +56,13 @@ def inference_worker(
                                      history=[],
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path, qid, return_invalid=False)
+                                                model.db_folder_path, qid, return_invalid=False, 
+                                                use_flash=model.generating_args.use_flash)
             generation_latency = time.time() - start_time
             if response != "":
                 start_time = time.time()
-                cached_response = model.verify_answer(response, question, schema)
+                cached_response = model.verify_answer(response, question, schema, 
+                                                      use_flash=model.generating_args.use_flash)
                 verification_latency = time.time() - start_time
                 if cached_response != "":
                     return cached_response, extra_tokens, n_tries, generation_latency, verification_latency
