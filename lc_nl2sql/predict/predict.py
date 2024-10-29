@@ -34,22 +34,6 @@ def prepare_dataset(predict_file_path: Optional[str] = None, ) -> List[Dict]:
 def inference_worker(
         model, item, qid,
         input_kwargs):  # Worker function for a single inference task
-    
-    def validate_email(email):
-                pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-                return re.match(pattern, email) is not None
-    
-    def format_col_vals(tbl_col_vals):
-        s = ""
-        for tbl, col_vals in tbl_col_vals.items():
-            for col, vals in col_vals.items():
-                if len(vals) > 0 and validate_email(vals[0]):
-                    continue
-                if len(vals) > 50 and np.mean(
-                    [len(v) for v in random.sample(vals, 10)]) > 90:
-                    continue
-                s += f'* `{tbl}`.`{col}`: [{",".join(vals[:])}]\n'
-        return s
         
     def _task2():
         # verify and retry
@@ -134,30 +118,6 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )
     return [res_dict[i] for i in range(len(predict_data))], extra_tokens, n_tries, latency
-
-
-def inference(model: GeminiModel, predict_data: List[Dict], **input_kwargs):
-    res = []
-    for item in tqdm(predict_data, desc="Inference Progress", unit="item"):
-        n_candidates = 1
-        cands = []
-        for i in range(n_candidates):
-            response, _ = model.chat(query=item["input"],
-                                     history=[],
-                                     **input_kwargs)
-            response = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path, i)
-            cands.append(response)
-        if n_candidates == 1:
-            res.append(response)
-        else:
-            query = item["input"].split(
-                'Also consider the "Rules" and some useful "Hints" if provided.'
-            )[1].split(
-                'Now generate SQLite SQL query to answer the given "Question".'
-            )[0]
-            res.append(model.majority_voting(query, cands))
-    return res
 
 
 def predict(model: GeminiModel, dump_file=True):

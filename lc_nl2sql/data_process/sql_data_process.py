@@ -20,8 +20,7 @@ sys.path.append(ROOT_PATH)
 from lc_nl2sql.configs.config import (BASIC_INSTRUCTION_PROMPT,
                                       BASIC_INSTRUCTION_PROMPT_NO_RULES,
                                       EXAMPLE_GENERATOR, SQL_DATA_INFO,
-                                      DATA_PATH, EXAMPLE_GENERATOR2,
-                                      COLUMN_SELECTOR_TEMPLATE)
+                                      DATA_PATH, EXAMPLE_GENERATOR2)
 from lc_nl2sql.llm_base.api_model import GeminiModel
 
 
