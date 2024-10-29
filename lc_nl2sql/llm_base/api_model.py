@@ -72,7 +72,7 @@ class GeminiModel:
         try:
             if len(prompt) > 1000000 * 4:
                 logging.debug("Over 1m token, returning 1000001 as size")
-                return 100001 
+                return 1000001 
             return self.model.count_tokens(prompt).total_tokens
         except Exception as e:
             logging.debug("Token counting failed, returning 1000001 as size")
