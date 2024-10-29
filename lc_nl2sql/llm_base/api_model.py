@@ -93,6 +93,17 @@ class GeminiModel:
             query = "\n".join(processed_lines)
             n_reduction += 1
         return query
+    
+    def _remove_col_vals(self, query):
+        prefix = query.split(
+            "###Table column example values###")[0]
+        postfix = "**************************".join(
+                query.split().split(
+                "###Table column example values###")[1].split(
+                "**************************")[1:]
+            )
+        query = prefix + "**************************" + postfix
+        return query
 
     def _generate_sql(self,
                       query,
@@ -111,17 +122,8 @@ class GeminiModel:
         except Exception as e:
             logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
             
-            if "400 Unable to submit request" in str(e):
-                prefix = query.split(
-                    "###Table column example values###")[0]
-                postfix = "**************************".join(
-                        query.split().split(
-                        "###Table column example values###")[1].split(
-                        "**************************")[1:]
-                    )
-                query = prefix + "**************************" + postfix
-            else:
-                time.sleep(30 // max(max_retries, 1))
+            
+            time.sleep(30 // max(max_retries, 1))
             if "RECITATION" in str(e):
                 json_response = str(e).split("Response:")[1]
                 try:
@@ -145,7 +147,7 @@ class GeminiModel:
             if max_retries > 0:
                 if ("SQL generation failed for: 400" in str(e) 
                     or "400 Unable to submit request" in str(e)):
-                    query = self._compress(query, multiplier=3)
+                    query = self._remove_col_vals(query)
                 return self._generate_sql(query,
                                             temperature + 0.1,
                                             use_flash,
