@@ -5,6 +5,10 @@ import numpy as np
 import logging
 import math
 
+from tqdm import tqdm
+from func_timeout import func_timeout, FunctionTimedOut
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 ROOT_PATH = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(ROOT_PATH)
@@ -15,21 +19,50 @@ from typing import List, Dict
 from lc_nl2sql.llm_base.api_model import GeminiModel
 from lc_nl2sql.predict.predict import prepare_dataset
 
-def measure_latency(model: GeminiModel, predict_data: List[Dict], n=100, use_flash=False):
-    toks, latency = [], []
-    for i, item in enumerate(predict_data):
-        if i % 15 != 0:
-            # Counting based on every other 15 samples
-            continue
+
+def measure(
+        model, item):  # Worker function for a single inference task
+        
+    def _task():
         try:
-            tok = model._count_token(item["input"])
+            token = model._count_token(item["input"])
             start_time = time.time()
             # measure single request latency
             _, _ = model.chat(query=item["input"], history=[], use_flash=use_flash)
-            latency.append(time.time() - start_time)
-            toks.append(tok)
+            latency = time.time() - start_time
+            return latency, token
         except:
-            continue
+            return 0, 0
+    try:
+        return func_timeout(300, _task, args=())
+    except FunctionTimedOut:
+        return 0, 0
+
+def measure_latency(model: GeminiModel, predict_data: List[Dict], n=100, use_flash=False):
+    
+    toks, latency = [], []
+    with ThreadPoolExecutor(max_workers=50) as executor:
+        futures = {
+            executor.submit(measure, model, item): i
+            for i, item in enumerate(predict_data) if i % 15 == 0
+        }
+
+        try:
+            for future in tqdm(as_completed(futures,
+                                            timeout=1200),
+                               total=len(futures),
+                               desc="Measure latency Progress",
+                               unit="item"):
+                index = futures[future]
+                result = future.result()  # (sql, token_count)
+                
+                if result[0] > 0:
+                    latency.append(result[0])
+                if result[1] > 0:
+                    toks.append(result[1])
+        except TimeoutError as e:
+            logging.info(e)
+            executor.shutdown(wait=False)
     return toks, latency
 
 
