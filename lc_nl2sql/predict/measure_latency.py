@@ -5,11 +5,11 @@ import numpy as np
 import logging
 import math
 
-from lc_nl2sql.configs.config import EXAMPLE_GENERATOR, EXAMPLE_GENERATOR2
-
 ROOT_PATH = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(ROOT_PATH)
+
+from lc_nl2sql.configs.config import EXAMPLE_GENERATOR, EXAMPLE_GENERATOR2
 
 from typing import List, Dict
 from lc_nl2sql.llm_base.api_model import GeminiModel
@@ -42,7 +42,7 @@ def predict(model: GeminiModel):
 
     with open(args.predicted_out_filename, "w") as f:
         for t, l in zip(toks, latency):
-            f.write(str(t) + ", " + str(l))
+            f.write(str(t) + ", " + str(l) + "\n")
 
 
 if __name__ == "__main__":
