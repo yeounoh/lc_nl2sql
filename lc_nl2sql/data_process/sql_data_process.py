@@ -54,6 +54,7 @@ class ProcessSqlData:
         num_documents=0,
         challenging_example_only=False,
         use_flash=False,
+        filtered_schema_generation=False,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -81,6 +82,7 @@ class ProcessSqlData:
 
         self.challenging_example_only = challenging_example_only
         self.use_flash = use_flash
+        self.filtered_schema_generation = filtered_schema_generation
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -649,6 +651,7 @@ if __name__ == "__main__":
     # experimental flag
     parser.add_argument("--challenging_example_only", default=False)
     parser.add_argument("--use_flash", default=False)
+    parser.add_argument("--filtered_schema_generation", default=False)
 
     args = parser.parse_args()
 
@@ -680,5 +683,6 @@ if __name__ == "__main__":
         num_documents=int(args.num_documents),
         challenging_example_only=bool(args.challenging_example_only),
         use_flash=bool(args.use_flash),
+        filtered_schema_generation=bool(args.filtered_schema_generation),
     )
     process.create_sft_raw_data()
