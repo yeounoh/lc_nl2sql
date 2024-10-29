@@ -69,7 +69,7 @@ def inference_worker(
     try:
         return func_timeout(1800, _task2, args=())
     except FunctionTimedOut:
-        return ("", 0, 0, 0)
+        return ("", 0, 0, 0, 0)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):

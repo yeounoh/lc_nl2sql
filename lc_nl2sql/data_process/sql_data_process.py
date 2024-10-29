@@ -45,7 +45,7 @@ class ProcessSqlData:
         vertex_ai_project_id="",
         tbr_selection_file="",
         use_hint=True,
-        use_rules=True,
+        use_rules=False,
         example_pool_type="train",
         example_selection_file="",
         inject_gt_example=False,

@@ -21,7 +21,7 @@ from lc_nl2sql.predict.predict import prepare_dataset
 
 
 def measure(
-        model, item):  # Worker function for a single inference task
+        model, item, use_flash):  # Worker function for a single inference task
         
     def _task():
         try:
@@ -31,7 +31,8 @@ def measure(
             _, _ = model.chat(query=item["input"], history=[], use_flash=use_flash)
             latency = time.time() - start_time
             return latency, token
-        except:
+        except Exception as e:
+            loging.error(e)
             return 0, 0
     try:
         return func_timeout(300, _task, args=())
@@ -41,9 +42,9 @@ def measure(
 def measure_latency(model: GeminiModel, predict_data: List[Dict], n=100, use_flash=False):
     
     toks, latency = [], []
-    with ThreadPoolExecutor(max_workers=50) as executor:
+    with ThreadPoolExecutor(max_workers=10) as executor:
         futures = {
-            executor.submit(measure, model, item): i
+            executor.submit(measure, model, item, use_flash): i
             for i, item in enumerate(predict_data) if i % 15 == 0
         }
 
