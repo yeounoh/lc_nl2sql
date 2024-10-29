@@ -53,6 +53,7 @@ class ProcessSqlData:
         document_selection_file="",
         num_documents=0,
         challenging_example_only=False,
+        use_flash=False,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -79,6 +80,7 @@ class ProcessSqlData:
         self.num_documents = num_documents
 
         self.challenging_example_only = challenging_example_only
+        self.use_flash = use_flash
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -368,7 +370,7 @@ class ProcessSqlData:
                     prompt = EXAMPLE_GENERATOR2.format(schema=schema, k=_k)
                 else:
                     prompt = EXAMPLE_GENERATOR.format(schema, _k)
-                _examples = self.model._generate_sql(prompt)
+                _examples = self.model._generate_sql(prompt, use_flash=self.use_flash)
                 num_generated_examples += len(_examples.split("\"input\":"))
                 examples += "\n" + _examples
             return examples
@@ -646,6 +648,7 @@ if __name__ == "__main__":
 
     # experimental flag
     parser.add_argument("--challenging_example_only", default=False)
+    parser.add_argument("--use_flash", default=False)
 
     args = parser.parse_args()
 
@@ -676,5 +679,6 @@ if __name__ == "__main__":
         document_selection_file=args.document_selection_file,
         num_documents=int(args.num_documents),
         challenging_example_only=bool(args.challenging_example_only),
+        use_flash=bool(args.use_flash),
     )
     process.create_sft_raw_data()

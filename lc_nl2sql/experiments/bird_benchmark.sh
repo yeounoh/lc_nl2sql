@@ -1,6 +1,6 @@
 #!/bin/bash
 
-input_file_sk100="lc_nl2sql/data/dev_example_synthetic_examples_100.json"
+input_file_sk100="lc_nl2sql/data/dev_example_synthetic_examples_100_flash.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/bird/dev/dev.json \
@@ -10,7 +10,7 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --tbr_selection_file lc_nl2sql/data/bird/crs_dump.json \
   --num_col_values 10 \
   --use_hint 1 \
-  --use_rules 0 \
+  --use_flash 1 \
   --filtered_schema_file lc_nl2sql/data/bird/col_selection_schema.csv \
   --use_column_filtering 1 \
   --synthetic_examples 1 \
