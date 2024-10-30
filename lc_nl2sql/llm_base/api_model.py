@@ -47,7 +47,7 @@ class GeminiModel:
             self.measure_self_correction_tokens = args.get("measure_self_correction_tokens", False)
             self.db_folder_path = args.get("db_folder_path", "")
             self.temperature = args.get("temperature", 0.5)
-            self.db_tbl_col_vals_file = args.get("db_tbl_col_vals_file", "")
+            self.db_tbl_col_vals_file = args.get("db_tbl_col_vals_file_bird.pickle", "")
         else:
             (
                 model_args,

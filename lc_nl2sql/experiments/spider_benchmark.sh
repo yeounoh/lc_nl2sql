@@ -9,6 +9,7 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --source_type "spider" \
   --output_file_path "$input_file_sk100" \
   --db_folder_path lc_nl2sql/data/spider/test_database \
+  --db_tbl_col_vals_file db_tbl_col_vals_spider.pickle \
   --num_col_values 10 \
   --filtered_schema_file lc_nl2sql/data/spider/col_selection_schema_spider.csv \
   --use_column_filtering 1 \
@@ -18,6 +19,7 @@ fi
 
 python lc_nl2sql/predict/predict.py \
   --predicted_input_filename "$input_file_sk100" \
+  --db_tbl_col_vals_file db_tbl_col_vals_spider.pickle \
   --num_beams 10 \
   --temperature 0.5 \
   --use_self_correction 1 \
@@ -34,6 +36,7 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --output_file_path "$input_file_sk100" \
   --source_type "spider" \
   --db_folder_path lc_nl2sql/data/spider/test_database \
+  --db_tbl_col_vals_file db_tbl_col_vals_spider.pickle \
   --num_col_values 10 \
   --use_flash 1 \
   --filtered_schema_file lc_nl2sql/data/spider/col_selection_schema_spider.csv \
@@ -44,6 +47,7 @@ fi
 
 python lc_nl2sql/predict/predict.py \
   --predicted_input_filename "$input_file_sk100" \
+  --db_tbl_col_vals_file db_tbl_col_vals_spider.pickle \
   --num_beams 10 \
   --temperature 0.5 \
   --use_self_correction 1 \

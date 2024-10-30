@@ -55,6 +55,7 @@ class ProcessSqlData:
         challenging_example_only=False,
         use_flash=False,
         filtered_schema_generation=False,
+        source_type="bird"
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -84,6 +85,8 @@ class ProcessSqlData:
         self.use_flash = use_flash
         self.filtered_schema_generation = filtered_schema_generation
 
+        self.source_type = source_type
+
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
 
@@ -93,9 +96,11 @@ class ProcessSqlData:
 
         if table_file.endswith(".json"):
             all_tables = json.load(open(table_file))
+            assert len(all_tables) > 0
             datas = []
             for data_file in data_file_list:
                 datas.extend(json.load(open(data_file)))
+            assert len(datas) > 0
             for i, data in enumerate(datas):
                 if 'question_id' not in data:
                     data['question_id'] = i
@@ -280,14 +285,14 @@ class ProcessSqlData:
 
         # Load cached contents
         try:
-            if os.path.exists(f'db_context_ncv{self.num_col_values}.cache'):
-                with open(f'db_context_ncv{self.num_col_values}.cache', 'rb') as file:
+            if os.path.exists(f'db_context_ncv{self.num_col_values}_{self.source_type}.cache'):
+                with open(f'db_context_ncv{self.num_col_values}_{self.source_type}.cache', 'rb') as file:
                     db_context = pickle.load(file)
-            if os.path.exists(f'db_table_schema_map_ncv{self.num_col_values}.cache'):
-                with open(f'db_table_schema_map_ncv{self.num_col_values}.cache', 'rb') as file:
+            if os.path.exists(f'db_table_schema_map_ncv{self.num_col_values}_{self.source_type}.cache'):
+                with open(f'db_table_schema_map_ncv{self.num_col_values}_{self.source_type}.cache', 'rb') as file:
                     db_table_schema_map = pickle.load(file)
-            if os.path.exists(self.db_tbl_col_vals_file):
-                with open(self.db_tbl_col_vals_file, "rb") as file:
+            if os.path.exists(f"{self.db_tbl_col_vals_file}"):
+                with open(f"{self.db_tbl_col_vals_file}", "rb") as file:
                     db_tbl_col_vals = pickle.load(file)
         except:
             db_tbl_col_vals = dict()
@@ -317,9 +322,9 @@ class ProcessSqlData:
                     raise
 
             # Caching for faster experimentation.
-            with open(f'db_context_ncv{self.num_col_values}.cache', 'wb') as file:
+            with open(f'db_context_ncv{self.num_col_values}_{self.source_type}.cache', 'wb') as file:
                 pickle.dump(db_context, file)
-            with open(f'db_table_schema_map_ncv{self.num_col_values}.cache', 'wb') as file:
+            with open(f'db_table_schema_map_ncv{self.num_col_values}_{self.source_type}.cache', 'wb') as file:
                 pickle.dump(db_table_schema_map, file)
             # Extra bookeeping for text example values.
             # This is used later for literal error fix.
@@ -684,5 +689,6 @@ if __name__ == "__main__":
         challenging_example_only=bool(args.challenging_example_only),
         use_flash=bool(args.use_flash),
         filtered_schema_generation=bool(args.filtered_schema_generation),
+        source_type=args.source_type,
     )
     process.create_sft_raw_data()
