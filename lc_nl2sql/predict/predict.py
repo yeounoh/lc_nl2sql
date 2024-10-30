@@ -99,16 +99,17 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                 index = futures[future]
                 result = future.result()  # (sql, token_count)
                 res_dict[index] = result[0]
-                if result[1] > 0:
-                    extra_tokens.append(result[1])
-                if result[2] > 0:
-                    n_tries.append(result[2])
-                if result[3] > 0:
-                    latency.append(result[3])
-                if result[4] > 0:
-                    verify_latency.append(result[4])
+                
                 if result[0] != "":
                     success_count += 1
+                    if result[1] > 0:
+                        extra_tokens.append(result[1])
+                    if result[2] > 0:
+                        n_tries.append(result[2])
+                    if result[3] > 0:
+                        latency.append(result[3])
+                    if result[4] > 0:
+                        verify_latency.append(result[4])
                 else:
                     failure_count += 1
                 n_completed = success_count + failure_count
