@@ -98,7 +98,7 @@ class GeminiModel:
         prefix = query.split(
             "###Table column example values###")[0]
         postfix = "**************************".join(
-                query.split().split(
+                query.split(
                 "###Table column example values###")[1].split(
                 "**************************")[1:]
             )
@@ -120,10 +120,6 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
-            
-            
-            time.sleep(30 // max(max_retries, 1))
             if "RECITATION" in str(e):
                 json_response = str(e).split("Response:")[1]
                 try:
@@ -145,9 +141,13 @@ class GeminiModel:
                 logging.error("PROHIBITED_CONTENT: {query}")
                 return ""
             if max_retries > 0:
-                if ("SQL generation failed for: 400" in str(e) 
-                    or "400 Unable to submit request" in str(e)):
+                if "400" in str(e):
+                    logging.info(f"{str(e)}, retrying in 2 seconds")
+                    time.sleep(2)
                     query = self._remove_col_vals(query)
+                else:
+                    logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
+                    time.sleep(30 // max(max_retries, 1))
                 return self._generate_sql(query,
                                             temperature + 0.1,
                                             use_flash,
