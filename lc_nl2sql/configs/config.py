@@ -310,7 +310,7 @@ Correct your SQL query based on this.
 The original question is:
 {}
 **************************
-The SQL query executed was:
+The SQL queries tried so far, but resulted in empty results:
 {}
 
 **************************
