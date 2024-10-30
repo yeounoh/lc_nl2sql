@@ -152,6 +152,7 @@ class GeminiModel:
                     for citation in citations:
                         start_index = citation['start_index']
                         end_index = citation['end_index']
+                        logging.info("RE")
                         modified_string = modified_string[:start_index] + modified_string[end_index:]
                     logging.info("Fixed RECITATION error")
                 except (json.JSONDecodeError, KeyError, IndexError) as e:

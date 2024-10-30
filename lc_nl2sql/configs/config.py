@@ -43,7 +43,8 @@ SAFETY_SETTING = {
 #### ICL Experimentation ####
 BASIC_INSTRUCTION_PROMPT = """\
 You are a SQLite SQL expert.
-You need to generate SQLite SQL query given a question in natural language.
+Your job is to write a SQLite SQL query to answer the user's question.
+You need to understand the question in natural language and good understanding of the underlying database schema and structure to get it right.
 The database ("{db_name}") structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
 
 Given the "Table creation statements" and the "Question", you need understand the database and columns.
@@ -92,7 +93,8 @@ Output the SQL query string ONLY, and make sure it is a single SQL statement.
 
 BASIC_INSTRUCTION_PROMPT_NO_RULES = """\
 You are a SQLite SQL expert.
-You need to generate SQLite SQL query given a question in natural language.
+Your job is to write a SQLite SQL query to answer the user's question.
+You need to understand the question in natural language and good understanding of the underlying database schema and structure to get it right.
 The database ("{db_name}") structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
 
 Given the "Table creation statements" and the "Question", you need understand the database and columns.
