@@ -139,7 +139,7 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            if "RECITATION" in str(e) and max_retries <= 1:
+            if "RECITATION" in str(e):
                 json_response = str(e).split("Response:")[1]
                 try:
                     response_data = json.loads(json_response)
@@ -149,12 +149,15 @@ class GeminiModel:
                     citations.sort(key=lambda x: x['start_index'], reverse=True)
 
                     modified_string = query
-                    for citation in citations:
-                        start_index = citation['start_index']
-                        end_index = citation['end_index']
-                        logging.info("RE")
-                        modified_string = modified_string[:start_index] + modified_string[end_index:]
-                    logging.info("Fixed RECITATION error")
+                    example_col_start = query.find("###Table column example values###")
+                    if example_col_start > -1:
+                        for citation in citations:
+                            start_index = citation['start_index']
+                            if int(start_index) > example_col_start:
+                                end_index = citation['end_index']
+                                modified_string = modified_string[:start_index] + modified_string[end_index:]
+                        query = modified_string
+                        logging.info("Fixed RECITATION error")
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
             if max_retries > 0:
