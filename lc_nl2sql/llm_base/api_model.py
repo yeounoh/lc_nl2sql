@@ -78,7 +78,7 @@ class GeminiModel:
             logging.debug("Token counting failed, returning 1000001 as size")
             return 1000001
         
-    def _compress(self, query, multiplier=3):
+    def _compress(self, query, multiplier=3.4):
         # Remove GitHub URLs using re.sub()
         pattern = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         query = re.sub(pattern, "", query)
@@ -95,14 +95,33 @@ class GeminiModel:
         return query
     
     def _remove_col_vals(self, query):
-        prefix = query.split(
-            "###Table column example values###")[0]
-        postfix = "**************************".join(
-                query.split(
-                "###Table column example values###")[1].split(
-                "**************************")[1:]
-            )
-        query = prefix + "**************************" + postfix
+        before = len(query)
+        if "###Table column example values###" in query:
+            prefix = query.split(
+                "###Table column example values###")[0]
+            postfix = "**************************".join(
+                    query.split(
+                    "###Table column example values###")[1].split(
+                    "**************************")[1:]
+                )
+            postfix = "**************************" + postfix
+        elif "###Examples###" in query:
+            prefix = query.split(
+                "###Examples###")[0]
+            postfix = "**************************".join(
+                    query.split(
+                    "###Examples###")[1].split(
+                    "**************************")[1:]
+                )
+            postfix = "**************************" + postfix
+        elif len(query) >= 10 * 1024 * 1024:
+            prefix = query[: 5 * 1024 * 1024]
+            postfix = query[: -5 * 1024 * 1024 + 1]
+        else:
+            prefix, postfix = query, ""
+        query = prefix + postfix
+        if len(query) == before:
+            logging.error(f"Failed to reduce query size from {before}!")
         return query
 
     def _generate_sql(self,
@@ -142,8 +161,7 @@ class GeminiModel:
                 return ""
             if max_retries > 0:
                 if "400" in str(e):
-                    logging.info(f"{str(e)}, retrying in 2 seconds")
-                    time.sleep(2)
+                    logging.info(f"{str(e)}, retrying ...")
                     query = self._remove_col_vals(query)
                 else:
                     logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")

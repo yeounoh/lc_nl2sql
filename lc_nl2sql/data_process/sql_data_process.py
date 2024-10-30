@@ -576,37 +576,37 @@ class ProcessSqlData:
         res = [res_dict[i] for i in range(len(datas))]
         return res
 
-    def create_sft_raw_data(self, dump_file=True):
+    def create_sft_raw_data(self, source_type="bird", dump_file=True):
         dev_data = []
-        for data_info in SQL_DATA_INFO:
-            if data_info['data_source'] in ['bird', 'spider']:
-                col_selected_schemas = dict()
-                if (self.use_column_filtering) and self.filtered_schema_file:
-                    df = pd.read_csv(self.filtered_schema_file)
-                    id_name, schema_name = 'question_id', 'selected_schema_with_connections'
-                    col_selected_schemas = dict()
-                    for k, v in zip(df[id_name], df[schema_name]):
-                        col_selected_schemas[int(k)] = v
-                dev_data.extend(
-                    self.decode_json_file_with_ddl(
-                        data_file_list=[self.input_data_file],
-                        table_file=self.input_table_file,
-                        db_folder_path=self.db_folder_path,
-                        db_id_name=data_info["db_id_name"],
-                        output_name=data_info["output_name"],
-                        col_selected_schemas=col_selected_schemas,
-                    ))
-                if dump_file:
-                    with open(self.dev_file, "w", encoding="utf-8") as s:
-                        json.dump(dev_data, s, indent=4, ensure_ascii=False)
-                return dev_data
-            else:
-                logging.error("non BIRD-Bench dataset is not supported.")
-                raise
+        data_info = SQL_DATA_INFO[source_type]
+        assert data_info['data_source'] in ['bird', 'spider']
+        
+        col_selected_schemas = dict()
+        if (self.use_column_filtering) and self.filtered_schema_file:
+            df = pd.read_csv(self.filtered_schema_file)
+            id_name, schema_name = 'question_id', 'selected_schema_with_connections'
+            col_selected_schemas = dict()
+            for k, v in zip(df[id_name], df[schema_name]):
+                col_selected_schemas[int(k)] = v
+        dev_data.extend(
+            self.decode_json_file_with_ddl(
+                data_file_list=[self.input_data_file],
+                table_file=self.input_table_file,
+                db_folder_path=self.db_folder_path,
+                db_id_name=data_info["db_id_name"],
+                output_name=data_info["output_name"],
+                col_selected_schemas=col_selected_schemas,
+            ))
+        if dump_file:
+            with open(self.dev_file, "w", encoding="utf-8") as s:
+                json.dump(dev_data, s, indent=4, ensure_ascii=False)
+        return dev_data
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+
+    parser.add_argument("--source_type", default="bird")
 
     parser.add_argument("--input_data_path")
     parser.add_argument("--input_table_path")

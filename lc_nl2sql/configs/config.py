@@ -18,14 +18,18 @@ DEFAULT_UNK_TOKEN = "<unk>"
 EXT2TYPE = {"csv": "csv", "json": "json", "jsonl": "json", "txt": "text"}
 
 # text2sql dataset information for processing sql data
-SQL_DATA_INFO = [
-    {
-        "data_source": "bird", # "spider"
+SQL_DATA_INFO = {
+    'bird': {
+        "data_source": "bird",
         "db_id_name": "db_id",
-        "output_name": "SQL",  # "query"
-        "is_multiple_turn": False,
+        "output_name": "SQL",
+    },
+    'spider': {
+        "data_source": "spider",
+        "db_id_name": "db_id",
+        "output_name": "query",
     }
-]
+}
 
 SAFETY_SETTING = {
     0: HarmBlockThreshold.OFF,
