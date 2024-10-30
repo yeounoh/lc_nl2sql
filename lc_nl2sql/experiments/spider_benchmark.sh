@@ -5,7 +5,8 @@ input_file_sk100="lc_nl2sql/data/spider_dev_example_synthetic_examples_100.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/spider/test_data/dev.json \
-  --input_table_path lc_nl2sql/data/spider/test_data/   qtables.json \
+  --input_table_path lc_nl2sql/data/spider/test_data/tables.json \
+  --source_type "spider" \
   --output_file_path "$input_file_sk100" \
   --db_folder_path lc_nl2sql/data/spider/test_database \
   --num_col_values 10 \
@@ -29,8 +30,9 @@ input_file_sk100="lc_nl2sql/data/spider_dev_example_synthetic_examples_100.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/spider/test_data/dev.json \
-  --input_table_path lc_nl2sql/data/spider/test_data/   qtables.json \
+  --input_table_path lc_nl2sql/data/spider/test_data/tables.json \
   --output_file_path "$input_file_sk100" \
+  --source_type "spider" \
   --db_folder_path lc_nl2sql/data/spider/test_database \
   --num_col_values 10 \
   --use_flash 1 \
