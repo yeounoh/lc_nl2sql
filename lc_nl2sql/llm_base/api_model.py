@@ -156,11 +156,8 @@ class GeminiModel:
                     logging.info("Fixed RECITATION error")
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
-            elif "PROHIBITED_CONTENT" in str(e):
-                logging.error("PROHIBITED_CONTENT: {query}")
-                return ""
             if max_retries > 0:
-                if "400" in str(e):
+                if "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
                     logging.info(f"{str(e)}, retrying ...")
                     query = self._remove_col_vals(query)
                 else:
