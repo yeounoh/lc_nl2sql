@@ -650,7 +650,7 @@ if __name__ == "__main__":
     # column names: question_id,selected_schema_with_connections
     # this contains filtered database schema by question_id (key)
     parser.add_argument("--filtered_schema_file", default="")
-    parser.add_argument("--db_tbl_col_vals_file", default="db_tbl_col_vals.pickle")
+    parser.add_argument("--db_tbl_col_vals_file", default="db_tbl_col_vals_bird.pickle")
     parser.add_argument("--tbr_selection_file", default="")
 
     # experimental flag
