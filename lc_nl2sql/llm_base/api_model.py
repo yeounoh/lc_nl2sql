@@ -156,6 +156,8 @@ class GeminiModel:
                         if example_col_start != -1 and int(start_index) > example_col_start:
                             modified_string = modified_string[:start_index] + modified_string[end_index:]
                             logging.info(f"Fixed RECITATION error: {query[start_index:end_index]}")
+                        else:
+                            logging.info(f"Not fixing RECITATION error: {query[start_index:end_index]}")
                     query = modified_string
                         
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
