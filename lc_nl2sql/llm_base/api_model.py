@@ -150,14 +150,14 @@ class GeminiModel:
 
                     modified_string = query
                     example_col_start = query.find("###Table column example values###")
-                    if example_col_start > -1:
-                        for citation in citations:
-                            start_index = citation['start_index']
-                            if int(start_index) > example_col_start:
-                                end_index = citation['end_index']
-                                modified_string = modified_string[:start_index] + modified_string[end_index:]
-                        query = modified_string
-                        logging.info("Fixed RECITATION error")
+                    for citation in citations:
+                        start_index = citation['start_index']
+                        end_index = citation['end_index']
+                        if example_col_start != -1 and int(start_index) > example_col_start:
+                            modified_string = modified_string[:start_index] + modified_string[end_index:]
+                            logging.info(f"Fixed RECITATION error: {query[start_index:end_index]}")
+                    query = modified_string
+                        
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
             if max_retries > 0:
