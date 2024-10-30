@@ -1,8 +1,16 @@
 import os
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
+# from google.generativeai.types import HarmCategory, HarmBlockThreshold
+from vertexai.generative_models import (
+    GenerativeModel,
+    HarmCategory,
+    HarmBlockThreshold,
+    Part,
+    SafetySetting,
+)
 
 ### path config
-ROOT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# ROOT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT_PATH = '/usr/local/google/home/gkakkar/nl2sql/lc_nl2sql'
 
 ADAPTER_PATH = os.path.join(ROOT_PATH, "lc_nl2sql/output/adapter")
 DATA_PATH = os.path.join(ROOT_PATH, "lc_nl2sql/data")
@@ -27,14 +35,45 @@ SQL_DATA_INFO = [
     }
 ]
 
-SAFETY_SETTING = {
-    0: HarmBlockThreshold.OFF,
-    1: HarmBlockThreshold.OFF,
-    2: HarmBlockThreshold.OFF,
-    3: HarmBlockThreshold.OFF,
-    4: HarmBlockThreshold.OFF,
-    5: HarmBlockThreshold.OFF,
-}
+SAFETY_SETTING = [
+    SafetySetting(
+        category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold=HarmBlockThreshold.BLOCK_NONE,
+    ),
+    SafetySetting(
+        category=HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold=HarmBlockThreshold.BLOCK_NONE,
+    ),
+    SafetySetting(
+        category=HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold=HarmBlockThreshold.BLOCK_NONE,
+    ),
+    SafetySetting(
+        category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold=HarmBlockThreshold.BLOCK_NONE,
+    ),
+]
+
+# SAFETY_SETTING = [
+#         {
+#             "category": "HARM_CATEGORY_HARASSMENT",
+#             "threshold": "BLOCK_NONE",
+#         },
+#         {
+#             "category": "HARM_CATEGORY_HATE_SPEECH",
+#             "threshold": "BLOCK_NONE",
+#         },
+#         {
+#             "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+#             "threshold": "BLOCK_NONE",
+#         },
+#         {
+#             "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+#             "threshold": "BLOCK_NONE",
+#         },
+#         ]
+
+
 
 #### ICL Experimentation ####
 BASIC_INSTRUCTION_PROMPT = """\

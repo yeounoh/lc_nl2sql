@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO)
 
 class GeminiModel:
 
-    def __init__(self, project_id="400355794761") -> None:
+    def __init__(self, project_id="cloud-db-nl2sql") -> None:
         vertexai.init(project=project_id, location="us-central1")
         self.model = GenerativeModel(model_name="gemini-1.5-pro-002")  # preview-0514
         self.model2 = GenerativeModel(

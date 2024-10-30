@@ -54,6 +54,7 @@ class ProcessSqlData:
         document_selection_file="",
         num_documents=0,
         challenging_example_only=False,
+        use_column_filtering_for_generation=False,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -80,6 +81,7 @@ class ProcessSqlData:
         self.num_documents = num_documents
 
         self.challenging_example_only = challenging_example_only
+        self.use_column_filtering_for_generation = use_column_filtering_for_generation
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -126,6 +128,7 @@ class ProcessSqlData:
             with open(self.document_selection_file, 'r') as f:
                 similar_documents = pd.read_json(f)
 
+        
         def truncate_example(val):
             s = str(val)
             if len(s) > 100:
@@ -513,6 +516,12 @@ class ProcessSqlData:
                     documentation = _extract_k_documents(int(data['question_id']), self.num_documents)
 
                 hints = data["evidence"] if "evidence" in data and self.use_hint else ""
+                if self.filtered_schema_file and self.use_column_filtering_for_generation:
+                    filtered_schemas = pd.read_csv(self.filtered_schema_file)
+                    qid = int(data['question_id'])
+                    filtered_schema = filtered_schemas[filtered_schemas["question_id"] == qid]["selected_schema_with_connections"].to_numpy()
+                    
+                schema= filtered_schema if args.use_column_filtering_for_generation else schema
                 if self.use_rules:
                     input_instruction = BASIC_INSTRUCTION_PROMPT.format(
                         db_name=data[db_id_name],
@@ -650,6 +659,9 @@ if __name__ == "__main__":
     # experimental flag
     parser.add_argument("--challenging_example_only", default=False)
 
+    # use for column filtering while generation
+    parser.add_argument("--use_column_filtering_for_generation", default=False)
+    
     args = parser.parse_args()
 
     
@@ -668,7 +680,7 @@ if __name__ == "__main__":
         num_col_values=int(args.num_col_values),
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
-        vertex_ai_project_id="400355794761",  # change appropriately
+        vertex_ai_project_id="cloud-db-nl2sql",  # change appropriately
         tbr_selection_file=args.tbr_selection_file,
         use_hint=bool(int(args.use_hint)),
         use_rules=bool(int(args.use_rules)),
@@ -679,5 +691,6 @@ if __name__ == "__main__":
         document_selection_file=args.document_selection_file,
         num_documents=int(args.num_documents),
         challenging_example_only=bool(args.challenging_example_only),
+        use_column_filtering_for_generation=bool(args.use_column_filtering_for_generation),
     )
     process.create_sft_raw_data()

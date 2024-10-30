@@ -1,6 +1,7 @@
 import argparse
 import sqlite3
 import re
+import traceback
 import numpy as np
 import pandas as pd
 
@@ -9,6 +10,7 @@ import pandas as pd
 # --correct_schema_file lc_nl2sql/data/bird/gt_schema.csv
 
 def _extract_schema_with_sqlite(schema_str):
+  try:
     """Extracts table and column information from a SQLite schema string"""
     tables = {}
 
@@ -36,6 +38,8 @@ def _extract_schema_with_sqlite(schema_str):
 
     conn.close()
     return tables
+  except Exception as e:
+    raise Exception(f"Error extracting schema from {schema_str}: {e}")
 
 def calculate_metrics(data):
   table_precision = 0
@@ -83,6 +87,14 @@ def calculate_metrics(data):
   except Exception as e:
     print(e)
 
+  if table_recall < 1:
+    table_recall = 0
+  
+  if col_recall < 1:
+    col_recall = 0
+    
+  if col_recall < 1:
+    open("tmp.txt", "a").write(str(data["question_id"]) + "\n" + str(correct_columns.difference(selected_columns)) + "\n")
   return table_precision, table_recall, col_precision, col_recall
 
 
@@ -99,17 +111,17 @@ def calculate_metrics_from_files(selected_schema_file, correct_schema_file):
             selected_row = selected_df[selected_df["question_id"] == question_id]
             
             selected_schema_str = selected_row["selected_schema_with_connections"].iloc[0]
-            correct_schema_str = correct_row["correct_schema_str"].iloc[0]
+            correct_schema_str = correct_row["selected_schema_with_connections"].iloc[0]
 
             if pd.isna(correct_schema_str) or correct_schema_str is np.nan:
-              continue
+              raise ValueError("Missing GT schema for question ID: ", question_id)
             
             if pd.isna(selected_schema_str) or selected_schema_str is np.nan:
-              selected_schema_str = ""
+              raise ValueError("Missing GT schema for question ID: ", question_id)
             
             
             
-            correct_schema = _extract_schema_with_sqlite(correct_row["correct_schema_str"].iloc[0])
+            correct_schema = _extract_schema_with_sqlite(correct_row["selected_schema_with_connections"].iloc[0])
             selected_schema = _extract_schema_with_sqlite(selected_row["selected_schema_with_connections"].iloc[0])
 
             results.append({

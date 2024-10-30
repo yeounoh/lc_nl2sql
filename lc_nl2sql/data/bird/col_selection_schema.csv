@@ -146,7 +146,7 @@ CREATE TABLE schools
 (
 	CDSCode TEXT not null primary key,
 	School TEXT null, -- description: School
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
 	CharterNum TEXT null, -- examples: `0499`| description: The charter school number, value description: 4-digit number assigned to a charter school.
 );"
 18,"CREATE TABLE satscores
@@ -161,7 +161,7 @@ CREATE TABLE schools
 	CDSCode TEXT not null primary key,
 	County TEXT not null, -- examples: `Contra Costa`| description: County name
 	School TEXT null, -- examples: `Contra Costa Adult`| description: School
-	FundingType TEXT null, -- examples: `Directly funded`| description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
+	FundingType TEXT null, -- examples: `Directly funded`| description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
 );"
 19,"CREATE TABLE schools
 (
@@ -189,7 +189,7 @@ CREATE TABLE schools
 	CDSCode TEXT not null primary key,
 	County TEXT not null, -- examples: `Fresno`
 	Zip TEXT null, --
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
 );"
 20,"CREATE TABLE frpm
 (
@@ -286,7 +286,7 @@ CREATE TABLE schools
 (
 	CDSCode TEXT not null primary key,
 	School TEXT null, -- examples: `Riverside Adult`
-	FundingType TEXT null, -- description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
+	FundingType TEXT null, -- description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
 );"
 26,"CREATE TABLE frpm
 (
@@ -357,7 +357,7 @@ CREATE TABLE schools
 	CDSCode TEXT not null primary key,
 	School TEXT null, --
 	OpenDate DATE null, -- examples: `2011-08-09`| description: The date the school opened.
-	GSserved TEXT null, -- examples: `K-12`| `grade span served.` description: It is the lowest grade and the highest grade of student enrollment as reported in the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through CALPADS. This field may differ from the grade span offered. value description: 1.     Only K–12 enrollment is reported through CALPADS  2.     Note: Special programs at independent study, alternative education, and special education schools will often exceed the typical grade span for schools of that type
+	GSserved TEXT null, -- examples: `K-12`| `grade span served.` description: It is the lowest grade and the highest grade of student enrollment as reported in the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through CALPADS. This field may differ from the grade span offered. value description: 1.     Only K–12 enrollment is reported through CALPADS  2.     Note: Special programs at independent study, alternative education, and special education schools will often exceed the typical grade span for schools of that type
 );"
 3,"CREATE TABLE frpm
 (
@@ -568,7 +568,7 @@ CREATE TABLE schools
 41,"CREATE TABLE schools
 (
 	CDSCode TEXT not null primary key,
-	Virtual TEXT null, -- description: This field identifies the type of virtual instruction offered by the school. Virtual instruction is instruction in which students and teachers are separated by time and/or location, and interaction occurs via computers and/or telecommunications technologies. value description: The field is coded as follows:  ·       F = Exclusively Virtual – The school has no physical building where students meet with each other or with teachers, all instruction is virtual.  ·       V = Primarily Virtual – The school focuses on a systematic program of virtual instruction but includes some physical meetings among students or with teachers.  ·       C = Primarily Classroom – The school offers virtual courses but virtual instruction is not the primary means of instruction.  ·       N = Not Virtual – The school does not offer any virtual instruction.  ·       P = Partial Virtual – The school offers some, but not all, instruction through virtual instruction. Note: This value was retired and replaced with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year.
+	Virtual TEXT null, -- description: This field identifies the type of virtual instruction offered by the school. Virtual instruction is instruction in which students and teachers are separated by time and/or location, and interaction occurs via computers and/or telecommunications technologies. value description: The field is coded as follows:  ·       F = Exclusively Virtual – The school has no physical building where students meet with each other or with teachers, all instruction is virtual.  ·       V = Primarily Virtual – The school focuses on a systematic program of virtual instruction but includes some physical meetings among students or with teachers.  ·       C = Primarily Classroom – The school offers virtual courses but virtual instruction is not the primary means of instruction.  ·       N = Not Virtual – The school does not offer any virtual instruction.  ·       P = Partial Virtual – The school offers some, but not all, instruction through virtual instruction. Note: This value was retired and replaced with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year.
 );
 
 CREATE TABLE satscores
@@ -683,7 +683,7 @@ CREATE TABLE schools
 (
 	CDSCode TEXT not null primary key,
 	School TEXT null, -- examples: `Virtual Pre`
-	Virtual TEXT null, -- description: This field identifies the type of virtual instruction offered by the school. Virtual instruction is instruction in which students and teachers are separated by time and/or location, and interaction occurs via computers and/or telecommunications technologies. value description: The field is coded as follows:  ·       F = Exclusively Virtual – The school has no physical building where students meet with each other or with teachers, all instruction is virtual.  ·       V = Primarily Virtual – The school focuses on a systematic program of virtual instruction but includes some physical meetings among students or with teachers.  ·       C = Primarily Classroom – The school offers virtual courses but virtual instruction is not the primary means of instruction.  ·       N = Not Virtual – The school does not offer any virtual instruction.  ·       P = Partial Virtual – The school offers some, but not all, instruction through virtual instruction. Note: This value was retired and replaced with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year.
+	Virtual TEXT null, -- description: This field identifies the type of virtual instruction offered by the school. Virtual instruction is instruction in which students and teachers are separated by time and/or location, and interaction occurs via computers and/or telecommunications technologies. value description: The field is coded as follows:  ·       F = Exclusively Virtual – The school has no physical building where students meet with each other or with teachers, all instruction is virtual.  ·       V = Primarily Virtual – The school focuses on a systematic program of virtual instruction but includes some physical meetings among students or with teachers.  ·       C = Primarily Classroom – The school offers virtual courses but virtual instruction is not the primary means of instruction.  ·       N = Not Virtual – The school does not offer any virtual instruction.  ·       P = Partial Virtual – The school offers some, but not all, instruction through virtual instruction. Note: This value was retired and replaced with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year.
 );"
 50,"CREATE TABLE satscores
 (
@@ -834,7 +834,7 @@ CREATE TABLE schools
 (
 	CDSCode TEXT not null primary key,
 	School TEXT null, -- examples: `MethodSchools`
-	Magnet INTEGER null, -- description: This field identifies whether a school is a magnet school and/or provides a magnet program. value description: The field is coded as follows:  ·       Y = Magnet - The school is a magnet school and/or offers a magnet program.  ·       N = Not Magnet - The school is not a magnet school and/or does not offer a magnet program.    Note: Preschools and adult education centers do not contain a magnet school indicator.
+	Magnet INTEGER null, -- description: This field identifies whether a school is a magnet school and/or provides a magnet program. value description: The field is coded as follows:  ·       Y = Magnet - The school is a magnet school and/or offers a magnet program.  ·       N = Not Magnet - The school is not a magnet school and/or does not offer a magnet program.    Note: Preschools and adult education centers do not contain a magnet school indicator.
 );"
 60,"CREATE TABLE schools
 (
@@ -842,8 +842,8 @@ CREATE TABLE schools
 	County TEXT not null, -- examples: `San Joaquin`
 	School TEXT null, -- examples: `Virtual Pre`
 	Website TEXT null, -- description: The website address of the school, district, or administrative authority. value description: The website address of the school, district, or administrative authority.
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
-	Virtual TEXT null, -- description: This field identifies the type of virtual instruction offered by the school. Virtual instruction is instruction in which students and teachers are separated by time and/or location, and interaction occurs via computers and/or telecommunications technologies. value description: The field is coded as follows:  ·       F = Exclusively Virtual – The school has no physical building where students meet with each other or with teachers, all instruction is virtual.  ·       V = Primarily Virtual – The school focuses on a systematic program of virtual instruction but includes some physical meetings among students or with teachers.  ·       C = Primarily Classroom – The school offers virtual courses but virtual instruction is not the primary means of instruction.  ·       N = Not Virtual – The school does not offer any virtual instruction.  ·       P = Partial Virtual – The school offers some, but not all, instruction through virtual instruction. Note: This value was retired and replaced with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year.
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	Virtual TEXT null, -- description: This field identifies the type of virtual instruction offered by the school. Virtual instruction is instruction in which students and teachers are separated by time and/or location, and interaction occurs via computers and/or telecommunications technologies. value description: The field is coded as follows:  ·       F = Exclusively Virtual – The school has no physical building where students meet with each other or with teachers, all instruction is virtual.  ·       V = Primarily Virtual – The school focuses on a systematic program of virtual instruction but includes some physical meetings among students or with teachers.  ·       C = Primarily Classroom – The school offers virtual courses but virtual instruction is not the primary means of instruction.  ·       N = Not Virtual – The school does not offer any virtual instruction.  ·       P = Partial Virtual – The school offers some, but not all, instruction through virtual instruction. Note: This value was retired and replaced with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year.
 );"
 61,"CREATE TABLE schools
 (
@@ -851,7 +851,7 @@ CREATE TABLE schools
 	District TEXT not null, --
 	School TEXT null, -- examples: `Bay Elementary`
 	City TEXT null, -- examples: `Hickman`
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
 	DOC TEXT not null, -- `District Ownership Code` description: District Ownership Code value description: The District Ownership Code (DOC) is the numeric code used to identify the category of the Administrative Authority. •       00 - County Office of Education •       02 – State Board of Education •       03 – Statewide Benefit Charter •       31 – State Special Schools •       34 – Non-school Location* •       52 – Elementary School District •       54 – Unified School District •       56 – High School District •       98 – Regional Occupational Center/Program (ROC/P)  *Only the California Education Authority has been included in the non-school location category.
 );"
 62,"CREATE TABLE schools
@@ -859,7 +859,7 @@ CREATE TABLE schools
 	CDSCode TEXT not null primary key,
 	County TEXT not null, -- examples: `Los Angeles`
 	School TEXT null, -- examples: `Epic Charter`
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
 );
 
 CREATE TABLE frpm
@@ -874,7 +874,7 @@ CREATE TABLE frpm
 	CDSCode TEXT not null primary key,
 	School TEXT null, -- examples: `Epic Charter`
 	City TEXT null, --
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
 	CharterNum TEXT null, -- examples: `00D2`| description: The charter school number, value description: 4-digit number assigned to a charter school.
 	AdmFName1 TEXT null, -- `administrator's first name` description: administrator's first name value description: The superintendent’s or principal’s first name.    Only active and pending districts and schools will display administrator information, if applicable.
 	AdmLName1 TEXT null, -- examples: `Fuller`| `administrator's last name` description: administrator's last name value description: The superintendent’s or principal’s last name.   Only active and pending districts and schools will display administrator information, if applicable.
@@ -889,7 +889,7 @@ CREATE TABLE frpm
 	School TEXT null, -- examples: `MethodSchools`| description: School
 	City TEXT null, -- examples: `Hickman`| description: City
 	MailCity TEXT null, -- examples: `Hickman`| `mailing city` value description: The city associated with the mailing address of the school, district, or administrative authority. Note: Many entities have not provided a mailing address city. For your convenience we have filled the unpopulated MailCity cells with City data.
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
 	CharterNum TEXT null, -- examples: `00D4`| description: The charter school number, value description: 4-digit number assigned to a charter school.
 );"
 65,"CREATE TABLE schools
@@ -897,8 +897,8 @@ CREATE TABLE frpm
 	CDSCode TEXT not null primary key,
 	County TEXT not null, -- examples: `Santa Clara`
 	School TEXT null, -- examples: `Santa Clara County Court`
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
-	FundingType TEXT null, -- examples: `Locally funded`| description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	FundingType TEXT null, -- examples: `Locally funded`| description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
 );"
 66,"CREATE TABLE schools
 (
@@ -906,7 +906,7 @@ CREATE TABLE frpm
 	County TEXT not null, -- examples: `Stanislaus`
 	School TEXT null, -- examples: `MethodSchools`
 	OpenDate DATE null, -- examples: `2012-08-27`| description: The date the school opened.
-	FundingType TEXT null, -- examples: `Directly funded`| description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
+	FundingType TEXT null, -- examples: `Directly funded`| description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
 );"
 67,"CREATE TABLE schools
 (
@@ -958,7 +958,7 @@ CREATE TABLE schools
 	CDSCode TEXT not null primary key,
 	School TEXT null, -- examples: `Fresno ROP`
 	City TEXT null, -- examples: `Fresno`
-	Magnet INTEGER null, -- description: This field identifies whether a school is a magnet school and/or provides a magnet program. value description: The field is coded as follows:  ·       Y = Magnet - The school is a magnet school and/or offers a magnet program.  ·       N = Not Magnet - The school is not a magnet school and/or does not offer a magnet program.    Note: Preschools and adult education centers do not contain a magnet school indicator.
+	Magnet INTEGER null, -- description: This field identifies whether a school is a magnet school and/or provides a magnet program. value description: The field is coded as follows:  ·       Y = Magnet - The school is a magnet school and/or offers a magnet program.  ·       N = Not Magnet - The school is not a magnet school and/or does not offer a magnet program.    Note: Preschools and adult education centers do not contain a magnet school indicator.
 );
 
 CREATE TABLE frpm
@@ -1003,7 +1003,7 @@ CREATE TABLE schools
 	NCESDist TEXT null, -- `National Center for Educational Statistics school district identification number` description: This field represents the 7-digit National Center for Educational Statistics (NCES) school district identification number. The first 2 digits identify the state and the last 5 digits identify the school district. Combined, they make a unique 7-digit ID for each school district.
 	District TEXT not null, --
 	EdOpsCode TEXT null, -- examples: `SPECON`| `Education Option Code` description: The Education Option Code is a short text description of the type of education offered. value description: •      ALTSOC – Alternative School of Choice •      COMM – County Community School •       COMMDAY – Community Day School •       CON – Continuation School •       JUV – Juvenile Court School •       OPP – Opportunity School •       YTH – Youth Authority School •       SSS – State Special School •       SPEC – Special Education School •       TRAD – Traditional •       ROP – Regional Occupational Program •       HOMHOS – Home and Hospital •       SPECON – District Consortia Special Education School
-	GSserved TEXT null, -- `grade span served.` description: It is the lowest grade and the highest grade of student enrollment as reported in the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through CALPADS. This field may differ from the grade span offered. value description: 1.     Only K–12 enrollment is reported through CALPADS  2.     Note: Special programs at independent study, alternative education, and special education schools will often exceed the typical grade span for schools of that type
+	GSserved TEXT null, -- `grade span served.` description: It is the lowest grade and the highest grade of student enrollment as reported in the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through CALPADS. This field may differ from the grade span offered. value description: 1.     Only K–12 enrollment is reported through CALPADS  2.     Note: Special programs at independent study, alternative education, and special education schools will often exceed the typical grade span for schools of that type
 );"
 75,"CREATE TABLE frpm
 (
@@ -1043,7 +1043,7 @@ CREATE TABLE schools
 	CDSCode TEXT not null primary key,
 	County TEXT not null, -- examples: `Los Angeles`
 	School TEXT null, -- examples: `Birch Kindergarten`
-	GSserved TEXT null, -- examples: `5-11`| `grade span served.` description: It is the lowest grade and the highest grade of student enrollment as reported in the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through CALPADS. This field may differ from the grade span offered. value description: 1.     Only K–12 enrollment is reported through CALPADS  2.     Note: Special programs at independent study, alternative education, and special education schools will often exceed the typical grade span for schools of that type
+	GSserved TEXT null, -- examples: `5-11`| `grade span served.` description: It is the lowest grade and the highest grade of student enrollment as reported in the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through CALPADS. This field may differ from the grade span offered. value description: 1.     Only K–12 enrollment is reported through CALPADS  2.     Note: Special programs at independent study, alternative education, and special education schools will often exceed the typical grade span for schools of that type
 );
 
 CREATE TABLE frpm
@@ -1057,14 +1057,14 @@ CREATE TABLE frpm
 (
 	CDSCode TEXT not null primary key,
 	City TEXT null, -- examples: `Adelanto`| description: City
-	GSserved TEXT null, -- `grade span served.` description: It is the lowest grade and the highest grade of student enrollment as reported in the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through CALPADS. This field may differ from the grade span offered. value description: 1.     Only K–12 enrollment is reported through CALPADS  2.     Note: Special programs at independent study, alternative education, and special education schools will often exceed the typical grade span for schools of that type
+	GSserved TEXT null, -- `grade span served.` description: It is the lowest grade and the highest grade of student enrollment as reported in the most recent certified CALPADS Fall 1 data collection. Only K–12 enrollment is reported through CALPADS. This field may differ from the grade span offered. value description: 1.     Only K–12 enrollment is reported through CALPADS  2.     Note: Special programs at independent study, alternative education, and special education schools will often exceed the typical grade span for schools of that type
 );"
 79,"CREATE TABLE schools
 (
 	CDSCode TEXT not null primary key,
 	County TEXT not null, -- examples: `Santa Barbara`, `San Diego`
 	School TEXT null, -- examples: `San Diego SCPA`
-	Virtual TEXT null, -- description: This field identifies the type of virtual instruction offered by the school. Virtual instruction is instruction in which students and teachers are separated by time and/or location, and interaction occurs via computers and/or telecommunications technologies. value description: The field is coded as follows:  ·       F = Exclusively Virtual – The school has no physical building where students meet with each other or with teachers, all instruction is virtual.  ·       V = Primarily Virtual – The school focuses on a systematic program of virtual instruction but includes some physical meetings among students or with teachers.  ·       C = Primarily Classroom – The school offers virtual courses but virtual instruction is not the primary means of instruction.  ·       N = Not Virtual – The school does not offer any virtual instruction.  ·       P = Partial Virtual – The school offers some, but not all, instruction through virtual instruction. Note: This value was retired and replaced with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year.
+	Virtual TEXT null, -- description: This field identifies the type of virtual instruction offered by the school. Virtual instruction is instruction in which students and teachers are separated by time and/or location, and interaction occurs via computers and/or telecommunications technologies. value description: The field is coded as follows:  ·       F = Exclusively Virtual – The school has no physical building where students meet with each other or with teachers, all instruction is virtual.  ·       V = Primarily Virtual – The school focuses on a systematic program of virtual instruction but includes some physical meetings among students or with teachers.  ·       C = Primarily Classroom – The school offers virtual courses but virtual instruction is not the primary means of instruction.  ·       N = Not Virtual – The school does not offer any virtual instruction.  ·       P = Partial Virtual – The school offers some, but not all, instruction through virtual instruction. Note: This value was retired and replaced with the Primarily Virtual and Primarily Classroom values beginning with the 2016–17 school year.
 );"
 8,"CREATE TABLE frpm
 (
@@ -1128,7 +1128,7 @@ CREATE TABLE frpm
 	School TEXT null, -- examples: `Birch Kindergarten`
 	City TEXT null, --
 	GSoffered TEXT null, -- examples: `K-8`| `grade span offered` description: The grade span offered is the lowest grade and the highest grade offered or supported by the school, district, or administrative authority. This field might differ from the grade span served as reported in the most recent certified California Longitudinal Pupil Achievement (CALPADS) Fall 1 data collection. value description: For example XYZ School might display the following data:  GSoffered = P–Adult  GSserved = K–12
-	Magnet INTEGER null, -- description: This field identifies whether a school is a magnet school and/or provides a magnet program. value description: The field is coded as follows:  ·       Y = Magnet - The school is a magnet school and/or offers a magnet program.  ·       N = Not Magnet - The school is not a magnet school and/or does not offer a magnet program.    Note: Preschools and adult education centers do not contain a magnet school indicator.
+	Magnet INTEGER null, -- description: This field identifies whether a school is a magnet school and/or provides a magnet program. value description: The field is coded as follows:  ·       Y = Magnet - The school is a magnet school and/or offers a magnet program.  ·       N = Not Magnet - The school is not a magnet school and/or does not offer a magnet program.    Note: Preschools and adult education centers do not contain a magnet school indicator.
 );
 
 CREATE TABLE frpm
@@ -1168,7 +1168,7 @@ CREATE TABLE frpm
 	County TEXT not null, -- description: County name
 	District TEXT not null, -- description: District
 	School TEXT null, -- examples: `Epic Charter`| description: School
-	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
+	Charter INTEGER null, -- description: This field identifies a charter school. value description: The field is coded as follows:  ·       1 = The school is a charter  ·       0 = The school is not a charter
 	CharterNum TEXT null, -- description: The charter school number, value description: 4-digit number assigned to a charter school.
 	AdmLName1 TEXT null, -- examples: `Administration`| `administrator's last name` description: administrator's last name value description: The superintendent’s or principal’s last name.   Only active and pending districts and schools will display administrator information, if applicable.
 );"
@@ -1207,7 +1207,7 @@ CREATE TABLE schools
 (
 	CDSCode TEXT not null primary key,
 	School TEXT null, -- examples: `MethodSchools`| description: School
-	FundingType TEXT null, -- description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
+	FundingType TEXT null, -- description: Indicates the charter school funding type value description: Values are as follows:  ·       Not in CS (California School) funding model  ·       Locally funded  ·       Directly funded
 );"
 717,"CREATE TABLE superhero
 (
@@ -12446,7 +12446,9 @@ CREATE TABLE member
 CREATE TABLE zip_code
 (
 	zip_code INTEGER constraint zip_code_pk primary key,
-	type TEXT, -- description: The kind of ZIP code value description: � Standard: the normal codes with which most people are familiar  � PO Box: zip codes have post office boxes  � Unique: zip codes that are assigned to individual organizations.
+	type TEXT, -- description: The kind of ZIP code value description: � Standard: the normal codes with which most people are familiar 
+ � PO Box: zip codes have post office boxes 
+ � Unique: zip codes that are assigned to individual organizations.
 );"
 1354,"CREATE TABLE member
 (
@@ -13509,13 +13511,17 @@ CREATE TABLE income
 1433,"CREATE TABLE zip_code
 (
 	zip_code INTEGER constraint zip_code_pk primary key,
-	type TEXT, -- examples: `PO Box`| description: The kind of ZIP code value description: � Standard: the normal codes with which most people are familiar  � PO Box: zip codes have post office boxes  � Unique: zip codes that are assigned to individual organizations.
+	type TEXT, -- examples: `PO Box`| description: The kind of ZIP code value description: � Standard: the normal codes with which most people are familiar 
+ � PO Box: zip codes have post office boxes 
+ � Unique: zip codes that are assigned to individual organizations.
 	state TEXT, -- description: The name of the state to which the ZIP pertains
 );"
 1434,"CREATE TABLE zip_code
 (
 	zip_code INTEGER constraint zip_code_pk primary key,
-	type TEXT, -- examples: `PO Box`| description: The kind of ZIP code value description: � Standard: the normal codes with which most people are familiar  � PO Box: zip codes have post office boxes  � Unique: zip codes that are assigned to individual organizations.
+	type TEXT, -- examples: `PO Box`| description: The kind of ZIP code value description: � Standard: the normal codes with which most people are familiar 
+ � PO Box: zip codes have post office boxes 
+ � Unique: zip codes that are assigned to individual organizations.
 	county TEXT, -- examples: `San Juan`, `San Juan Municipio`| description: The county to which the ZIP pertains
 	state TEXT, -- examples: `Puerto Rico`| description: The name of the state to which the ZIP pertains
 );"
@@ -13673,7 +13679,9 @@ CREATE TABLE zip_code
 1446,"CREATE TABLE zip_code
 (
 	zip_code INTEGER constraint zip_code_pk primary key,
-	type TEXT, -- examples: `PO Box`| description: The kind of ZIP code value description: � Standard: the normal codes with which most people are familiar  � PO Box: zip codes have post office boxes  � Unique: zip codes that are assigned to individual organizations.
+	type TEXT, -- examples: `PO Box`| description: The kind of ZIP code value description: � Standard: the normal codes with which most people are familiar 
+ � PO Box: zip codes have post office boxes 
+ � Unique: zip codes that are assigned to individual organizations.
 	county TEXT, -- description: The county to which the ZIP pertains
 );"
 1447,"CREATE TABLE event
