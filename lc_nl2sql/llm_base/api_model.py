@@ -139,7 +139,7 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            if "RECITATION" in str(e):
+            if "RECITATION" in str(e) and max_retries <= 1:
                 json_response = str(e).split("Response:")[1]
                 try:
                     response_data = json.loads(json_response)
@@ -164,7 +164,7 @@ class GeminiModel:
                     logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
                 return self._generate_sql(query,
-                                            temperature + 0.1,
+                                            1.0,
                                             use_flash,
                                             max_retries=max_retries - 1)
             else:
