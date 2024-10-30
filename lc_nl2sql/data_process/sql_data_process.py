@@ -691,4 +691,4 @@ if __name__ == "__main__":
         filtered_schema_generation=bool(args.filtered_schema_generation),
         source_type=args.source_type,
     )
-    process.create_sft_raw_data()
+    process.create_sft_raw_data(source_type=args.source_type)
