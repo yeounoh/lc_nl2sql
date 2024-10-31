@@ -34,6 +34,7 @@ class GeminiModel:
         self.model = GenerativeModel(model_name="gemini-1.5-pro-002")  # preview-0514
         self.model2 = GenerativeModel(
             model_name="gemini-1.5-flash-002")
+        self.ignore_hints = False
 
     def _infer_args(self, args: Optional[Dict[str, Any]] = None):
         parser = HfArgumentParser((ModelArguments, DataArguments,
@@ -132,8 +133,9 @@ class GeminiModel:
         if query.find("(Hints:") > -1 and self.ignore_hints:
             prefix = query.split(
                 "(Hints:")[0]
-            postfix = query.split("(Hints:")[1].split(
-                "**************************")[1]
+            postfix = "**************************".join(
+                query.split("(Hints:")[1].split(
+                "**************************")[1:])
             return prefix + "**************************" + postfix
         return query
 

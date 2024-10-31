@@ -738,7 +738,6 @@ def evaluate(
         scores["joint_all"]["count"] += 1
         turn_scores = {"exec": [], "exact": []}
         for idx, pg in enumerate(zip(p, g)):
-            print(f"compare pred idx {idx}")
             p, g = pg
             p_str = p[0]
             p_str = p_str.replace("value", "1")
@@ -1174,9 +1173,6 @@ def evaluate_api(args: Optional[Dict[str, Any]] = None):
         ), "table argument must be non-None if exact set match is evaluated"
         kmaps = build_foreign_key_map_from_json(args["table"])
 
-    # Print args
-    print(f"params as fllows \n {args}")
-
     evaluate(
         gold_file_path,
         pred_file_path,
@@ -1206,7 +1202,7 @@ if __name__ == "__main__":
         dest="db",
         type=str,
         help="the directory that contains all the databases and test suites",
-        default="./lc_nl2sql/data/spider/database",
+        default="./lc_nl2sql/data/spider/test_database",
     )
     parser.add_argument(
         "--table",
@@ -1279,10 +1275,6 @@ if __name__ == "__main__":
         # First, run `python convert_natsql_to_sql.py` in a subprocess to convert the predicted queries to SQL
         cmd = f"python convert_natsql_to_sql.py --input_file {args.input} --output_file {output_file_path}"
         subprocess.run(cmd, shell=True, check=True)
-
-    # Print args
-    print(f"params as fllows \n {args}")
-    # print("args: ", args)
 
     # Second, evaluate the predicted SQL queries
     evaluate(

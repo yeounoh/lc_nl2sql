@@ -27,7 +27,7 @@ python lc_nl2sql/predict/predict.py \
   --use_disambiguation 1 \
   --use_flash 1 \
   --db_folder_path lc_nl2sql/data/spider/test_database \
-  --predicted_out_filename "lc_nl2sql/output/pred/spider_benchmark_flash"
+  --predicted_out_filename "lc_nl2sql/output/pred/spider_benchmark_flash.sql"
   
 echo "Use Spider w/ gemini-1.5-pro"
 input_file_sk100="lc_nl2sql/data/spider_dev_example_synthetic_examples_100.json"
@@ -54,6 +54,6 @@ python lc_nl2sql/predict/predict.py \
   --use_self_correction 1 \
   --use_disambiguation 1 \
   --db_folder_path lc_nl2sql/data/spider/test_database \
-  --predicted_out_filename "lc_nl2sql/output/pred/spider_benchmark"
+  --predicted_out_filename "lc_nl2sql/output/pred/spider_benchmark.sql"
 
 
