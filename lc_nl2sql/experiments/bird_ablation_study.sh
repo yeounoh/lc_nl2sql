@@ -186,3 +186,15 @@ python lc_nl2sql/predict/count_token.py \
 python lc_nl2sql/predict/count_verify_token.py \
   --predicted_input_filename "$input_file_sk100" \
   --predicted_out_filename "lc_nl2sql/output/pred/token_count/bird_ablation_7_verify_retry_verify"
+
+# Ablation for without hints
+input_file_sk100="lc_nl2sql/data/dev_example_synthetic_examples_100.json"
+python lc_nl2sql/predict/predict.py \
+  --predicted_input_filename "$input_file_sk100" \
+  --num_beams 10 \
+  --temperature 0.5 \
+  --use_self_correction 1 \
+  --use_disambiguation 1 \
+  --ignore_hints 1 \
+  --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
+  --predicted_out_filename "lc_nl2sql/output/pred/bird_ablation_without_hints"

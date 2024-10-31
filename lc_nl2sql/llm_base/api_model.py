@@ -48,6 +48,7 @@ class GeminiModel:
             self.db_folder_path = args.get("db_folder_path", "")
             self.temperature = args.get("temperature", 0.5)
             self.db_tbl_col_vals_file = args.get("db_tbl_col_vals_file_bird.pickle", "")
+            self.ignore_hints = args.get("ignore_hints", False)
         else:
             (
                 model_args,
@@ -64,6 +65,9 @@ class GeminiModel:
             self.measure_self_correction_tokens = self.generating_args.measure_self_correction_tokens
             self.db_folder_path = self.data_args.db_folder_path
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
+            self.ignore_hints = self.generating_args.ignore_hints
+        if self.ignore_hints:
+            logging.info("*** ignoring hints ***")
 
     def set_temperature(self, temperature):
         self.temperature = temperature
@@ -123,6 +127,15 @@ class GeminiModel:
         if len(query) == before:
             logging.error(f"Failed to reduce query size from {before}!")
         return query
+    
+    def _remove_hints(self, query):
+        if query.find("(Hints:") > -1 and self.ignore_hints:
+            prefix = query.split(
+                "(Hints:")[0]
+            postfix = query.split("(Hints:")[1].split(
+                "**************************")[1]
+            return prefix + "**************************" + postfix
+        return query
 
     def _generate_sql(self,
                       query,
@@ -131,6 +144,7 @@ class GeminiModel:
                       max_retries=5):
         model = self.model2 if use_flash else self.model
         query = self._compress(query)
+        query = self._remove_hints(query)
         try:
             resp = model.generate_content(query, generation_config={"temperature": temperature}, 
                                           safety_settings=SAFETY_SETTING).text.replace(

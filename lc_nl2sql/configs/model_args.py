@@ -197,6 +197,13 @@ class GeneratingArguments:
             "The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt."
         },
     )
+    ignore_hints: Optional[bool] = field(
+        default=False,
+        metadata={
+            "help":
+            "Ignore hints if set True."
+        },
+    )
     repetition_penalty: Optional[float] = field(
         default=1.0,
         metadata={
