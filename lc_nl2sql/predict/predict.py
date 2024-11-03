@@ -48,6 +48,7 @@ def inference_worker(
         cached_response = ""
         n_tries, extra_tokens = 0, 0
         generation_latency, verification_latency = 0, 0
+        e2e_latency = time.time()
         for i in range(n_candidates):
             n_tries += 1
             model.set_temperature(model.generating_args.temperature + 0.1 * i)
@@ -65,9 +66,11 @@ def inference_worker(
                                                       use_flash=model.generating_args.use_flash)
                 verification_latency = time.time() - start_time
                 if cached_response != "":
-                    return cached_response, extra_tokens, n_tries, generation_latency, verification_latency
+                    e2e_latency = time.time() - e2e_latency
+                    return cached_response, extra_tokens, n_tries, generation_latency, verification_latency, e2e_latency
         model.set_temperature(model.generating_args.temperature)
-        return cached_response, extra_tokens, n_tries, generation_latency, verification_latency
+        e2e_latency = time.time() - e2e_latency
+        return cached_response, extra_tokens, n_tries, generation_latency, verification_latency, e2e_latency
     try:
         return func_timeout(1800, _task2, args=())
     except FunctionTimedOut:
@@ -81,6 +84,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
 
     res_dict = {}
     extra_tokens, n_tries, latency, verify_latency = [], [], [], []
+    e2e_latency = []
     success_count, failure_count = 0, 0
 
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
@@ -99,6 +103,8 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                 index = futures[future]
                 result = future.result()  # (sql, token_count)
                 res_dict[index] = result[0]
+                
+                e2e_latency.append(result[5])
                 
                 if result[0] != "":
                     success_count += 1
@@ -128,14 +134,14 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
     logging.info(
         f"Successful inferences: {success_count}, Failed inferences: {failure_count}"
     )
-    return [res_dict[i] for i in range(len(predict_data))], extra_tokens, n_tries, latency, verify_latency
+    return [res_dict[i] for i in range(len(predict_data))], extra_tokens, n_tries, latency, verify_latency, e2e_latency
 
 
 def predict(model: GeminiModel, dump_file=True):
     args = model.data_args
     ## predict file can be give by param --predicted_input_filename ,output_file can be gived by param predicted_out_filename
     predict_data = prepare_dataset(args.predicted_input_filename)
-    result, extra_tokens, n_tries, latency, vlatency = parallelized_inference(model, predict_data)
+    result, extra_tokens, n_tries, latency, vlatency, e2e_latency = parallelized_inference(model, predict_data)
 
     if dump_file:
         with open(args.predicted_out_filename, "w") as f:
@@ -157,10 +163,12 @@ def predict(model: GeminiModel, dump_file=True):
             tm, ts = _compute_stats(n_tries)
             lm, ls = _compute_stats(latency)
             vlm, vls = _compute_stats(vlatency)
+            elm, els = _compute_stats(e2e_latency)
             
             f.write(f"avg(n_tries): {tm}, std(n_tries): {ts}, "
                     + f"avg(latency): {lm}, std(latency): {ls}, "
-                    + f"avg(vlatency): {vlm}, std(vlatency): {vls}")
+                    + f"avg(vlatency): {vlm}, std(vlatency): {vls}"
+                    + f"avg(e2e_latency): {elm}, std(e2e_latency): {els}")
     else:
         return result
 
