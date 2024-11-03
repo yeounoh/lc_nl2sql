@@ -11,6 +11,7 @@ python lc_nl2sql/predict/predict.py \
   --num_beams 1 \
   --temperature 0.5 \
   --use_self_correction 0 \
+  --use_disambiguation 0 \
   --db_folder_path lc_nl2sql/data/bird/dev/dev_databases \
   --predicted_out_filename "lc_nl2sql/output/pred/bird_self_correction_no_correction"
 

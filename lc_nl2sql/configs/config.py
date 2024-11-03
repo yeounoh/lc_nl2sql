@@ -18,14 +18,18 @@ DEFAULT_UNK_TOKEN = "<unk>"
 EXT2TYPE = {"csv": "csv", "json": "json", "jsonl": "json", "txt": "text"}
 
 # text2sql dataset information for processing sql data
-SQL_DATA_INFO = [
-    {
-        "data_source": "bird", # "spider"
+SQL_DATA_INFO = {
+    'bird': {
+        "data_source": "bird",
         "db_id_name": "db_id",
-        "output_name": "SQL",  # "query"
-        "is_multiple_turn": False,
+        "output_name": "SQL",
+    },
+    'spider': {
+        "data_source": "spider",
+        "db_id_name": "db_id",
+        "output_name": "query",
     }
-]
+}
 
 SAFETY_SETTING = {
     0: HarmBlockThreshold.OFF,
@@ -39,7 +43,8 @@ SAFETY_SETTING = {
 #### ICL Experimentation ####
 BASIC_INSTRUCTION_PROMPT = """\
 You are a SQLite SQL expert.
-You need to generate SQLite SQL query given a question in natural language.
+Your job is to write a SQLite SQL query to answer the user's question.
+You need to understand the question in natural language and good understanding of the underlying database schema and structure to get it right.
 The database ("{db_name}") structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
 
 Given the "Table creation statements" and the "Question", you need understand the database and columns.
@@ -51,6 +56,8 @@ Also consider the "Rules" and some useful "Hints" if provided.
 ***************************
 ###Rules###
 - You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
+- Hints, if provided, is very important for correct column references and mathematical computation.
+- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
 - Column References: Verify column names and use table_name.column_name format.
@@ -62,10 +69,8 @@ Also consider the "Rules" and some useful "Hints" if provided.
 - Use double quotations for string literals.
 - A single quote within the string can be encoded by putting two single quotes in a row (''): "Men's basketball" should be "Men''s basketball"
 - When comparing string/text type in filter criteria, use LIKE operator and surround the text with wildcards %.
-- When you need to find the highest or lowest values based on a certain condition, using ORDER BY with LIMIT 1 is prefered over using MAX/MIN within sub queries.
 - If the question doesn't specify exactly which columns to select, between name column and id column, prefer to select id column.
 - Never use || to concatenate columns in the SELECT. Rather output the columns as they are.
-- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
 ***************************
 ###Table creation statements###
 {schema}
@@ -88,7 +93,8 @@ Output the SQL query string ONLY, and make sure it is a single SQL statement.
 
 BASIC_INSTRUCTION_PROMPT_NO_RULES = """\
 You are a SQLite SQL expert.
-You need to generate SQLite SQL query given a question in natural language.
+Your job is to write a SQLite SQL query to answer the user's question.
+You need to understand the question in natural language and good understanding of the underlying database schema and structure to get it right.
 The database ("{db_name}") structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
 
 Given the "Table creation statements" and the "Question", you need understand the database and columns.
@@ -116,50 +122,6 @@ Now generate SQLite SQL query to answer the given "Question".
 Output the SQL query string ONLY.
 """
 
-
-DISTINCT_ERROR_TEMPLATE = """You are a SQLite SQL expert.
-
-Your task is to meticulously examine the provided "SQL" query and determine if it requires the `DISTINCT` keyword to accurately answer the given "Question".
-
-***************************
-###SQL query###
-{sql}
-***************************
-###Question###
-{question}
-***************************
-
-Here are some tips to help you make the right decision:
-1. Look at the question and the result and see if the result respects the intent of the question. If the question expects distinct results, but the result is not distinct, then `DISTINCT` is required.
-2. For aggregate functions, like count adding distinct helps in case user is expecting us to not do double counting.
-3. If you think adding `DISTINCT` would not change the result, add it. It is better to add it.
-4. Do not make any assumption about the primary key.
-
-Return the updated SQL query. Make sure that the SQL query is in SQLite dialect.
-If the SQL already satisfies the rules or the rules are not applicable, then just return the original SQL.
-
-Just return the SQL query string.
-"""
-
-NOT_NULL_ERROR_TEMPLATE = """You are a SQLite SQL exeprt.
-
-You have written a SQL query, "SQL", to answer a user question, "Question".
-The SQL query contains None and it is likely because you did not filter NULL values.
-
-Specifically, you should follow this rule to fix the SQL query:
-- If you are doing a logical operation on a column, such as mathematical operations and sorting, make sure to filter NULL values within those columns
-
-***************************
-###SQL###
-{sql}
-***************************
-###Question###
-{question}
-***************************
-
-Fix the SQL query and just return the SQL query string.
-"""
-
 MAJORITY_VOTING = """You are a SQLite SQL expert.
 
 You need to the most likely or correct SQLite SQL from a set of candidates that answers a question in natural language.
@@ -180,6 +142,33 @@ answers the given "Question":
 {candidates}
 
 Only return a single SQL query from the candidates and the SQL only as a string.
+"""
+
+VERIFY_ANSWER = """You are a SQLite SQL expert.
+
+Your job is to verify the correctness of a given SQL query both syntactically and semantically. That means you would have to ensure the SQL query is syntatically correct, and also it does return what the user is asking for in the natural language "Question."
+
+Given the "Table creation statements" and the "Question and Hints", you need understand the database and the relevant table columns. The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions). 
+
+Use all these information to identify the correct literals, table column names and also the correct join path.
+
+Also pay close attention to the "Hints" as they contain very important information to answer the question correctly.
+
+***************************
+###SQL to verify###
+{sql}
+***************************
+###Question and Hints###
+{question}
+***************************
+###Table Creation Statements###
+{schema}
+***************************
+
+Remember, following hints very closely is the key to the correct answer!!!
+
+If you think the SQL query is incorrect, then return an empty string "".
+If you are confident that the SQL query is correct, return it as-is.
 """
 
 EXAMPLE_GENERATOR2 = """You are a SQLite SQL expert.
@@ -207,48 +196,6 @@ Generate a mixture of SQL examples that include:
 
 Generate total of {k} examples.
 Only outputs the examples (question input and SQL output pairs), and each eaxmple can be separated by a new line.
-"""
-
-COLUMN_SELECTOR_TEMPLATE= """
-You are a SQLite SQL expert.
-Your task is to examine the provided database schema, understand the posed question, and use the hint to pinpoint the specific columns within tables that are essential for crafting a SQL query to answer the question.
-
-Database Schema Overview:
-{DATABASE_SCHEMA}
-
-This schema offers an in-depth description of the database's architecture, detailing tables, columns, primary keys, foreign keys, and any pertinent information regarding relationships or constraints. Special attention should be given to the examples listed beside each column, as they directly hint at which columns are relevant to our query.
-
-For key phrases mentioned in the question, we have provided the most similar values within the columns denoted by "-- examples" in front of the corresponding column names. This is a critical hint to identify the columns that will be used in the SQL query.
-
-Question:
-{QUESTION}
-
-Hint:
-{HINT}
-
-The hint aims to direct your focus towards the specific elements of the database schema that are crucial for answering the question effectively.
-
-Task:
-Based on the database schema, question, and hint provided, your task is to identify all and only the columns that are essential for crafting a SQL query to answer the question.
-For each of the selected columns, explain why exactly it is necessary for answering the question. Your reasoning should be concise and clear, demonstrating a logical connection between the columns and the question asked.
-
-Tip: If you are choosing a column for filtering a value within that column, make sure that column has the value as an example.
-
-
-Please respond with a JSON object structured as follows:
-
-```json
-{{
-  "table_name1": ["column1", "column2", ...],
-  "table_name2": ["column1", "column2", ...],
-  ...
-}}
-```
-
-Make sure your response includes the table names as keys, each associated with a list of column names that are necessary for writing a SQL query to answer the question.
-Take a deep breath and think logically. If you do the task correctly, I will give you 1 million dollars.
-
-Only output a json as your response.
 """
 
 EXAMPLE_GENERATOR = """You are a SQLite SQL expert.
@@ -365,7 +312,7 @@ Correct your SQL query based on this.
 The original question is:
 {}
 **************************
-The SQL query executed was:
+The SQL queries tried so far, but resulted in empty results:
 {}
 
 **************************
@@ -373,7 +320,8 @@ Based on the question, table schemas, the example column values and the executed
 
 DONT FORGET Additional rules to generate correct SQLite SQL dialect:
 - You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
-- Try to use all the pieces of information provided in the hints.
+- Hints, if provided, is very important for correct column references and mathematical computation.
+- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
 - Column References: Verify column names and use table_name.column_name format.
@@ -423,7 +371,8 @@ Analyze the error and how to fix.
 
 DONT FORGET Additional rules to generate correct SQLite SQL dialect:
 - You can have nested SQL, but the final answer must be a single SQL statement, not multiple.
-- Try to use all the pieces of information provided in the hints.
+- Hints, if provided, is very important for correct column references and mathematical computation.
+- If the hints provide a mathematical computation, make sure you closely follow the mathematical compuation.
 - Column values/literals: Make sure that column values and literals are correct. Consider the column example values and hints provided.
 - Table Aliases: Use aliases to avoid duplicate table name conflicts.
 - Column References: Verify column names and use table_name.column_name format.

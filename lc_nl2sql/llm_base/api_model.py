@@ -1,9 +1,7 @@
 import pickle
 import sqlite3
 from lc_nl2sql.configs.config import (CHECKER_TEMPLATE, LITERAL_ERROR_TEMPLATE,
-                                      MAJORITY_VOTING, NOT_NULL_ERROR_TEMPLATE,
-                                      DISTINCT_ERROR_TEMPLATE,
-                                      COLUMN_SELECTOR_TEMPLATE, SAFETY_SETTING)
+                                      MAJORITY_VOTING, VERIFY_ANSWER, SAFETY_SETTING)
 import random
 import numpy as np
 import pandas as pd
@@ -36,6 +34,7 @@ class GeminiModel:
         self.model = GenerativeModel(model_name="gemini-1.5-pro-002")  # preview-0514
         self.model2 = GenerativeModel(
             model_name="gemini-1.5-flash-002")
+        self.ignore_hints = False
 
     def _infer_args(self, args: Optional[Dict[str, Any]] = None):
         parser = HfArgumentParser((ModelArguments, DataArguments,
@@ -49,7 +48,8 @@ class GeminiModel:
             self.measure_self_correction_tokens = args.get("measure_self_correction_tokens", False)
             self.db_folder_path = args.get("db_folder_path", "")
             self.temperature = args.get("temperature", 0.5)
-            self.db_tbl_col_vals_file = args.get("db_tbl_col_vals_file", "")
+            self.db_tbl_col_vals_file = args.get("db_tbl_col_vals_file_bird.pickle", "")
+            self.ignore_hints = args.get("ignore_hints", False)
         else:
             (
                 model_args,
@@ -66,12 +66,18 @@ class GeminiModel:
             self.measure_self_correction_tokens = self.generating_args.measure_self_correction_tokens
             self.db_folder_path = self.data_args.db_folder_path
             self.db_tbl_col_vals_file = self.data_args.db_tbl_col_vals_file
+            self.ignore_hints = self.generating_args.ignore_hints
+        if self.ignore_hints:
+            logging.info("*** ignoring hints ***")
 
+    def set_temperature(self, temperature):
+        self.temperature = temperature
+        
     def _count_token(self, prompt):
         try:
             if len(prompt) > 1000000 * 4:
                 logging.debug("Over 1m token, returning 1000001 as size")
-                return 100001 
+                return 1000001 
             return self.model.count_tokens(prompt).total_tokens
         except Exception as e:
             logging.debug("Token counting failed, returning 1000001 as size")
@@ -82,15 +88,55 @@ class GeminiModel:
         pattern = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         query = re.sub(pattern, "", query)
         n_reduction = 0
-        while len(query) > 1000000 * multiplier and n_reduction < 6:
+        while len(query) > 1000000 * multiplier and n_reduction < 8:
             processed_lines = []
             for line in query.splitlines():
-                if len(line) > 50000:
-                    processed_lines.append(line[:(100000 - n_reduction * 10000)])
+                if len(line) > 20000:
+                    processed_lines.append(line[:-10000])
                 else:
                     processed_lines.append(line)
             query = "\n".join(processed_lines)
             n_reduction += 1
+        return query
+    
+    def _remove_col_vals(self, query):
+        before = len(query)
+        if "###Table column example values###" in query:
+            prefix = query.split(
+                "###Table column example values###")[0]
+            postfix = "**************************".join(
+                    query.split(
+                    "###Table column example values###")[1].split(
+                    "**************************")[1:]
+                )
+            postfix = "**************************" + postfix
+        elif "###Examples###" in query:
+            prefix = query.split(
+                "###Examples###")[0]
+            postfix = "**************************".join(
+                    query.split(
+                    "###Examples###")[1].split(
+                    "**************************")[1:]
+                )
+            postfix = "**************************" + postfix
+        elif len(query) >= 10 * 1024 * 1024:
+            prefix = query[: 5 * 1024 * 1024]
+            postfix = query[: -5 * 1024 * 1024 + 1]
+        else:
+            prefix, postfix = query, ""
+        query = prefix + postfix
+        if len(query) == before:
+            logging.error(f"Failed to reduce query size from {before}!")
+        return query
+    
+    def _remove_hints(self, query):
+        if query.find("(Hints:") > -1 and self.ignore_hints:
+            prefix = query.split(
+                "(Hints:")[0]
+            postfix = "**************************".join(
+                query.split("(Hints:")[1].split(
+                "**************************")[1:])
+            return prefix + "**************************" + postfix
         return query
 
     def _generate_sql(self,
@@ -100,6 +146,7 @@ class GeminiModel:
                       max_retries=5):
         model = self.model2 if use_flash else self.model
         query = self._compress(query)
+        query = self._remove_hints(query)
         try:
             resp = model.generate_content(query, generation_config={"temperature": temperature}, 
                                           safety_settings=SAFETY_SETTING).text.replace(
@@ -108,28 +155,38 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
-            time.sleep(30 // max(max_retries, 1))
             if "RECITATION" in str(e):
                 json_response = str(e).split("Response:")[1]
                 try:
                     response_data = json.loads(json_response)
-                    start_index = response_data['candidates'][0]['citation_metadata']['citations'][0]['start_index']
-                    end_index = response_data['candidates'][0]['citation_metadata']['citations'][0]['end_index']
-                    # Remove the cited portion from the input string
-                    query = query[:start_index] + query[end_index:]
-                    logging.info("Fixed RECITATION error")
+                    citations = response_data['candidates'][0]['citation_metadata']['citations']
+
+                    # Sort citations by start_index in descending order to avoid index issues
+                    citations.sort(key=lambda x: x['start_index'], reverse=True)
+
+                    modified_string = query
+                    example_col_start = query.find("###Table column example values###")
+                    for citation in citations:
+                        start_index = citation['start_index']
+                        end_index = citation['end_index']
+                        if example_col_start != -1 and int(start_index) > example_col_start:
+                            modified_string = modified_string[:start_index] + modified_string[end_index:]
+                            logging.info(f"Fixed RECITATION error: {query[start_index:end_index]}")
+                        else:
+                            logging.info(f"Not fixing RECITATION error: {query[start_index:end_index]}")
+                    query = modified_string
+                        
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
-            elif "PROHIBITED_CONTENT" in str(e):
-                logging.error("PROHIBITED_CONTENT: {query}")
-                return ""
             if max_retries > 0:
-                if ("SQL generation failed for: 400" in str(e) 
-                    or "400 Unable to submit request" in str(e)):
-                    query = self._compress(query, multiplier=3)
+                if "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
+                    logging.info(f"{str(e)}, retrying ...")
+                    query = self._remove_col_vals(query)
+                else:
+                    logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
+                    time.sleep(30 // max(max_retries, 1))
                 return self._generate_sql(query,
-                                            temperature + 0.1,
+                                            1.0,
                                             use_flash,
                                             max_retries=max_retries - 1)
             else:
@@ -151,55 +208,15 @@ class GeminiModel:
         sql = self._generate_sql(MAJORITY_VOTING.format(input=query,
                                                         candidates=candidates),
                                  use_flash=False)
-        if sql == "":
-            logging.debug("**** Majority voting resulted in empty SQL")
         return sql
+    
+    def verify_answer(self, sql, question, schema, use_flash=False):
+        prompt = VERIFY_ANSWER.format(sql=sql, question=question, schema=schema)
+        return self._generate_sql(prompt, use_flash=use_flash)
 
-    def verify_and_correct(self, query, sql, db_folder_path, qid):
+    def verify_and_correct(self, query, sql, db_folder_path, qid, return_invalid=True, use_flash=False):
         if not self.use_self_correction or query == "":
             return sql, 0
-
-        def syntax_fix(s):
-            pattern = r"(?<!\\)'"
-
-            def replace_func(match):
-                return match.group().replace("'", '"')
-
-            modified_sql = re.sub(pattern, replace_func, r"{}".format(s))
-            return modified_sql
-
-        def enforce_rules(s, db_path):
-            conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            err = ""
-            has_null = False
-            try:
-                rows = cursor.execute(sql).fetchall()
-                if len(rows) > 0:
-                    for r in rows[0]:
-                        if 'None' in str(r):
-                            has_null = True
-                            break
-            except sqlite3.Warning as warning:
-                logging.debug(f"SQLite Warning: {warning}")
-            except sqlite3.Error as e:
-                logging.debug(e)
-            finally:
-                if conn:
-                    conn.close()
-
-            context_str = query[query.find("###Table creation statements###"
-                                           ):query.find("###Question###")]
-            input_str = query[query.find("###Question###"):query.find(
-                "Now generate SQLite SQL query to answer the given")]
-            if has_null:
-                _sql = self._generate_sql(NOT_NULL_ERROR_TEMPLATE.format(
-                    sql=s, question=input_str),
-                                          use_flash=True)
-            _sql = self._generate_sql(DISTINCT_ERROR_TEMPLATE.format(
-                sql=s, question=input_str),
-                                      use_flash=True)
-            return _sql
 
         def fix_error(s, err):
             context_str = query[query.find("###Table creation statements###"
@@ -210,7 +227,7 @@ class GeminiModel:
             new_prompt = CHECKER_TEMPLATE.format(context_str, input_str, s,
                                                  err)
             new_sql = self._generate_sql(new_prompt,
-                                         use_flash=False,
+                                         use_flash=use_flash,
                                          temperature=self.temperature)
             return new_sql, self._count_token(new_prompt) if self.measure_self_correction_tokens else 0
 
@@ -274,7 +291,7 @@ class GeminiModel:
                                                        input_str,
                                                        "\n".join(tried_sql))
             new_sql = self._generate_sql(new_prompt,
-                                         use_flash=False,
+                                         use_flash=use_flash,
                                          temperature=0.9)
             return new_sql, self._count_token(new_prompt) if self.measure_self_correction_tokens else 0
 
@@ -306,14 +323,12 @@ class GeminiModel:
         db_name = query.split("The database (\"")[1].split("\") structure")[0]
         db_path = os.path.join(db_folder_path, db_name) + f"/{db_name}.sqlite"
 
-        _sql = sql
-        _sql = enforce_rules(_sql, db_path)
-        retry_cnt, max_retries = 0, 5
-        valid, err, row_cnt = isValidSQL(_sql, db_path)
-
         # this will tick if --measure_self_correction_tokens is set.
         accumulated_token_count = 0
 
+        _sql = sql
+        retry_cnt, max_retries = 0, 5
+        valid, err, row_cnt = isValidSQL(_sql, db_path)
         tried_sql = [_sql]
         while not valid and retry_cnt < max_retries:
             if err == "empty results" and self.use_disambiguation:
@@ -321,12 +336,13 @@ class GeminiModel:
             else:
                 _sql, extra_tokens = fix_error(_sql, err)
             accumulated_token_count += extra_tokens
-            _sql = enforce_rules(_sql, db_path)
             tried_sql.append(_sql)
             valid, err, row_cnt = isValidSQL(_sql, db_path)
             retry_cnt += 1
         if retry_cnt >= max_retries:
             logging.info(f"Correction failed due to {err}: {_sql}")
+            if not return_invalid:
+                return "", accumulated_token_count
         return _sql, accumulated_token_count
 
     def chat(self,
@@ -335,8 +351,11 @@ class GeminiModel:
              system: Optional[str] = None,
              **input_kwargs) -> Tuple[str, Tuple[int, int]]:
         try:
+            use_flash = False
+            if 'use_flash' in input_kwargs and input_kwargs['use_flash']:
+                use_flalsh = True
             resp = self._generate_sql(query,
-                                      use_flash=False,
+                                      use_flash=use_flash,
                                       temperature=self.temperature)
         except:
             print(f'\n*** {query} resulted in API error...\n')

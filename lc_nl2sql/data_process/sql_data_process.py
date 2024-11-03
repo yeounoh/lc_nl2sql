@@ -20,8 +20,7 @@ sys.path.append(ROOT_PATH)
 from lc_nl2sql.configs.config import (BASIC_INSTRUCTION_PROMPT,
                                       BASIC_INSTRUCTION_PROMPT_NO_RULES,
                                       EXAMPLE_GENERATOR, SQL_DATA_INFO,
-                                      DATA_PATH, EXAMPLE_GENERATOR2,
-                                      COLUMN_SELECTOR_TEMPLATE)
+                                      DATA_PATH, EXAMPLE_GENERATOR2)
 from lc_nl2sql.llm_base.api_model import GeminiModel
 
 
@@ -46,7 +45,7 @@ class ProcessSqlData:
         vertex_ai_project_id="",
         tbr_selection_file="",
         use_hint=True,
-        use_rules=True,
+        use_rules=False,
         example_pool_type="train",
         example_selection_file="",
         inject_gt_example=False,
@@ -54,6 +53,9 @@ class ProcessSqlData:
         document_selection_file="",
         num_documents=0,
         challenging_example_only=False,
+        use_flash=False,
+        filtered_schema_generation=False,
+        source_type="bird"
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -80,6 +82,10 @@ class ProcessSqlData:
         self.num_documents = num_documents
 
         self.challenging_example_only = challenging_example_only
+        self.use_flash = use_flash
+        self.filtered_schema_generation = filtered_schema_generation
+
+        self.source_type = source_type
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -90,9 +96,11 @@ class ProcessSqlData:
 
         if table_file.endswith(".json"):
             all_tables = json.load(open(table_file))
+            assert len(all_tables) > 0
             datas = []
             for data_file in data_file_list:
                 datas.extend(json.load(open(data_file)))
+            assert len(datas) > 0
             for i, data in enumerate(datas):
                 if 'question_id' not in data:
                     data['question_id'] = i
@@ -277,14 +285,14 @@ class ProcessSqlData:
 
         # Load cached contents
         try:
-            if os.path.exists(f'db_context_ncv{self.num_col_values}.cache'):
-                with open(f'db_context_ncv{self.num_col_values}.cache', 'rb') as file:
+            if os.path.exists(f'db_context_ncv{self.num_col_values}_{self.source_type}.cache'):
+                with open(f'db_context_ncv{self.num_col_values}_{self.source_type}.cache', 'rb') as file:
                     db_context = pickle.load(file)
-            if os.path.exists(f'db_table_schema_map_ncv{self.num_col_values}.cache'):
-                with open(f'db_table_schema_map_ncv{self.num_col_values}.cache', 'rb') as file:
+            if os.path.exists(f'db_table_schema_map_ncv{self.num_col_values}_{self.source_type}.cache'):
+                with open(f'db_table_schema_map_ncv{self.num_col_values}_{self.source_type}.cache', 'rb') as file:
                     db_table_schema_map = pickle.load(file)
-            if os.path.exists(self.db_tbl_col_vals_file):
-                with open(self.db_tbl_col_vals_file, "rb") as file:
+            if os.path.exists(f"{self.db_tbl_col_vals_file}"):
+                with open(f"{self.db_tbl_col_vals_file}", "rb") as file:
                     db_tbl_col_vals = pickle.load(file)
         except:
             db_tbl_col_vals = dict()
@@ -314,9 +322,9 @@ class ProcessSqlData:
                     raise
 
             # Caching for faster experimentation.
-            with open(f'db_context_ncv{self.num_col_values}.cache', 'wb') as file:
+            with open(f'db_context_ncv{self.num_col_values}_{self.source_type}.cache', 'wb') as file:
                 pickle.dump(db_context, file)
-            with open(f'db_table_schema_map_ncv{self.num_col_values}.cache', 'wb') as file:
+            with open(f'db_table_schema_map_ncv{self.num_col_values}_{self.source_type}.cache', 'wb') as file:
                 pickle.dump(db_table_schema_map, file)
             # Extra bookeeping for text example values.
             # This is used later for literal error fix.
@@ -369,10 +377,8 @@ class ProcessSqlData:
                     prompt = EXAMPLE_GENERATOR2.format(schema=schema, k=_k)
                 else:
                     prompt = EXAMPLE_GENERATOR.format(schema, _k)
-                _examples = self.model._generate_sql(prompt, temperature=1.0)
-                _examples_list = list(set(_examples.split("\"input\":")))
-                _examples = "\"input\":".join(_examples_list)
-                num_generated_examples += len(_examples_list)
+                _examples = self.model._generate_sql(prompt, use_flash=self.use_flash)
+                num_generated_examples += len(_examples.split("\"input\":"))
                 examples += "\n" + _examples
             return examples
             
@@ -575,37 +581,37 @@ class ProcessSqlData:
         res = [res_dict[i] for i in range(len(datas))]
         return res
 
-    def create_sft_raw_data(self, dump_file=True):
+    def create_sft_raw_data(self, source_type="bird", dump_file=True):
         dev_data = []
-        for data_info in SQL_DATA_INFO:
-            if data_info['data_source'] in ['bird', 'spider']:
-                col_selected_schemas = dict()
-                if (self.use_column_filtering) and self.filtered_schema_file:
-                    df = pd.read_csv(self.filtered_schema_file)
-                    id_name, schema_name = 'question_id', 'selected_schema_with_connections'
-                    col_selected_schemas = dict()
-                    for k, v in zip(df[id_name], df[schema_name]):
-                        col_selected_schemas[int(k)] = v
-                dev_data.extend(
-                    self.decode_json_file_with_ddl(
-                        data_file_list=[self.input_data_file],
-                        table_file=self.input_table_file,
-                        db_folder_path=self.db_folder_path,
-                        db_id_name=data_info["db_id_name"],
-                        output_name=data_info["output_name"],
-                        col_selected_schemas=col_selected_schemas,
-                    ))
-                if dump_file:
-                    with open(self.dev_file, "w", encoding="utf-8") as s:
-                        json.dump(dev_data, s, indent=4, ensure_ascii=False)
-                return dev_data
-            else:
-                logging.error("non BIRD-Bench dataset is not supported.")
-                raise
+        data_info = SQL_DATA_INFO[source_type]
+        assert data_info['data_source'] in ['bird', 'spider']
+        
+        col_selected_schemas = dict()
+        if (self.use_column_filtering) and self.filtered_schema_file:
+            df = pd.read_csv(self.filtered_schema_file)
+            id_name, schema_name = 'question_id', 'selected_schema_with_connections'
+            col_selected_schemas = dict()
+            for k, v in zip(df[id_name], df[schema_name]):
+                col_selected_schemas[int(k)] = v
+        dev_data.extend(
+            self.decode_json_file_with_ddl(
+                data_file_list=[self.input_data_file],
+                table_file=self.input_table_file,
+                db_folder_path=self.db_folder_path,
+                db_id_name=data_info["db_id_name"],
+                output_name=data_info["output_name"],
+                col_selected_schemas=col_selected_schemas,
+            ))
+        if dump_file:
+            with open(self.dev_file, "w", encoding="utf-8") as s:
+                json.dump(dev_data, s, indent=4, ensure_ascii=False)
+        return dev_data
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+
+    parser.add_argument("--source_type", default="bird")
 
     parser.add_argument("--input_data_path")
     parser.add_argument("--input_table_path")
@@ -634,7 +640,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_documents", default=0)
     # Use hint & rules
     parser.add_argument("--use_hint", default=True)
-    parser.add_argument("--use_rules", default=True)
+    parser.add_argument("--use_rules", default=False)  # for the first generation
     # Table retrieval. Use --tbr_selection_file, for retrieval with TBR simulation.
     parser.add_argument(
         "--extra_top_k",
@@ -644,11 +650,13 @@ if __name__ == "__main__":
     # column names: question_id,selected_schema_with_connections
     # this contains filtered database schema by question_id (key)
     parser.add_argument("--filtered_schema_file", default="")
-    parser.add_argument("--db_tbl_col_vals_file", default="db_tbl_col_vals.pickle")
+    parser.add_argument("--db_tbl_col_vals_file", default="db_tbl_col_vals_bird.pickle")
     parser.add_argument("--tbr_selection_file", default="")
 
     # experimental flag
     parser.add_argument("--challenging_example_only", default=False)
+    parser.add_argument("--use_flash", default=False)
+    parser.add_argument("--filtered_schema_generation", default=False)
 
     args = parser.parse_args()
 
@@ -679,5 +687,8 @@ if __name__ == "__main__":
         document_selection_file=args.document_selection_file,
         num_documents=int(args.num_documents),
         challenging_example_only=bool(args.challenging_example_only),
+        use_flash=bool(args.use_flash),
+        filtered_schema_generation=bool(args.filtered_schema_generation),
+        source_type=args.source_type,
     )
-    process.create_sft_raw_data()
+    process.create_sft_raw_data(source_type=args.source_type)

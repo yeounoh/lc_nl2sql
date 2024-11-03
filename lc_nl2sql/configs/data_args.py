@@ -167,7 +167,7 @@ class DataArguments:
         metadata={"help": "Directory (path) containing test databases"}
     )
     db_tbl_col_vals_file: Optional[str] = field(
-        default="db_tbl_col_vals.pickle",
+        default="db_tbl_col_vals_bird.pickle",
         metadata={"help": "Cache file to hold column values"}
     )
     filtered_schema_file: Optional[str] = field(

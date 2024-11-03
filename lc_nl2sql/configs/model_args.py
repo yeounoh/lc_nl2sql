@@ -137,7 +137,7 @@ class GeneratingArguments:
         },
     )
     use_self_correction: Optional[bool] = field(
-        default=True,
+        default=False,
         metadata={
             "help":
             "Whether or not to use self error correction feature."
@@ -148,6 +148,13 @@ class GeneratingArguments:
         metadata={
             "help":
             "Whether or not to measure and record additional tokens used for self-correction loop."
+        },
+    )
+    use_flash: Optional[bool] = field(
+        default=False,
+        metadata={
+            "help":
+            "Whether or not to use gemini flash model."
         },
     )
     temperature: Optional[float] = field(
@@ -188,6 +195,13 @@ class GeneratingArguments:
         metadata={
             "help":
             "The maximum numbers of tokens to generate, ignoring the number of tokens in the prompt."
+        },
+    )
+    ignore_hints: Optional[bool] = field(
+        default=False,
+        metadata={
+            "help":
+            "Ignore hints if set True."
         },
     )
     repetition_penalty: Optional[float] = field(
