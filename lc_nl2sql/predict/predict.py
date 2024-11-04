@@ -105,7 +105,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                 res_dict[index] = result[0]
                 
                 e2e_latency.append(result[5])
-                
+
                 if result[0] != "":
                     success_count += 1
                     if result[1] > 0:
