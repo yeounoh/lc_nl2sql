@@ -686,9 +686,9 @@ if __name__ == "__main__":
         document_pool_type=args.document_pool_type,
         document_selection_file=args.document_selection_file,
         num_documents=int(args.num_documents),
-        challenging_example_only=bool(args.challenging_example_only),
-        use_flash=bool(args.use_flash),
-        filtered_schema_generation=bool(args.filtered_schema_generation),
+        challenging_example_only=bool(int(args.challenging_example_only)),
+        use_flash=bool(int(args.use_flash)),
+        filtered_schema_generation=bool(int(args.filtered_schema_generation)),
         source_type=args.source_type,
     )
     process.create_sft_raw_data(source_type=args.source_type)
