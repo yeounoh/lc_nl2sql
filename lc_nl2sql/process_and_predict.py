@@ -67,7 +67,9 @@ def main():
     model = GeminiModel(project_id=args.vertex_ai_project_id)
     model._infer_args({"temperature": float(args.temperature),
                        "db_folder_path": args.db_folder_path,
-                       "db_tbl_col_vals_file": args.db_tbl_col_vals_file})
+                       "db_tbl_col_vals_file": args.db_tbl_col_vals_file,
+                       "use_disambiguation": False,
+                       "use_self_correction": True})
 
     dev_data = process.create_sft_raw_data(dump_file=False)
     predict_data = [extract_sql_prompt_dataset(item) for item in dev_data]

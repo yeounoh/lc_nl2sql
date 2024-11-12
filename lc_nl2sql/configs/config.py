@@ -41,10 +41,9 @@ SAFETY_SETTING = {
 }
 
 #### ICL Experimentation ####
-BASIC_INSTRUCTION_PROMPT = """\
-You are a SQLite SQL expert.
-Your job is to write a SQLite SQL query to answer the user's question.
-You need to understand the question in natural language and good understanding of the underlying database schema and structure to get it right.
+BASIC_INSTRUCTION_PROMPT = """
+Your job is to write a SQLite SQL query to answer the user's question in natural language.
+This requires understanding the question as well asthe underlying database schema.
 The database ("{db_name}") structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
 
 Given the "Table creation statements" and the "Question", you need understand the database and columns.
@@ -91,10 +90,9 @@ Now generate SQLite SQL query to answer the given "Question".
 Output the SQL query string ONLY, and make sure it is a single SQL statement.
 """
 
-BASIC_INSTRUCTION_PROMPT_NO_RULES = """\
-You are a SQLite SQL expert.
-Your job is to write a SQLite SQL query to answer the user's question.
-You need to understand the question in natural language and good understanding of the underlying database schema and structure to get it right.
+BASIC_INSTRUCTION_PROMPT_NO_RULES = """
+Your job is to write a SQLite SQL query to answer the user's question in natural language.
+This requires understanding the question as well asthe underlying database schema.
 The database ("{db_name}") structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
 
 Given the "Table creation statements" and the "Question", you need understand the database and columns.
@@ -122,8 +120,7 @@ Now generate SQLite SQL query to answer the given "Question".
 Output the SQL query string ONLY.
 """
 
-MAJORITY_VOTING = """You are a SQLite SQL expert.
-
+MAJORITY_VOTING = """
 You need to the most likely or correct SQLite SQL from a set of candidates that answers a question in natural language.
 
 The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions).
@@ -144,8 +141,7 @@ answers the given "Question":
 Only return a single SQL query from the candidates and the SQL only as a string.
 """
 
-VERIFY_ANSWER = """You are a SQLite SQL expert.
-
+VERIFY_ANSWER = """
 Your job is to verify the correctness of a given SQL query both syntactically and semantically. That means you would have to ensure the SQL query is syntatically correct, and also it does return what the user is asking for in the natural language "Question."
 
 Given the "Table creation statements" and the "Question and Hints", you need understand the database and the relevant table columns. The database structure is defined by the following table schemas (comments after '--' provide additional column descriptions). 
@@ -171,7 +167,7 @@ If you think the SQL query is incorrect, then return an empty string "".
 If you are confident that the SQL query is correct, return it as-is.
 """
 
-EXAMPLE_GENERATOR2 = """You are a SQLite SQL expert.
+EXAMPLE_GENERATOR2 = """
 Your job is to create {k} examples, where each example consists of a question and a SQL query to fetch the data for it.
 I want each example to look like this, question input and SQL ouput pairs:
 ```
@@ -198,7 +194,7 @@ Generate total of {k} examples.
 Only outputs the examples (question input and SQL output pairs), and each eaxmple can be separated by a new line.
 """
 
-EXAMPLE_GENERATOR = """You are a SQLite SQL expert.
+EXAMPLE_GENERATOR = """
 Your job is to create a set of examples, where each example consists of a question and a SQL query to fetch the data for it.
 
 You should generate examples that examine and showcase different aspects and relationships of the following table schemas.
@@ -281,7 +277,7 @@ Only outputs the examples (question input and SQL output pairs), and each eaxmpl
 
 """
 
-LITERAL_ERROR_TEMPLATE = """You are a SQLite SQL expert.
+LITERAL_ERROR_TEMPLATE = """
 Someone had a question and they tried to run a SQL query to fetch the data for it.
 It is possible there were some literal errors in the query.
 Or you used a wrong table(s) and column(s) in the query.
@@ -342,7 +338,7 @@ Output the sqlite query string ONLY. It should be the query in plain text.
 Your answer must be a single SQL statement.
 """
 
-CHECKER_TEMPLATE = """You are a SQLite SQL expert.
+CHECKER_TEMPLATE = """
 Someone had a question and they tried to run a SQL query to fetch the data for it.
 However, the query execution failed for some error.
 Now you need to fix the query based on the previous execution error.

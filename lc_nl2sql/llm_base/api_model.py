@@ -31,9 +31,11 @@ class GeminiModel:
 
     def __init__(self, project_id="400355794761") -> None:
         vertexai.init(project=project_id, location="us-central1")
-        self.model = GenerativeModel(model_name="gemini-1.5-pro-002")  # preview-0514
+        self.model = GenerativeModel(model_name="gemini-1.5-pro-002",
+                                     system_instruction="You are a SQLite SQL expert.")  # preview-0514
         self.model2 = GenerativeModel(
-            model_name="gemini-1.5-flash-002")
+            model_name="gemini-1.5-flash-002",
+            system_instruction="You are a SQLite SQL expert.")
         self.ignore_hints = False
 
     def _infer_args(self, args: Optional[Dict[str, Any]] = None):
@@ -186,8 +188,8 @@ class GeminiModel:
                     logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
                 return self._generate_sql(query,
-                                            1.0,
-                                            use_flash,
+                                            temperature=temperature+0.2,
+                                            use_flash=use_flash,
                                             max_retries=max_retries - 1)
             else:
                 logging.error(f"SQL generation failed for: {str(e)}")

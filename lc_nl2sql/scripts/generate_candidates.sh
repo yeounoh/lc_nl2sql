@@ -3,12 +3,13 @@
 # Using train dataset
 num_candidates="20"
 python lc_nl2sql/process_and_predict.py \
+        --vertex_ai_project_id 400355794761 \
         --input_data_path lc_nl2sql/data/bird/train/train.json \
         --input_table_path lc_nl2sql/data/bird/train/train_tables.json \
         --output_file_path "lc_nl2sql/data/train_candidates_$num_candidates.csv" \
         --db_folder_path lc_nl2sql/data/bird/train/train_databases \
         --db_tbl_col_vals_file lc_nl2sql/data/bird/train_db_tbl_col_vals.pickle \
-        --temperature 1.0 \
+        --temperature 2 \
         --num_candidates "$num_candidates"
 
 python lc_nl2sql/eval/label_bird.py \
