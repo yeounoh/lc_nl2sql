@@ -145,8 +145,9 @@ class GeminiModel:
                       query,
                       temperature=0.5,
                       use_flash=False,
-                      max_retries=5):
-        model = self.model2 if use_flash else self.model
+                      max_retries=5, model=None):
+        if not model:
+            model = self.model2 if use_flash else self.model
         query = self._compress(query)
         query = self._remove_hints(query)
         try:
@@ -158,6 +159,7 @@ class GeminiModel:
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
             err_msg = str(e)
+            model = None
             if "RECITATION" in err_msg:
                 json_response = err_msg.split("Response:")[1]
                 try:
@@ -190,6 +192,10 @@ class GeminiModel:
                                 )
                             postfix = "**************************" + postfix
                             modified_string = prefix + shuffled_schema + postfix
+                            model = GenerativeModel(
+                                    model_name="gemini-1.5-flash-002",
+                                    system_instruction=query[:end_idx])
+                            modified_string = query[end_idx:]
                             logging.info(f"Not fixing RECITATION error: {query[start_index:end_index]}")
                     query = modified_string
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
@@ -204,7 +210,8 @@ class GeminiModel:
                 return self._generate_sql(query,
                                             temperature=temperature+0.2,
                                             use_flash=use_flash,
-                                            max_retries=max_retries - 1)
+                                            max_retries=max_retries - 1,
+                                            model=model)
             else:
                 logging.error(f"SQL generation failed for: {err_msg}")
             return ""
