@@ -145,7 +145,7 @@ class GeminiModel:
                       query,
                       temperature=0.5,
                       use_flash=False,
-                      max_retries=5, model=None):
+                      max_retries=4, model=None):
         if not model:
             model = self.model2 if use_flash else self.model
         query = self._compress(query)
@@ -171,15 +171,15 @@ class GeminiModel:
 
                     modified_string = query
                     example_col_start = query.find("###Table column example values###")
+                    table_col_start = query.find("###Table creation statements###")
                     for citation in citations:
                         start_index = citation['start_index']
                         end_index = citation['end_index']
                         if example_col_start != -1 and int(start_index) > example_col_start:
                             modified_string = modified_string[:start_index] + modified_string[end_index:]
-                            logging.info(f"Fixed RECITATION error: {query[start_index:end_index]}")
-                        else:
+                        elif table_col_start != -1 and int(start_index) > table_col_start:
                             prefix = query.split(
-                                "###Table creation statements###")[0]
+                                "###Table creation statements###")[0] + "###Table creation statements###"
                             tables = query.split(
                                 "###Table creation statements###")[1].split(
                                     "**************************")[0].split(");\n")
@@ -192,11 +192,11 @@ class GeminiModel:
                                 )
                             postfix = "**************************" + postfix
                             modified_string = prefix + shuffled_schema + postfix
+                        else:
                             model = GenerativeModel(
                                     model_name="gemini-1.5-flash-002",
-                                    system_instruction=query[:end_idx])
-                            modified_string = query[end_idx:]
-                            logging.info(f"Not fixing RECITATION error: {query[start_index:end_index]}")
+                                    system_instruction=query[:end_index])
+                            modified_string = query[end_index:]
                     query = modified_string
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
