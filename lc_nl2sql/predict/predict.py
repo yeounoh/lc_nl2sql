@@ -51,7 +51,7 @@ def inference_worker(
         e2e_latency = time.time()
         for i in range(n_candidates):
             n_tries += 1
-            model.set_temperature(model.generating_args.temperature + 0.1 * i)
+            model.set_temperature(min(2.0, model.generating_args.temperature + 0.1 * i))
             start_time = time.time()  # tracks output generation time
             response, _ = model.chat(query=item["input"],
                                      history=[],

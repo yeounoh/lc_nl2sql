@@ -76,11 +76,7 @@ def main():
     candidate_sets = list()
     candidate_sets.append([idx for idx in range(len(predict_data))])
     for _ in range(int(args.num_candidates)):
-        cnt = 0
-        result = []
-        while cnt < len(predict_data):
-            result += predict.parallelized_inference(model, predict_data[cnt:cnt+50])[0]
-            cnt += len(predict_data[cnt:cnt+50])
+        result = predict.parallelized_inference(model, predict_data)[0]
         candidate_sets.append(result)
 
     with open(args.output_file_path, "w", newline="") as csvfile:

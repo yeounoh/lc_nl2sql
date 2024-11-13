@@ -146,6 +146,7 @@ class GeminiModel:
                       temperature=0.5,
                       use_flash=False,
                       max_retries=4, model=None):
+        temperature = min(2.0,temperature)
         if not model:
             model = self.model2 if use_flash else self.model
         query = self._compress(query)
@@ -200,12 +201,18 @@ class GeminiModel:
                     query = modified_string
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
+                return self._generate_sql(query,
+                                            temperature=temperature,
+                                            use_flash=use_flash,
+                                            max_retries=0,
+                                            model=model)
             if max_retries > 0:
                 if "400" in err_msg or "PROHIBITED_CONTENT" in err_msg:
-                    logging.info(f"{err_msg}, retrying ...")
+                    logging.debug(f"{err_msg}, retrying ...")
                     query = self._remove_col_vals(query)
                 else:
-                    logging.info(f"{err_msg}, retrying in {30 // max(max_retries, 1)} seconds")
+                    logging.debug(f"{err_msg}")
+                    logging.info(f"Retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
                 return self._generate_sql(query,
                                             temperature=temperature+0.2,
