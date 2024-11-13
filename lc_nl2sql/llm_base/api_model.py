@@ -157,8 +157,9 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            if "RECITATION" in str(e):
-                json_response = str(e).split("Response:")[1]
+            err_msg = str(e)
+            if "RECITATION" in err_msg:
+                json_response = err_msg.split("Response:")[1]
                 try:
                     response_data = json.loads(json_response)
                     citations = response_data['candidates'][0]['citation_metadata']['citations']
@@ -175,24 +176,37 @@ class GeminiModel:
                             modified_string = modified_string[:start_index] + modified_string[end_index:]
                             logging.info(f"Fixed RECITATION error: {query[start_index:end_index]}")
                         else:
+                            prefix = query.split(
+                                "###Table creation statements###")[0]
+                            tables = query.split(
+                                "###Table creation statements###")[1].split(
+                                    "**************************")[0].split(");\n")
+                            np.random.shuffle(tables)
+                            shuffled_schema = ");\n".join(tables)
+                            postfix = "**************************".join(
+                                    query.split(
+                                    "###Table creation statements###")[1].split(
+                                    "**************************")[1:]
+                                )
+                            postfix = "**************************" + postfix
+                            modified_string = prefix + shuffled_schema + postfix
                             logging.info(f"Not fixing RECITATION error: {query[start_index:end_index]}")
                     query = modified_string
-                        
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logging.debug(f"Error processing JSON response: {e}")
             if max_retries > 0:
-                if "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
-                    logging.info(f"{str(e)}, retrying ...")
+                if "400" in err_msg or "PROHIBITED_CONTENT" in err_msg:
+                    logging.info(f"{err_msg}, retrying ...")
                     query = self._remove_col_vals(query)
                 else:
-                    logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
+                    logging.info(f"{err_msg}, retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
                 return self._generate_sql(query,
                                             temperature=temperature+0.2,
                                             use_flash=use_flash,
                                             max_retries=max_retries - 1)
             else:
-                logging.error(f"SQL generation failed for: {str(e)}")
+                logging.error(f"SQL generation failed for: {err_msg}")
             return ""
         resp = re.sub(r"^ite\s+", "", resp)
         resp = re.sub('\s+', ' ', resp).strip()

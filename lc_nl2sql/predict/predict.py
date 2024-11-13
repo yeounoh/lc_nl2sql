@@ -74,7 +74,7 @@ def inference_worker(
     try:
         return func_timeout(1800, _task2, args=())
     except FunctionTimedOut:
-        return ("", 0, 0, 0, 0)
+        return ("", 0, 0, 0, 0, 0)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):
@@ -96,7 +96,7 @@ def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
         n_completed = 0
         try:
             for future in tqdm(as_completed(futures,
-                                            timeout=8000),
+                                            timeout=5 * len(futures)),
                                total=len(futures),
                                desc="Inference Progress",
                                unit="item"):
