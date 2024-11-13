@@ -200,7 +200,7 @@ class GeminiModel:
                             modified_string = query[end_index:]
                     query = modified_string
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
-                    logging.debug(f"Error processing JSON response: {e}")\
+                    logging.debug(f"Error processing JSON response: {e}")
                 time.sleep(2)
                 return self._generate_sql(query,
                                             temperature=temperature,
