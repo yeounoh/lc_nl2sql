@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Using train dataset
-num_candidates=10
+num_candidates=5
 python lc_nl2sql/process_and_predict.py \
         --vertex_ai_project_id 400355794761 \
         --input_data_path lc_nl2sql/data/bird/train/train.json \
@@ -13,9 +13,9 @@ python lc_nl2sql/process_and_predict.py \
         --num_candidates "$num_candidates"
 
 python lc_nl2sql/eval/label_bird.py \
-        --ground_truth_path \
-        --db_root_path \
-        --gt_tied_json_path \
+        --ground_truth_path lc_nl2sql/data/bird/train/train_gold.sql \
+        --db_root_path lc_nl2sql/data/bird/train/train_databases/ \
+        --gt_tied_json_path "" \
         --sql_candidates_path "lc_nl2sql/data/train_candidates_${num_candidates}.csv" \
         --sql_candidates_with_label_path "lc_nl2sql/data/train_candidates_${num_candidates}_label.csv"
 

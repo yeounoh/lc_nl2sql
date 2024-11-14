@@ -59,17 +59,22 @@ def execute_sqls(predicted_sqls, ground_truth, db_path, gt_tied_sql=""):
 
 
 def execute_model(predicted_sql, ground_truth, db_place, idx, meta_time_out, gt_tied_sql=""):
-    assert isinstance(predicted_sql, list)
+    
     try:
-        res = func_timeout(
-                meta_time_out * len(predicted_sql), execute_sqls, args=(predicted_sql, ground_truth, db_place, gt_tied_sql)
-            )
+        if isinstance(predicted_sql, list):
+            res = func_timeout(
+                    meta_time_out * len(predicted_sql), execute_sqls, args=(predicted_sql, ground_truth, db_place, gt_tied_sql)
+                )
+        else:
+            res = func_timeout(
+                    meta_time_out, execute_sql, args=(predicted_sql, ground_truth, db_place, gt_tied_sql)
+                )
     except KeyboardInterrupt:
         sys.exit(0)
     except FunctionTimedOut:
-        res = [0] * len(predicted_sql)
+        res = [0] * len(predicted_sql) if isinstance(predicted_sql, list) else [0]
     except Exception as e:
-        res = [0] * len(predicted_sql)
+        res = [0] * len(predicted_sql) if isinstance(predicted_sql, list) else [0]
     result = {
         "sql_idx": idx,
         "res": res,
@@ -77,19 +82,23 @@ def execute_model(predicted_sql, ground_truth, db_place, idx, meta_time_out, gt_
     return result
 
 
-def package_sqls(sql_path, multi_sqls=False):
+def package_sqls(sql_path, db_root_path, multi_sqls=False):
     clean_sqls = []
     db_path_list = []
     if multi_sqls:
         with open(sql_path, 'r') as f:
             csv_reader = csv.reader(f)
+            next(csv_reader, None)
             for row in csv_reader:
                 candidates = [r.strip() for r in row]
                 clean_sqls.append(candidates)
+        clean_sqls = np.array(clean_sqls).T.tolist()
     else:
         with open(sql_path) as f:
             for l in f.readlines():
                 clean_sqls.append(l.strip())
+                sql, db_name = clean_sqls[-1].split("\t")
+                db_path_list.append(db_root_path + db_name + "/" + db_name + ".sqlite")
 
     return clean_sqls, db_path_list
 
@@ -101,23 +110,41 @@ def run_sqls_parallel(sqls, db_places, num_cpus=1, meta_time_out=30.0, gt_tied_q
         gt_tied_sql = ""
         if gt_tied_queries:
             gt_tied_sql = gt_tied_queries[i] if i in gt_tied_queries else ""
-        pool.apply_async(
-            execute_model,
-            args=(predicted_sql, ground_truth, db_places[i], i, meta_time_out, gt_tied_sql),
-            callback=result_callback,
-        )
+        
+        for sql in predicted_sql:
+            pool.apply_async(
+                execute_model,
+                args=(sql, ground_truth, db_places[i], i, meta_time_out, gt_tied_sql),
+                callback=result_callback,
+            )
     pool.close()
     pool.join()
 
-
 def sort_results(list_of_dicts):
     return sorted(list_of_dicts, key=lambda x: x["sql_idx"])
+
+def merge_results(list_of_dicts):
+    candidates = list()
+    current_idx = 0
+    new_list_of_dicts = list()
+    for d in list_of_dicts:
+        if d['sql_idx'] != current_idx:
+            new_list_of_dicts.append({'sql_idx': current_idx,
+                                      'res': candidates})
+            candidates = list()
+            current_idx = d['sql_idx']
+        else:
+            candidates.append(d['res'])
+    if candidates:
+        new_list_of_dicts.append({'sql_idx': current_idx,
+                                      'res': candidates})
+    return new_list_of_dicts
 
 
 def compute_acc_with_candidates(exec_results, metric):
     assert metric == "res"
     num_queries = len(exec_results)
-    num_candidates = len(exec_results[metric])
+    num_candidates = len(exec_results[0][metric])
 
     average_acc = 0.
     for i in range(num_candidates):
@@ -163,7 +190,7 @@ if __name__ == "__main__":
         type=str,
         default="",
     )
-    args_parser.add_argument("--num_cpus", type=int, default=1)
+    args_parser.add_argument("--num_cpus", type=int, default=20)
     args_parser.add_argument("--meta_time_out", type=float, default=30.0)
     args_parser.add_argument(
         "--etype",
@@ -184,12 +211,13 @@ if __name__ == "__main__":
     assert args.sql_candidates_path
     pred_queries, db_paths = package_sqls(
         args.sql_candidates_path,
+        args.db_root_path,
         multi_sqls=True,
     )
     
     # generate gt sqls:
     gt_queries, db_paths_gt = package_sqls(
-        args.ground_truth_path, args.db_root_path,
+        args.ground_truth_path, args.db_root_path, multi_sqls=False
     )
     # generate gt_tied sqls dict
     gt_tied_queries = {}
@@ -213,6 +241,7 @@ if __name__ == "__main__":
     else:
         raise NotImplementedError(f"--etype: {args.etype} is not supported")
     exec_result = sort_results(exec_result)
+    exec_result = merge_results(exec_result)
 
     with open(args.sql_candidates_with_label_path, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
@@ -221,13 +250,12 @@ if __name__ == "__main__":
     print("start calculate")
     if args.etype in ["exec"]:
         (
-            simple_acc,
-            moderate_acc,
-            challenging_acc,
-            acc,
+            avg_acc,
+            upper_acc,
+            lower_acc,
             count_lists,
         ) = compute_acc_with_candidates(exec_result, "res")
-        score_lists = [simple_acc, moderate_acc, challenging_acc, acc]
+        score_lists = [avg_acc, upper_acc, lower_acc]
         print_data(score_lists, count_lists, metric="Exec Accuracy")
     print(
         "==========================================================================================="
