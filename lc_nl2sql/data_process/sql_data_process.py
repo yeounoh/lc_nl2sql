@@ -19,6 +19,8 @@ sys.path.append(ROOT_PATH)
 
 from lc_nl2sql.configs.config import (BASIC_INSTRUCTION_PROMPT,
                                       BASIC_INSTRUCTION_PROMPT_NO_RULES,
+                                      CODES_SQL2TXT,CODES_SQL2TXT_TEMPLATES,
+                                    CODES_TXT2SQL1, CODES_TXT2SQL2,
                                       EXAMPLE_GENERATOR, SQL_DATA_INFO,
                                       DATA_PATH, EXAMPLE_GENERATOR2)
 from lc_nl2sql.llm_base.api_model import GeminiModel
@@ -55,7 +57,8 @@ class ProcessSqlData:
         challenging_example_only=False,
         use_flash=False,
         filtered_schema_generation=False,
-        source_type="bird"
+        source_type="bird",
+        use_codes=False,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -86,6 +89,7 @@ class ProcessSqlData:
         self.filtered_schema_generation = filtered_schema_generation
 
         self.source_type = source_type
+        self.use_codes = use_codes
 
         self.emb_model = None
         self.model = GeminiModel(vertex_ai_project_id)
@@ -371,15 +375,35 @@ class ProcessSqlData:
         def generate_k_examples(schema, k, diverse_set=True):
             num_generated_examples = 0
             examples = ""
-            while num_generated_examples < k:
-                _k = min(k - num_generated_examples, 128)
+            if not self.use_codes:
+                while num_generated_examples < k:
+                    _k = min(k - num_generated_examples, 128)
+                    if diverse_set:
+                        prompt = EXAMPLE_GENERATOR2.format(schema=schema, k=_k)
+                    else:
+                        prompt = EXAMPLE_GENERATOR.format(schema, _k)
+                    _examples = self.model._generate_sql(prompt, use_flash=self.use_flash)
+                    num_generated_examples += len(_examples.split("\"input\":"))
+                    examples += "\n" + _examples
+            else:
+                shot_template = r"""
+                        \"input\": \"{sql_prompt}\"\n
+                        \"output\": \"{sql}\"\n
+                        """
                 if diverse_set:
-                    prompt = EXAMPLE_GENERATOR2.format(schema=schema, k=_k)
+                    # txt2sql, asking LLM to come up with questions first
+                    prompt = CODES_TXT2SQL1.format(SCHEMA_SLOT=schema, n=k)
+                    questions = self.model._generate_sql(prompt).split("\n")
+                    for question in questions:
+                        prompt = CODES_TXT2SQL2.format(
+                            SCHEMA_SLOT=schema,
+                            NATURAL_LANGUAGE_QUESTION=question)
+                        sql = self.model._generate_sql(prompt)
+                        examples += shot_template.format(sql_prompt=question, sql=sql)
                 else:
-                    prompt = EXAMPLE_GENERATOR.format(schema, _k)
-                _examples = self.model._generate_sql(prompt, use_flash=self.use_flash)
-                num_generated_examples += len(_examples.split("\"input\":"))
-                examples += "\n" + _examples
+                    #sql2txt
+                    prompt = CODES_SQL2TXT.format(templates=CODES_SQL2TXT_TEMPLATES, schema=schema, n=k)
+                    examples += self.model._generate_sql(prompt)
             return examples
             
 
@@ -657,6 +681,7 @@ if __name__ == "__main__":
     parser.add_argument("--challenging_example_only", default=False)
     parser.add_argument("--use_flash", default=False)
     parser.add_argument("--filtered_schema_generation", default=False)
+    parser.add_argument("--use_codes", default=False)
 
     args = parser.parse_args()
 
@@ -690,5 +715,6 @@ if __name__ == "__main__":
         use_flash=bool(int(args.use_flash)),
         filtered_schema_generation=bool(int(args.filtered_schema_generation)),
         source_type=args.source_type,
+        use_codes=bool(int(args.use_codes)),
     )
     process.create_sft_raw_data(source_type=args.source_type)

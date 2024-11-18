@@ -62,8 +62,9 @@ def inference_worker(
             generation_latency = time.time() - start_time
             if response != "":
                 start_time = time.time()
-                cached_response = model.verify_answer(response, question, schema, 
-                                                      use_flash=model.generating_args.use_flash)
+                #cached_response = model.verify_answer(response, question, schema, 
+                #                                      use_flash=model.generating_args.use_flash)
+                cached_response = response
                 verification_latency = time.time() - start_time
                 if cached_response != "":
                     e2e_latency = time.time() - e2e_latency

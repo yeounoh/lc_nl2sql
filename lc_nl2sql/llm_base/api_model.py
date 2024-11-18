@@ -31,9 +31,12 @@ class GeminiModel:
 
     def __init__(self, project_id="400355794761") -> None:
         vertexai.init(project=project_id, location="us-central1")
-        self.model = GenerativeModel(model_name="gemini-1.5-pro-002")  # preview-0514
+        # self.model = GenerativeModel(model_name="gemini-1.5-pro-002")  # preview-0514
+        # self.model2 = GenerativeModel(
+        #     model_name="gemini-1.5-flash-002")
+        self.model = GenerativeModel(model_name="gemini-1.5-pro-preview-0514")  # preview-0514
         self.model2 = GenerativeModel(
-            model_name="gemini-1.5-flash-002")
+            model_name="gemini-1.5-flash-preview-0514")
         self.ignore_hints = False
 
     def _infer_args(self, args: Optional[Dict[str, Any]] = None):
