@@ -20,7 +20,8 @@ sys.path.append(ROOT_PATH)
 from lc_nl2sql.configs.config import (BASIC_INSTRUCTION_PROMPT,
                                       BASIC_INSTRUCTION_PROMPT_NO_RULES,
                                       EXAMPLE_GENERATOR, SQL_DATA_INFO,
-                                      DATA_PATH, EXAMPLE_GENERATOR2)
+                                      DATA_PATH, EXAMPLE_GENERATOR2, 
+                                      COLUMN_SELECTOR_TEMPLATE)
 from lc_nl2sql.llm_base.api_model import GeminiModel
 
 
@@ -429,7 +430,7 @@ class ProcessSqlData:
                     data['question_id'])]
             if not filtered_schema:
                 filtered_col_json = select_table_columns(
-                    schema, data['question'], data['evidence'])
+                    schema, data['question'], data['evidence'] if 'evidence' in data else "")
                 table_schema_map = db_table_schema_map[
                     data[db_id_name]]
                 filtered_schema = filter_tables(
@@ -584,8 +585,9 @@ class ProcessSqlData:
     def create_sft_raw_data(self, source_type="bird", dump_file=True):
         dev_data = []
         data_info = SQL_DATA_INFO[source_type]
-        assert data_info['data_source'] in ['bird', 'spider']
+        assert data_info['data_source'] in ['bird', 'spider', 'kaggle']
         
+        # TODO(yeounoh) - column selection results for kaggle
         col_selected_schemas = dict()
         if (self.use_column_filtering) and self.filtered_schema_file:
             df = pd.read_csv(self.filtered_schema_file)
