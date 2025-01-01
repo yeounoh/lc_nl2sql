@@ -615,6 +615,7 @@ class ProcessSqlData:
         data_info = SQL_DATA_INFO[source_type]
         assert data_info['data_source'] in ['bird', 'spider', 'kaggle', 'beaver']
         
+        # TODO(yeounoh) - column selection results for kaggle
         col_selected_schemas = dict()
         if (self.use_column_filtering) and self.filtered_schema_file:
             df = pd.read_csv(self.filtered_schema_file)
