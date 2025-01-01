@@ -88,17 +88,16 @@ def package_sqls(sql_path, db_root_path, multi_sqls=False):
     if multi_sqls:
         with open(sql_path, 'r') as f:
             csv_reader = csv.reader(f)
-            #next(csv_reader, None)
+            next(csv_reader, None)
             for row in csv_reader:
                 candidates = [r.strip() for r in row]
                 clean_sqls.append(candidates)
         clean_sqls = np.array(clean_sqls).T.tolist()
-        clean_sqls[0] = clean_sqls[0][1:]
     else:
         with open(sql_path) as f:
             for l in f.readlines():
-                clean_sqls.append(l.strip())
-                sql, db_name = clean_sqls[-1].split("\t")
+                sql, db_name = l.strip().split("\t")
+                clean_sqls.append(sql)
                 db_path_list.append(db_root_path + db_name + "/" + db_name + ".sqlite")
 
     return clean_sqls, db_path_list
@@ -134,11 +133,10 @@ def merge_results(list_of_dicts):
                                       'res': candidates})
             candidates = list()
             current_idx = d['sql_idx']
+        if isinstance(d['res'], list):
+            candidates += d['res']
         else:
-            if isinstance(d['res'], list):
-                candidates += d['res']
-            else:
-                candidates.append(d['res'])
+            candidates.append(d['res'])
     if candidates:
         new_list_of_dicts.append({'sql_idx': current_idx,
                                       'res': candidates})
@@ -157,8 +155,9 @@ def compute_acc_with_candidates(exec_results, metric):
     upper_acc = 0.
     lower_acc = 0.
     for i in range(num_queries):
-        upper_acc += int(np.any(exec_results[i][metric] == 1))
-        lower_acc += int(np.all(exec_results[i][metric] == 1))
+        arr = np.array(exec_results[i][metric])
+        upper_acc += int(np.any(arr == 1))
+        lower_acc += int(np.all(arr == 1))
     upper_acc /= num_queries
     lower_acc /= num_queries
     
