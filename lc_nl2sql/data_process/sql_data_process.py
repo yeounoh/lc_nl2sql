@@ -386,10 +386,13 @@ class ProcessSqlData:
 
         def filter_tables(table_schema_map, filtered_col_json):
             tables = []
-            for item in json.loads(filtered_col_json.replace("json ", "")):
-                tname = item.split(":")[0]
-                if tname:
-                    tables = table_schema_map.get(tname, "")
+            try:
+                for item in json.loads(filtered_col_json.replace("json ", "")):
+                    tname = item.split(":")[0]
+                    if tname:
+                        tables = table_schema_map.get(tname, "")
+            except Exception:
+                tables = []
             return "".join(tables)
 
         def _generate_examples(db_id_key):
