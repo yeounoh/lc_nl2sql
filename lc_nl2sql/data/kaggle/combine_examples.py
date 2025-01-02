@@ -21,9 +21,9 @@ print(f'Numb examples: {len(combined_data)}')
 gold_sql = []
 for idx, item in enumerate(combined_data):
     item['question_id'] = idx
-    gold_sql.append(item['query'])
+    gold_sql.append((item['query'], item['db_id']))
 with open("dev.json", "w") as outfile:
   json.dump(combined_data, outfile, indent=4)
 with open("dev_gold.sql", "w") as outfile:
-  for sql in gold_sql:
-      outfile.write(sql + "\n")
+  for sql, db_id in gold_sql:
+      outfile.write(sql + "\t" + db_id + "\n")
