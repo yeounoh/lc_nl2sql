@@ -1,5 +1,6 @@
 import hashlib
 import os
+import json
 import numpy as np
 import pandas as pd
 from itertools import chain
@@ -325,3 +326,16 @@ def extract_most_similar_idx(query:List, candidates:List[List], top_k: int) -> L
     findex.add(candidates_arr)
     D, I = findex.search(np.array([query_arr]), top_k)
     return I[0,:min(top_k, len(candidates))].tolist()
+
+def combine_json_files(folder_path):
+  combined_data = []
+  for filename in os.listdir(folder_path):
+    if filename.endswith(".json"):
+      file_path = os.path.join(folder_path, filename)
+      with open(file_path, 'r') as f:
+        try:
+          data = json.load(f)
+          combined_data.extend(data) 
+        except json.JSONDecodeError as e:
+          print(f"Error decoding JSON in file {filename}: {e}")
+  return combined_data
