@@ -16,6 +16,8 @@ def create_table_from_schema(cursor, schema_file, table_name):
         next(reader)  # Skip the header row
 
         # Build the CREATE TABLE statement
+        fkeys = []
+        pkey_exist = False
         create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} ("
         for row in reader:
             column_name, data_type, data_length, pkey, fkey = row
@@ -29,32 +31,46 @@ def create_table_from_schema(cursor, schema_file, table_name):
             if data_length:
                 create_table_sql += f"({data_length})"
 
-            if pkey == 'PRIMARY KEY':
+            if pkey == 'PRIMARY KEY' and not pkey_exist:
                 create_table_sql += " PRIMARY KEY"
+                # to avoid: sqlite3.OperationalError: table "LIBRARY_MATERIAL_STATUS" has more than one primary key
+                pkey_exist = True
 
             if 'FOREIGN KEY' in fkey:
-                create_table_sql += f" {fkey}"
+                fkey_parent = fkey.split("FOREIGN KEY")[-1].strip()
+                fkeys.append(f" FOREIGN KEY ({column_name}) REFERENCES {fkey_parent}")
 
             # Add a comma if it's not the last column
             create_table_sql += ", "
 
         # Remove the trailing comma and space, and close the statement
-        create_table_sql = create_table_sql[:-2] + ")"
+        if len(fkeys) > 0:
+            create_table_sql += ", ".join(fkeys) + ")"
+        else:
+            create_table_sql = create_table_sql[:-2] + ")"
 
         # Execute the CREATE TABLE statement
         cursor.execute(create_table_sql)
 
-def load_table_content(cursor, content_file, table_name)
+def load_table_content(cursor, content_file, table_name):
         with open(content_file, 'r') as file:
             reader = csv.reader(file)
-            next(reader)  # Skip the header row if present
+            header = next(reader) 
+            num_columns = len(header)
+            print(f"Number of columns: {num_columns}")
+            cols = ", ".join(["?"] * num_columns)
 
-            # Insert data into the table
-            cursor.executemany(f'INSERT INTO {table_name} VALUES (?, ?, ?)', reader)
+            # Insert data into the table by row to avoid any integriy error:
+            # sqlite3.IntegrityError: UNIQUE constraint failed: FCLT_BUILDING_ADDRESS.FCLT_BUILDING_ADDRESS_KEY
+            for row in reader:
+                try:
+                    cursor.execute(f'INSERT INTO {table_name} VALUES ({",".join(["?"] * len(row))})', row)
+                except sqlite3.Error as e:
+                    print(e)
+                    continue
 
 
-# Specify the directory containing your CSV files
-schema_directory = 'schema'
+schema_directory = 'schema/dw'
 db_csv_directory = 'actual'
 
 db_name = 'dw.sqlite'
