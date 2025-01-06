@@ -1,5 +1,6 @@
 import sqlite3
 import csv
+import json
 import os
 
 
@@ -15,9 +16,15 @@ def create_table_from_schema(cursor, schema_file, table_name):
         reader = csv.reader(file)
         next(reader)  # Skip the header row
 
+        metadata = {
+                'columns': list(),
+                'primary_keys': list(),
+                'foreign_keys': list()
+                }
         # Build the CREATE TABLE statement
         fkeys = []
         pkey_exist = False
+        col_idx = 0
         create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} ("
         for row in reader:
             column_name, data_type, data_length, pkey, fkey = row
@@ -35,10 +42,14 @@ def create_table_from_schema(cursor, schema_file, table_name):
                 create_table_sql += " PRIMARY KEY"
                 # to avoid: sqlite3.OperationalError: table "LIBRARY_MATERIAL_STATUS" has more than one primary key
                 pkey_exist = True
+                metadata['primary_keys'].append(col_idx)
 
             if 'FOREIGN KEY' in fkey:
                 fkey_parent = fkey.split("FOREIGN KEY")[-1].strip()
                 fkeys.append(f" FOREIGN KEY ({column_name}) REFERENCES {fkey_parent}")
+            
+            metadata['columns'].append((column_name, data_type))
+            col_idx += 1
 
             # Add a comma if it's not the last column
             create_table_sql += ", "
@@ -52,6 +63,9 @@ def create_table_from_schema(cursor, schema_file, table_name):
         # Execute the CREATE TABLE statement
         cursor.execute(create_table_sql)
 
+        # Return the table object
+        return metadata
+
 def load_table_content(cursor, content_file, table_name):
         with open(content_file, 'r') as file:
             reader = csv.reader(file)
@@ -61,7 +75,7 @@ def load_table_content(cursor, content_file, table_name):
             cols = ", ".join(["?"] * num_columns)
 
             # Insert data into the table by row to avoid any integriy error:
-            # sqlite3.IntegrityError: UNIQUE constraint failed: FCLT_BUILDING_ADDRESS.FCLT_BUILDING_ADDRESS_KEY
+            # sqlite3.IntegrityError: UNIQUE constraint failed: ...
             for row in reader:
                 try:
                     cursor.execute(f'INSERT INTO {table_name} VALUES ({",".join(["?"] * len(row))})', row)
@@ -74,20 +88,48 @@ schema_directory = 'schema/dw'
 db_csv_directory = 'actual'
 
 db_name = 'dw.sqlite'
-db_path = os.path.join(db_csv_directory, db_name)
+db_path = os.path.join('databases/dw', db_name)
+db_tables = {'db_id': 'dw', 
+             'table_names_original': list(), 
+             'table_names': list(),
+             'column_names_original': list(),
+             'column_names': list(),
+             'column_types': list(),
+             'primary_keys': list(),
+             'foreign_keys': list()
+             }
+tbl_idx = 0
 for filename in os.listdir(db_csv_directory):
     if filename.endswith('.csv'):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         table_name = os.path.splitext(filename)[0]
+        db_tables['table_names_original'].append(table_name)
+        db_tables['table_names'].append(table_name)
         schema_file = os.path.join(schema_directory, table_name + ".csv")
         content_file = os.path.join(db_csv_directory, table_name + ".csv")
-        create_table_from_schema(cursor, schema_file, table_name)
+        metadata = create_table_from_schema(cursor, schema_file, table_name)
         load_table_content(cursor, content_file, table_name)
+
+        for c in metadata['columns']:
+            db_tables['column_names_original'].append([tbl_idx, c[0]])
+            db_tables['column_names'].append([tbl_idx, c[0]])
+            db_tables['column_types'].append([tbl_idx, c[1]])
+        pkeys = metadata['primary_keys']
+        if len(pkeys) == 1:
+            db_tables['primary_keys'].append(pkeys[0])
+        elif len(pkeys) > 1:
+            db_tables['primary_keys'].append(pkeys)
+        tbl_idx += 1
 
 # Commit changes and close the connection
 conn.commit()
 conn.close()
 
 print("Databases created successfully!")
+
+with open(os.path.join('tables.json'), 'w') as file:
+    file.write(json.dumps([db_tables]))
+
+print("Tables metadata file created successfully!")
