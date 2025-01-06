@@ -745,7 +745,21 @@ def evaluate(
             db_name = db
             db = os.path.join(db_dir, db, db + ".sqlite")
             schema = Schema(get_schema(db))
-            g_sql = get_sql(schema, g_str)
+            try:
+                g_sql = get_sql(schema, g_str)
+            except:
+                g_sql = {
+                    "except": None,
+                    "from": {"conds": [], "table_units": []},
+                    "groupBy": [],
+                    "having": [],
+                    "intersect": None,
+                    "limit": None,
+                    "orderBy": [],
+                    "select": [False, []],
+                    "union": None,
+                    "where": [],
+                }
             hardness = evaluator.eval_hardness(g_sql)
             if idx > 3:
                 idx = "> 4"

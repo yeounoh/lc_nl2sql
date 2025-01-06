@@ -16,6 +16,7 @@ for pred_sql in "$directory"/"$prefix"*; do
       --input "$pred_sql" \
       --gold lc_nl2sql/data/beaver/dev_gold.sql \
       --db lc_nl2sql/data/beaver/databases/ \
+      --table lc_nl2sql/data/beaver/tables.json \
       --etype exec
   fi
 done

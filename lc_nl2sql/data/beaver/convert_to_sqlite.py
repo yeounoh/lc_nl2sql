@@ -78,7 +78,7 @@ def load_table_content(cursor, content_file, table_name):
             # sqlite3.IntegrityError: UNIQUE constraint failed: ...
             for row in reader:
                 try:
-                    cursor.execute(f'INSERT INTO {table_name} VALUES ({",".join(["?"] * len(row))})', row)
+                    cursor.execute(f'INSERT OR IGNORE INTO {table_name} VALUES ({",".join(["?"] * len(row))})', row)
                 except sqlite3.Error as e:
                     print(e)
                     continue
@@ -111,7 +111,13 @@ for filename in os.listdir(db_csv_directory):
         content_file = os.path.join(db_csv_directory, table_name + ".csv")
         metadata = create_table_from_schema(cursor, schema_file, table_name)
         load_table_content(cursor, content_file, table_name)
+        # Commit changes and close the connection
+        conn.commit()
+        conn.close()
 
+        db_tables['column_names_original'].append([-1, "*"])
+        db_tables['column_names'].append([-1, "*"])
+        db_tables['column_types'].append("text")
         for c in metadata['columns']:
             db_tables['column_names_original'].append([tbl_idx, c[0]])
             db_tables['column_names'].append([tbl_idx, c[0]])
@@ -123,9 +129,7 @@ for filename in os.listdir(db_csv_directory):
             db_tables['primary_keys'].append(pkeys)
         tbl_idx += 1
 
-# Commit changes and close the connection
-conn.commit()
-conn.close()
+
 
 print("Databases created successfully!")
 
