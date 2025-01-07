@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Use Kaggle w/ gemini-1.5-pro"
+echo "Use Beaver w/ gemini-1.5-pro"
 input_file_sk100="lc_nl2sql/data/beaver_dev_example_synthetic_examples_100.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \
@@ -32,7 +32,7 @@ python lc_nl2sql/predict/measure_latency.py \
   --predicted_out_filename "lc_nl2sql/output/pred/latency/beaver_measure_latency"
  
 
-echo "Use Kaggle w/ gemini-1.5-flash"
+echo "Use Beaver w/ gemini-1.5-flash"
 input_file_sk100="lc_nl2sql/data/beaver_dev_example_synthetic_examples_100_flash.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \

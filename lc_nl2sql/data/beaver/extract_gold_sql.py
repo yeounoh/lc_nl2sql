@@ -18,9 +18,10 @@ model = GeminiModel("400355794761")
 with open("dev_gold.sql", "w") as outfile:
   for sql, db_id in gold_sqls:
       sql = model._generate_sql(f"You are sqlite expert.\n"
-                          "Rewrite the below SQL query according to the following rules:\n"
+                          "Rewrite the below Oracle SQL query to a valid SQLite query. Also consider the following rules:\n"
                           "- all table aliases are properly defined using a keyword `AS`.\n"
                           "- do not use window function (partition over) so it's compatible with older sqlite version.\n"
+                          "- make sure you use valid SQLite functions.\n"
                           "- remove lower(), as it is case insensitive.\n\n"
                           "-------------------------------------------------------\n"
                           f"{sql}\n"
