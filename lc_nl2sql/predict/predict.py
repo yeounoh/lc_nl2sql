@@ -57,7 +57,7 @@ def inference_worker(
                                      history=[],
                                      **input_kwargs)
             response, extra_tokens = model.verify_and_correct(item["input"], response,
-                                                model.db_folder_path, qid, return_invalid=False, 
+                                                model.db_folder_path, qid, return_invalid=True, 
                                                 use_flash=model.generating_args.use_flash)
             generation_latency = time.time() - start_time
             if response != "":
@@ -74,7 +74,7 @@ def inference_worker(
     try:
         return func_timeout(1800, _task2, args=())
     except FunctionTimedOut:
-        return ("", 0, 0, 0, 0)
+        return ("", 0, 0, 0, 0, 0)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):

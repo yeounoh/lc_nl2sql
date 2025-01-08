@@ -588,7 +588,7 @@ class ProcessSqlData:
     def create_sft_raw_data(self, source_type="bird", dump_file=True):
         dev_data = []
         data_info = SQL_DATA_INFO[source_type]
-        assert data_info['data_source'] in ['bird', 'spider', 'kaggle']
+        assert data_info['data_source'] in ['bird', 'spider', 'kaggle', 'beaver']
         
         # TODO(yeounoh) - column selection results for kaggle
         col_selected_schemas = dict()

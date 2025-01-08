@@ -33,6 +33,11 @@ SQL_DATA_INFO = {
         "data_source": "kaggle",
         "db_id_name": "db_id",
         "output_name": "query",
+    },
+    'beaver': {
+        "data_source": "beaver",
+        "db_id_name": "db_id",
+        "output_name": "sql",
     }
 }
 
