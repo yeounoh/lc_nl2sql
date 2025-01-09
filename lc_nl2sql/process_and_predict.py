@@ -3,6 +3,7 @@ import argparse
 import os
 import sys
 import csv
+import json
 
 ROOT_PATH = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))
@@ -74,13 +75,17 @@ def main():
                        "db_tbl_col_vals_file": args.db_tbl_col_vals_file})
 
     dev_data = process.create_sft_raw_data(dump_file=False)
+    with open('lc_nl2sql/data/example_text2sql_dev.json', 'r') as f:
+        dev_data = json.load(f)
     predict_data = [extract_sql_prompt_dataset(item) for item in dev_data]
     candidate_sets = list()
     candidate_sets.append([idx for idx in range(len(predict_data))])
-    for _ in range(int(args.num_candidates)):
+    for i in range(int(args.num_candidates)):
         result = predict.parallelized_inference(model, predict_data)
-        candidate_sets.append(result)
-
+        candidate_sets.append(result[0])
+        with open(f'cand_{i}.txt', 'w') as f:
+            for l in result[0]:
+                f.write(l + "\n")
     with open(args.output_file_path, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(candidate_sets)

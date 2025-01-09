@@ -10,6 +10,8 @@ import multiprocessing as mp
 from func_timeout import func_timeout, FunctionTimedOut
 import math
 import time
+import csv
+import numpy as np
 
 
 def load_json(dir):
@@ -43,14 +45,13 @@ def execute_sql(predicted_sql, ground_truth, db_path, gt_tied_sql=""):
         return execute_sql(predicted_sql, gt_tied_sql, db_path, "")
     return res, time_ratio
 
-def execute_sqls(predicted_sqls, ground_truth, db_path, gt_tied_sql=""):
+def execute_sqls(predicted_sqls, ground_truth, db_path, gt_tied_sql="", multi_sql_mode="upper"):
     conn = sqlite3.connect(db_path)
     # Connect to the database
     cursor = conn.cursor()
-    res = 0
+    results = []
     for predicted_sql in predicted_sqls:
-        if res == 1:
-            return res, 0
+        res = 0
         cursor.execute(predicted_sql)
         predicted_res = cursor.fetchall()
         cursor.execute(ground_truth)
@@ -59,14 +60,24 @@ def execute_sqls(predicted_sqls, ground_truth, db_path, gt_tied_sql=""):
             res = 1
         if res == 0 and gt_tied_sql != "":
             res = execute_sql(predicted_sql, gt_tied_sql, db_path, "")[0]
-    return res, 0
+        results.append(res)
+    
+    results = np.array(results)
+    if multi_sql_mode == "upper":
+        return int(np.any(results == 1)), 0
+    elif multi_sql_mode == "lower":
+        return int(np.all(results == 1)), 0
+    elif multi_sql_mode == "average":
+        return int(results[0]), 0
+    else:
+        raise(f"{multi_sql_mode} is not supported. Please use upper, lower, or average.")
 
 
-def execute_model(predicted_sql, ground_truth, db_place, idx, meta_time_out, gt_tied_sql=""):
+def execute_model(predicted_sql, ground_truth, db_place, idx, meta_time_out, gt_tied_sql="", multi_sql_mode="upper"):
     try:
         if isinstance(predicted_sql, list):
             res, time_ratio = func_timeout(
-                meta_time_out * len(predicted_sql), execute_sqls, args=(predicted_sql, ground_truth, db_place, gt_tied_sql)
+                meta_time_out * len(predicted_sql), execute_sqls, args=(predicted_sql, ground_truth, db_place, gt_tied_sql, multi_sql_mode)
             )
         else:
             res, time_ratio = func_timeout(
@@ -99,24 +110,33 @@ def package_sqls(sql_path, db_root_path, mode="gpt", data_mode="dev", multi_sqls
     db_path_list = []
     if mode == "gpt":
         if multi_sqls:
-            files = []
-            for filename in os.listdir(sql_path):
-                if filename.startswith("cand_"):
-                    filepath = os.path.join(sql_path, filename)
-                    with open(filepath, 'r') as f:
-                        candidates = []
-                        for l in f.readlines():
-                            # if len(l.strip()) == 0:
-                            #     sql, db_name = " ", "financial"
-                            # else:
-                            #     sql, db_name = l.split('\t')
-                            candidates.append(l.strip())
-                        files.append(candidates)
-            for i in range(len(files[0])):
-                candidates = []
-                for file in files:
-                    candidates.append(file[i])
-                clean_sqls.append(candidates)
+            if sql_path.endswith(".csv"):
+                with open(sql_path, 'r', newline='') as csvfile:
+                    reader = csv.reader(csvfile)
+                    headers = next(reader)
+                    clean_sqls = [list() for _ in range(len(headers))]
+                    for predictions in reader:
+                        for i, p in enumerate(predictions):
+                            clean_sqls[i].append(p)
+            else:
+                files = []
+                for filename in os.listdir(sql_path):
+                    if filename.startswith("cand_"):
+                        filepath = os.path.join(sql_path, filename)
+                        with open(filepath, 'r') as f:
+                            candidates = []
+                            for l in f.readlines():
+                                # if len(l.strip()) == 0:
+                                #     sql, db_name = " ", "financial"
+                                # else:
+                                #     sql, db_name = l.split('\t')
+                                candidates.append(l.strip())
+                            files.append(candidates)
+                for i in range(len(files[0])):
+                    candidates = []
+                    for file in files:
+                        candidates.append(file[i])
+                    clean_sqls.append(candidates)
         else:
             with open(sql_path) as f:
                 for l in f.readlines():
@@ -138,7 +158,7 @@ def package_sqls(sql_path, db_root_path, mode="gpt", data_mode="dev", multi_sqls
     return clean_sqls, db_path_list
 
 
-def run_sqls_parallel(sqls, db_places, num_cpus=1, meta_time_out=30.0, gt_tied_queries=None):
+def run_sqls_parallel(sqls, db_places, num_cpus=1, meta_time_out=30.0, gt_tied_queries=None, multi_sql_mode="upper"):
     pool = mp.Pool(processes=num_cpus)
     for i, sql_pair in enumerate(sqls):
         predicted_sql, ground_truth = sql_pair
@@ -146,7 +166,7 @@ def run_sqls_parallel(sqls, db_places, num_cpus=1, meta_time_out=30.0, gt_tied_q
             gt_tied_sql = gt_tied_queries[i] if i in gt_tied_queries else ""
         pool.apply_async(
             execute_model,
-            args=(predicted_sql, ground_truth, db_places[i], i, meta_time_out, gt_tied_sql),
+            args=(predicted_sql, ground_truth, db_places[i], i, meta_time_out, gt_tied_sql, multi_sql_mode),
             callback=result_callback,
         )
     pool.close()
@@ -263,7 +283,9 @@ if __name__ == "__main__":
     )
     args_parser.add_argument("--gt_tied_json_path", type=str, default="")
     # SQL candidate files directory, each prefixed with "cand_"
+    # or a csv file in .csv extension: row: question, column: candidate SQL
     args_parser.add_argument("--sql_candidates_path", type=str, default="")
+    args_parser.add_argument("--multi_sql_mode", type=str, default="upper")  # upper, lower, average
 
     args = args_parser.parse_args()
     exec_result = []
@@ -305,6 +327,7 @@ if __name__ == "__main__":
             num_cpus=args.num_cpus,
             meta_time_out=args.meta_time_out,
             gt_tied_queries=gt_tied_queries,
+            multi_sql_mode=args.multi_sql_mode,
         )
     else:
         for i, sql_pair in enumerate(query_pairs):
