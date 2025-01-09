@@ -50,13 +50,15 @@ class ProcessSqlData:
         example_pool_type="train",
         example_selection_file="",
         inject_gt_example=False,
+        gt_pos=0.5,
         document_pool_type="long",
         document_selection_file="",
         num_documents=0,
         challenging_example_only=False,
         use_flash=False,
         filtered_schema_generation=False,
-        source_type="bird"
+        source_type="bird",
+        shuffle=2,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -78,6 +80,7 @@ class ProcessSqlData:
         self.example_pool_type = example_pool_type
         self.example_selection_file = example_selection_file
         self.inject_gt_example = inject_gt_example
+        self.gt_pos = gt_pos
         self.document_pool_type = document_pool_type
         self.document_selection_file = document_selection_file
         self.num_documents = num_documents
@@ -85,6 +88,7 @@ class ProcessSqlData:
         self.challenging_example_only = challenging_example_only
         self.use_flash = use_flash
         self.filtered_schema_generation = filtered_schema_generation
+        self.shuffle = shuffle
 
         self.source_type = source_type
 
@@ -511,7 +515,7 @@ class ProcessSqlData:
                         selected_examples = selected_examples[:self.num_examples]
                         shots = list()
                         for i, eg in enumerate(selected_examples):
-                            if i == len(selected_examples)//2 and self.inject_gt_example:
+                            if i == int(len(selected_examples) * self.gt_pos) and self.inject_gt_example:
                                 shots.append(shot_template.format(sql_prompt=data["question"], sql=data['SQL']))
                             shots.append(shot_template.format(
                                 sql_prompt=eg['sql_prompt'], 
@@ -541,10 +545,31 @@ class ProcessSqlData:
                         question=data["question"])
 
                 input_idx = input_instruction.find("###Question###")
+                context_str = input_instruction[:input_idx]
+                question_str = input_instruction[input_idx:]
+
+                assert self.shuffle <= 2 and self.shuffle >= 0, f"shuffle={self.shuffle} mode is not supported"
+                example_start = context_str.find("###Examples###")
+                example_end = context_str[example_start:].find("***************************")
+                examples = context_str[example_start:example_end]
+                if self.shuffle == 0:
+                    new_context_str = examples + "***************************" 
+                    new_context_str += context_str[:example_start]
+                    new_context_str += context_str[example_end:]
+                    context_str = new_context_str
+                elif self.shuffle == 1:
+                    schema_start = context_str.find("###Table creation statements###")
+                    schema_end = context_str[schema_start:].find("***************************")
+                    new_context_str = context_str[:schema_start] + examples + "***************************" 
+                    new_context_str += context_str[schema_start:schema_end]
+                    new_context_str += context_str[example_end:]
+                    context_str = new_context_str
+                elif self.shuffle == 2:
+                    context_str = context_str  # no-op
                 input = {
                     "db_id": data[db_id_name],
-                    "instruction": input_instruction[:input_idx],
-                    "input": input_instruction[input_idx:],
+                    "instruction": context_str,
+                    "input": question_str,
                     "output": data[output_name],
                     "history": [],
                 }
@@ -590,7 +615,6 @@ class ProcessSqlData:
         data_info = SQL_DATA_INFO[source_type]
         assert data_info['data_source'] in ['bird', 'spider', 'kaggle', 'beaver']
         
-        # TODO(yeounoh) - column selection results for kaggle
         col_selected_schemas = dict()
         if (self.use_column_filtering) and self.filtered_schema_file:
             df = pd.read_csv(self.filtered_schema_file)
@@ -639,6 +663,7 @@ if __name__ == "__main__":
     parser.add_argument("--example_pool_type", default='train')
     parser.add_argument("--example_selection_file", default="")
     parser.add_argument("--inject_gt_example", default=False)
+    parser.add_argument("--gt_pos", default=0.5)
     # Document selection
     parser.add_argument("--document_pool_type", default="long")
     parser.add_argument("--document_selection_file", default="")
@@ -662,9 +687,13 @@ if __name__ == "__main__":
     parser.add_argument("--challenging_example_only", default=False)
     parser.add_argument("--use_flash", default=False)
     parser.add_argument("--filtered_schema_generation", default=False)
+    # 0 (before system inst), 1 (before schema), 2 (after schema & before question)
+    parser.add_argument("--shuffle", default=2)
 
     args = parser.parse_args()
 
+    # constraints
+    assert float(args.gt_pos) <= 1.0 and float(args.gt_pos) >= 0.0
     
     process = ProcessSqlData(
         input_data_file=args.input_data_path,
@@ -688,6 +717,7 @@ if __name__ == "__main__":
         example_pool_type=args.example_pool_type,
         example_selection_file=args.example_selection_file,
         inject_gt_example=args.inject_gt_example,
+        gt_pos=float(args.gt_pos),
         document_pool_type=args.document_pool_type,
         document_selection_file=args.document_selection_file,
         num_documents=int(args.num_documents),
@@ -695,5 +725,6 @@ if __name__ == "__main__":
         use_flash=bool(int(args.use_flash)),
         filtered_schema_generation=bool(int(args.filtered_schema_generation)),
         source_type=args.source_type,
+        shuffle=int(args.shuffle),
     )
     process.create_sft_raw_data(source_type=args.source_type)

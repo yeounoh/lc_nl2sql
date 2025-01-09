@@ -1,8 +1,12 @@
 
-
 import argparse
 import os
+import sys
 import csv
+
+ROOT_PATH = os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(ROOT_PATH)
 
 from lc_nl2sql.configs.config import DATA_PATH
 from lc_nl2sql.data_process.data_utils import extract_sql_prompt_dataset
