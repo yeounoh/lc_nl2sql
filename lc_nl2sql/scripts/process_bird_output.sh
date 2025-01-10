@@ -2,7 +2,8 @@
 
 prefix="$1"
 directory="$2"
-multi_sql_mode="$3"
+multi_sql_mode="${3:-upper}"
+n_cands="${4:--1}"          
 
 if [ -z "$prefix" ] || [ -z "$directory" ]; then
   echo "Error: Please provide a prefix and directory path as arguments."
@@ -18,7 +19,8 @@ if [[ "$prefix" == "cand" ]]; then
         --etype exec \
         --gt_tied_json_path lc_nl2sql/data/bird/dev/dev_tied_append.json \
         --diff_json_path lc_nl2sql/data/bird/dev/dev.json \
-        --multi_sql_mode "$multi_sql_mode"
+        --multi_sql_mode "$multi_sql_mode" \
+        --n_cands "$n_cands"
 else
   for pred_sql in "$directory"/"$prefix"*; do
     if [ -f "$pred_sql" ]; then

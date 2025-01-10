@@ -105,7 +105,7 @@ def execute_model(predicted_sql, ground_truth, db_place, idx, meta_time_out, gt_
     return result
 
 
-def package_sqls(sql_path, db_root_path, mode="gpt", data_mode="dev", multi_sqls=False):
+def package_sqls(sql_path, db_root_path, mode="gpt", data_mode="dev", multi_sqls=False, n_cands=-1):
     clean_sqls = []
     db_path_list = []
     if mode == "gpt":
@@ -115,9 +115,13 @@ def package_sqls(sql_path, db_root_path, mode="gpt", data_mode="dev", multi_sqls
                     reader = csv.reader(csvfile)
                     headers = next(reader)
                     clean_sqls = [list() for _ in range(len(headers))]
+                    cnt = 0
                     for predictions in reader:
+                        if n_cands > -1 and cnt >= n_cands:
+                            break
                         for i, p in enumerate(predictions):
                             clean_sqls[i].append(p)
+                        cnt += 1
             else:
                 files = []
                 for filename in os.listdir(sql_path):
@@ -286,6 +290,7 @@ if __name__ == "__main__":
     # or a csv file in .csv extension: row: question, column: candidate SQL
     args_parser.add_argument("--sql_candidates_path", type=str, default="")
     args_parser.add_argument("--multi_sql_mode", type=str, default="upper")  # upper, lower, average
+    args_parser.add_argument("--n_cands", type=int, default=-1)
 
     args = args_parser.parse_args()
     exec_result = []
@@ -297,6 +302,7 @@ if __name__ == "__main__":
             mode=args.mode_predict,
             data_mode=args.data_mode,
             multi_sqls=True,
+            n_cands=int(args.n_cands),
         )
     else:
         pred_queries, db_paths = package_sqls(
