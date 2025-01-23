@@ -8,3 +8,5 @@ dist/
 poetry.lock
 stats*
 *.pickle
+*.txt
+*.csv
