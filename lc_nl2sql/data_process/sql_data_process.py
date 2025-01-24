@@ -483,7 +483,7 @@ class ProcessSqlData:
                         \"input\": \"{sql_prompt}\"\n
                         \"output\": \"{sql}\"\n
                         """
-                        shots.append(shot_template.format(sql_prompt=e['question'], sql=e['SQL']))
+                        shots.append(shot_template.format(sql_prompt=e['question'], sql=e[output_name]))
                     examples += '\n'.join(shots)
             
                 if self.num_examples > 0:
@@ -516,7 +516,7 @@ class ProcessSqlData:
                         shots = list()
                         for i, eg in enumerate(selected_examples):
                             if i == int(len(selected_examples) * self.gt_pos) and self.inject_gt_example:
-                                shots.append(shot_template.format(sql_prompt=data["question"], sql=data['SQL']))
+                                shots.append(shot_template.format(sql_prompt=data["question"], sql=data[output_name]))
                             shots.append(shot_template.format(
                                 sql_prompt=eg['sql_prompt'], 
                                 sql=eg['sql']))
