@@ -43,7 +43,7 @@ python lc_nl2sql/predict/count_token.py \
   --predicted_out_filename "lc_nl2sql/output/pred/token_count/kaggle_tbr_top_all_dbs"
 
 # Use simulated TBR with top_k and draw tables across the DBs.
-k_values=(1 7 13) 
+k_values=(1 2 5) 
 for k in "${k_values[@]}"; do
   echo "Running with top_k = $k"
   python lc_nl2sql/data_process/sql_data_process.py \
