@@ -385,6 +385,17 @@ class ProcessSqlData:
                 _examples = self.model._generate_sql(prompt, use_flash=self.use_flash)
                 num_generated_examples += len(_examples.split("\"input\":"))
                 examples += "\n" + _examples
+            
+            while num_generated_examples > k:
+                indices = []
+                index = -1
+                while True:
+                    index = examples.find("\"input\":", index + 1)
+                    if index == -1:
+                        break
+                    indices.append(index)
+                examples = examples[:indices[-1]]
+                num_generated_examples = len(examples.split("\"input\":"))
             return examples
             
 
