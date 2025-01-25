@@ -46,7 +46,6 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --filtered_schema_file lc_nl2sql/data/beaver/col_selection_schema.csv \
   --num_col_values 10 \
   --synthetic_examples 1 \
-  --use_column_filtering 1 \
   --use_flash 1 \
   --use_column_filtering 1\
   --num_examples 100
