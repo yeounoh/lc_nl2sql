@@ -21,7 +21,7 @@ with open("dev_gold.sql", "w") as outfile:
                           "Rewrite the below Oracle SQL query to a valid SQLite query. Also consider the following rules:\n"
                           "- all table aliases are properly defined using a keyword `AS`.\n"
                           "- do not use window function (partition over) so it's compatible with older sqlite version.\n"
-                          "- make sure you use valid SQLite functions.\n"
+                          "- make sure you use valid SQLite functions (e.g., TO_DATE function is not available).\n"
                           "- remove lower(), as it is case insensitive.\n\n"
                           "-------------------------------------------------------\n"
                           f"{sql}\n"

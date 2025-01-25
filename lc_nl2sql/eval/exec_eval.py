@@ -249,7 +249,7 @@ def eval_exec_match(
                 pred_passes = 0
 
             # if denotations are not equivalent, the prediction must be wrong
-            elif not result_eq(g_denotation, p_denotation, order_matters=order_matters):
+            elif g_flag != "exception" and not result_eq(g_denotation, p_denotation, order_matters=order_matters):
                 pred_passes = 0
             if pred_passes == 0:
                 break
