@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Generate different number of synthetic examples
-n_examples=(0 5 10 25 50 100 125 200)
+n_examples=(0 5 10 25 50 100 125 200 500)
 for k in "${n_examples[@]}"; do
   echo "Running with $k synthetic examples"  
-  output_file="lc_nl2sql/data/dev_example_with_synthetic_examples_$k.json"
+  output_file="lc_nl2sql/data/kaggle_dev_example_with_synthetic_examples_$k.json"
   if [[ ! -f "$output_file" ]]; then
     python lc_nl2sql/data_process/sql_data_process.py \
     --input_data_path lc_nl2sql/data/kaggle/dev.json \
@@ -13,6 +13,7 @@ for k in "${n_examples[@]}"; do
     --source_type "kaggle" \
     --db_tbl_col_vals_file db_tbl_col_vals_kaggle.pickle \
     --output_file_path "$output_file" \
+    --use_column_filtering 1 \
     --synthetic_examples 1 \
     --num_examples "$k"
   fi
