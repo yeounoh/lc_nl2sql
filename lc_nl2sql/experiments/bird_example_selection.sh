@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example selection experiments
-n_examples=(5 20 50 100 150 200)
+n_examples=(5 20 50 75 100 125 200)
 for k in "${n_examples[@]}"; do
   echo "Running with $k train examples"
   python lc_nl2sql/data_process/sql_data_process.py \
