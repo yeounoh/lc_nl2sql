@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Use Kaggle w/ gemini-1.5-pro"
-input_file_sk100="lc_nl2sql/data/kaggle_dev_example_synthetic_examples_200.json"
+input_file_sk100="lc_nl2sql/data/kaggle_dev_example_synthetic_examples_100.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/kaggle/dev.json \
@@ -13,7 +13,7 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --num_col_values 10 \
   --synthetic_examples 1 \
   --num_examples 100
-  #--filtered_schema_file lc_nl2sql/data/kaggle/col_selection_schema_kaggle.csv \
+  
 fi
 
 python lc_nl2sql/predict/predict.py \
@@ -33,7 +33,7 @@ python lc_nl2sql/predict/measure_latency.py \
  
 
 echo "Use Kaggle w/ gemini-1.5-flash"
-input_file_sk100="lc_nl2sql/data/kaggle_dev_example_synthetic_examples_200_flash.json"
+input_file_sk100="lc_nl2sql/data/kaggle_dev_example_synthetic_examples_100_flash.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/kaggle/dev.json \
@@ -46,7 +46,6 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --synthetic_examples 1 \
   --use_flash 1 \
   --num_examples 100
-  #--filtered_schema_file lc_nl2sql/data/kaggle/col_selection_schema_kaggle.csv \
 fi
 
 python lc_nl2sql/predict/predict.py \
