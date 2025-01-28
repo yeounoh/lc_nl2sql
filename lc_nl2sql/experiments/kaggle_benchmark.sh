@@ -11,8 +11,10 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --db_folder_path lc_nl2sql/data/kaggle/databases \
   --db_tbl_col_vals_file db_tbl_col_vals_kaggle.pickle \
   --num_col_values 10 \
+  --use_column_filtering 1\
+  --filtered_schema_file lc_nl2sql/data/kaggle/col_selection_schema.csv \
   --synthetic_examples 1 \
-  --num_examples 100
+  --num_examples 200
   
 fi
 
@@ -44,8 +46,10 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --db_tbl_col_vals_file db_tbl_col_vals_kaggle.pickle \
   --num_col_values 10 \
   --synthetic_examples 1 \
+  --use_column_filtering 1\
+  --filtered_schema_file lc_nl2sql/data/kaggle/col_selection_schema.csv \
   --use_flash 1 \
-  --num_examples 100
+  --num_examples 200
 fi
 
 python lc_nl2sql/predict/predict.py \

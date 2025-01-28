@@ -446,6 +446,8 @@ class ProcessSqlData:
             if len(col_selected_schemas) > 0:
                 filtered_schema = col_selected_schemas[int(
                     data['question_id'])]
+                if len("(".join(filtered_schema.split("(")[1:]).split(");")[0]) < 1:
+                    filtered_schema = schema
             if not filtered_schema:
                 filtered_col_json = select_table_columns(
                     schema, data['question'], data['evidence'] if 'evidence' in data else "")
