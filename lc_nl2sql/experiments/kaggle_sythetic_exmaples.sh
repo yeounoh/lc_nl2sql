@@ -14,6 +14,8 @@ for k in "${n_examples[@]}"; do
     --db_tbl_col_vals_file db_tbl_col_vals_kaggle.pickle \
     --output_file_path "$output_file" \
     --synthetic_examples 1 \
+    --use_column_filtering 1\
+    --filtered_schema_file lc_nl2sql/data/kaggle/col_selection_schema.csv \
     --num_examples "$k"
   fi
 
