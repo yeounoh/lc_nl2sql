@@ -1,0 +1,815 @@
+question_id,selected_schema_with_connections
+3,"CREATE TABLE Fires
+(
+);"
+0,"CREATE TABLE Fires
+(
+);"
+1,"CREATE TABLE Fires
+(
+);"
+2,"CREATE TABLE Fires
+(
+);"
+4,"CREATE TABLE Fires
+(
+);"
+5,"CREATE TABLE Fires
+(
+);"
+6,"CREATE TABLE Fires
+(
+);"
+7,"CREATE TABLE Fires
+(
+);"
+8,"CREATE TABLE Fires
+(
+);"
+10,"CREATE TABLE Fires
+(
+);"
+11,"CREATE TABLE Fires
+(
+);"
+9,"CREATE TABLE Fires
+(
+);"
+12,"CREATE TABLE Fires
+(
+);"
+13,"CREATE TABLE Fires
+(
+);"
+14,"CREATE TABLE Fires
+(
+);"
+15,"CREATE TABLE Fires
+(
+);"
+16,"CREATE TABLE Fires
+(
+);"
+19,"CREATE TABLE Fires
+(
+);"
+17,"CREATE TABLE Fires
+(
+);"
+18,"CREATE TABLE Fires
+(
+);"
+20,"CREATE TABLE Fires
+(
+);"
+22,"CREATE TABLE Fires
+(
+);"
+21,"CREATE TABLE Fires
+(
+);"
+23,"CREATE TABLE Fires
+(
+);"
+24,"CREATE TABLE Fires
+(
+);"
+25,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeTS TIMESTAMP, -- Example Values: `('2018-08-24 22:22:01',)`, `('2018-08-23 15:57:24',)`, `('2018-08-29 07:47:27',)` | Value Statics: Total count 5000 - Distinct count 4994 - Null count 0   
+	CrimeID TEXT PRIMARY KEY,
+);"
+27,"CREATE TABLE GreaterManchesterCrime
+(
+	LSOA TEXT, -- Example Values: `Salford 006D`, `Salford 006A`, `Salford 011D`, `Salford 007D`, `Salford 028J`, `Salford 012C`, `Salford 007F`, `Salford 020D`, `Salford 007E`, `Salford 026A` | Value Statics: Total count 5000 - Distinct count 1375 - Null count 0   
+	Type TEXT, -- Example Values: `Other crime` | Value Statics: Total count 5000 - Distinct count 13 - Null count 0   
+	CrimeID TEXT PRIMARY KEY,
+);"
+26,"CREATE TABLE GreaterManchesterCrime
+(
+	Outcome TEXT, -- Example Values: `Under investigation` | Value Statics: Total count 5000 - Distinct count 11 - Null count 0   
+	Location TEXT, -- Example Values: `On or near Police Station` | Value Statics: Total count 5000 - Distinct count 3103 - Null count 0   
+	CrimeID TEXT PRIMARY KEY,
+);"
+28,"CREATE TABLE GreaterManchesterCrime
+(
+	Outcome TEXT, -- Example Values: `Under investigation` | Value Statics: Total count 5000 - Distinct count 11 - Null count 0   
+	CrimeID TEXT PRIMARY KEY,
+);"
+29,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+);"
+30,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	Location TEXT, -- Example Values: `On or near Lime Close`, `On or near Viaduct Road` | Value Statics: Total count 5000 - Distinct count 3103 - Null count 0   
+);"
+31,"CREATE TABLE GreaterManchesterCrime
+(
+	Type TEXT, -- Example Values: `Other crime` | Value Statics: Total count 5000 - Distinct count 13 - Null count 0   
+	Outcome TEXT, -- Example Values: `Under investigation` | Value Statics: Total count 5000 - Distinct count 11 - Null count 0   
+	CrimeID TEXT PRIMARY KEY,
+);"
+32,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	Type TEXT, -- Example Values: `Drugs` | Value Statics: Total count 5000 - Distinct count 13 - Null count 0   
+);"
+33,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	Outcome TEXT, -- Example Values: `Under investigation` | Value Statics: Total count 5000 - Distinct count 11 - Null count 0   
+);"
+34,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	Type TEXT, -- Example Values: `Drugs` | Value Statics: Total count 5000 - Distinct count 13 - Null count 0   
+	Location TEXT, -- Example Values: `On or near Station Road`, `On or near Bus/Coach Station`, `On or near Police Station` | Value Statics: Total count 5000 - Distinct count 3103 - Null count 0   
+);"
+35,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	Type TEXT, -- Example Values: `Other crime`, `Other crime` | Value Statics: Total count 5000 - Distinct count 13 - Null count 0   
+);"
+36,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	LSOA TEXT, -- Example Values: `('Tameside 025A',)`, `('Bolton 021E',)`, `('Trafford 019D',)` | Value Statics: Total count 5000 - Distinct count 1375 - Null count 0   
+);"
+37,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	LSOA TEXT, -- Example Values: `Manchester 006C`, `Manchester 001A`, `Manchester 048D`, `Manchester 048B`, `Manchester 046B`, `Manchester 045D`, `Manchester 021A`, `Manchester 043A`, `Manchester 026C` | Value Statics: Total count 5000 - Distinct count 1375 - Null count 0   
+);"
+40,"CREATE TABLE GreaterManchesterCrime
+(
+	Outcome TEXT, -- Example Values: `Local resolution` | Value Statics: Total count 5000 - Distinct count 11 - Null count 0   
+	CrimeID TEXT PRIMARY KEY,
+	Type TEXT, -- Example Values: `Other crime` | Value Statics: Total count 5000 - Distinct count 13 - Null count 0   
+);"
+38,"CREATE TABLE GreaterManchesterCrime
+(
+	Location TEXT, -- Example Values: `On or near Regents Drive`, `On or near Lime Avenue`, `On or near Levens Drive`, `On or near Lime Green` | Value Statics: Total count 5000 - Distinct count 3103 - Null count 0   
+	CrimeID TEXT PRIMARY KEY,
+	Type TEXT, -- Example Values: `Violence and sexual offences` | Value Statics: Total count 5000 - Distinct count 13 - Null count 0   
+);"
+39,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	Location TEXT, -- Example Values: `On or near War Office Road` | Value Statics: Total count 5000 - Distinct count 3103 - Null count 0   
+);"
+41,"CREATE TABLE GreaterManchesterCrime
+(
+	CrimeID TEXT PRIMARY KEY,
+	Outcome TEXT, -- Example Values: `Under investigation` | Value Statics: Total count 5000 - Distinct count 11 - Null count 0   
+	Type TEXT, -- Example Values: `Other crime` | Value Statics: Total count 5000 - Distinct count 13 - Null count 0   
+);"
+43,
+42,
+44,
+45,
+46,
+47,
+48,
+49,
+50,
+51,
+52,
+53,
+55,
+54,
+56,
+57,
+58,
+59,
+60,
+61,
+62,"CREATE TABLE torrents
+(
+	""groupYear"" INTEGER, -- Example Values: `(1979,)`, `(1980,)`, `(1981,)` | Value Statics: Total count 75719 - Distinct count 38 - Null count 0   
+);"
+64,"CREATE TABLE tags
+(
+	""tag"" TEXT, -- Example Values: `stage` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+);"
+63,"CREATE TABLE torrents
+(
+	""artist"" TEXT, -- Example Values: `lartiste` | Value Statics: Total count 75719 - Distinct count 31287 - Null count 0   
+	""groupName"" TEXT, -- Example Values: `artist` | Value Statics: Total count 75719 - Distinct count 69692 - Null count 0   
+	""releaseType"" TEXT, -- Example Values: `single`, `album`, `live album`, `ep`, `unknown` | Value Statics: Total count 75719 - Distinct count 15 - Null count 0   
+);"
+65,"CREATE TABLE torrents
+(
+	""releaseType"" TEXT, -- Example Values: `single`, `album`, `live album`, `ep`, `unknown` | Value Statics: Total count 75719 - Distinct count 15 - Null count 0   
+);"
+68,"CREATE TABLE tags
+(
+	""tag"" TEXT, -- Example Values: `houston` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+);
+
+CREATE TABLE torrents
+(
+	""groupName"" TEXT, -- Example Values: `release`, `released`, `most`, `houston` | Value Statics: Total count 75719 - Distinct count 69692 - Null count 0   
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+);"
+69,"CREATE TABLE torrents
+(
+	""groupName"" TEXT, -- Example Values: `release`, `most` | Value Statics: Total count 75719 - Distinct count 69692 - Null count 0   
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+	""artist"" TEXT, -- Example Values: `lasean camry` | Value Statics: Total count 75719 - Distinct count 31287 - Null count 0   
+);"
+66,"CREATE TABLE torrents
+(
+	""groupYear"" INTEGER, -- Example Values: `(1979,)`, `(1980,)`, `(1981,)` | Value Statics: Total count 75719 - Distinct count 38 - Null count 0   
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+);"
+67,"CREATE TABLE tags
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(2,)`, `(3,)` | Value Statics: Total count 100000 - Distinct count 37804 - Null count 0   
+	""tag"" TEXT, -- Example Values: `download`, `album` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+);
+
+CREATE TABLE torrents
+(
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+	""releaseType"" TEXT, -- Example Values: `album` | Value Statics: Total count 75719 - Distinct count 15 - Null count 0   
+);"
+70,"CREATE TABLE torrents
+(
+	""releaseType"" TEXT, -- Example Values: `album` | Value Statics: Total count 75719 - Distinct count 15 - Null count 0   
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+);"
+72,"CREATE TABLE torrents
+(
+	""groupYear"" INTEGER, -- Example Values: `(1979,)`, `(1980,)`, `(1981,)` | Value Statics: Total count 75719 - Distinct count 38 - Null count 0   
+	""groupId"" INTEGER, -- Example Values: `(720949,)`, `(728752,)`, `(18513,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+);"
+71,"CREATE TABLE tags
+(
+	""tag"" TEXT, -- Example Values: `2010` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+	""id"" INTEGER, -- Example Values: `(0,)`, `(2,)`, `(3,)` | Value Statics: Total count 100000 - Distinct count 37804 - Null count 0   
+);
+
+CREATE TABLE torrents
+(
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+	""groupYear"" INTEGER, -- Example Values: `(1979,)`, `(1980,)`, `(1981,)` | Value Statics: Total count 75719 - Distinct count 38 - Null count 0   
+	""groupId"" INTEGER, -- Example Values: `(720949,)`, `(728752,)`, `(18513,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+);"
+73,"CREATE TABLE torrents
+(
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+	""groupName"" TEXT, -- Example Values: `release`, `released` | Value Statics: Total count 75719 - Distinct count 69692 - Null count 0   
+);
+
+CREATE TABLE tags
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(2,)`, `(3,)` | Value Statics: Total count 100000 - Distinct count 37804 - Null count 0   
+	""tag"" TEXT, -- Example Values: `download` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+);"
+74,"CREATE TABLE tags
+(
+	""tag"" TEXT, -- Example Values: `2015` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+);
+
+CREATE TABLE torrents
+(
+	""groupName"" TEXT, -- Example Values: `2015` | Value Statics: Total count 75719 - Distinct count 69692 - Null count 0   
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+);"
+75,"CREATE TABLE tags
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(2,)`, `(3,)` | Value Statics: Total count 100000 - Distinct count 37804 - Null count 0   
+	""tag"" TEXT, -- Example Values: `stage`, `self.released` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+);
+
+CREATE TABLE torrents
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+	""groupName"" TEXT, -- Example Values: `release`, `released`, `titled`, `titles` | Value Statics: Total count 75719 - Distinct count 69692 - Null count 0   
+);"
+77,"CREATE TABLE torrents
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+	""artist"" TEXT, -- Example Values: `lartiste` | Value Statics: Total count 75719 - Distinct count 31287 - Null count 0   
+);"
+76,"CREATE TABLE torrents
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+	""groupYear"" INTEGER, -- Example Values: `(1979,)`, `(1980,)`, `(1981,)` | Value Statics: Total count 75719 - Distinct count 38 - Null count 0   
+);"
+78,"CREATE TABLE torrents
+(
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+	""artist"" TEXT, -- Example Values: `average`, `average.` | Value Statics: Total count 75719 - Distinct count 31287 - Null count 0   
+);"
+79,"CREATE TABLE torrents
+(
+	""releaseType"" TEXT, -- Example Values: `single`, `album`, `live album`, `ep`, `unknown` | Value Statics: Total count 75719 - Distinct count 15 - Null count 0   
+	""groupYear"" INTEGER, -- Example Values: `(1979,)`, `(1980,)`, `(1981,)` | Value Statics: Total count 75719 - Distinct count 38 - Null count 0   
+);"
+80,"CREATE TABLE torrents
+(
+	""artist"" TEXT, -- Example Values: `time` | Value Statics: Total count 75719 - Distinct count 31287 - Null count 0   
+	""groupName"" TEXT, -- Example Values: `most` | Value Statics: Total count 75719 - Distinct count 69692 - Null count 0   
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+);
+
+CREATE TABLE tags
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(2,)`, `(3,)` | Value Statics: Total count 100000 - Distinct count 37804 - Null count 0   
+	""tag"" TEXT, -- Example Values: `download` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+);"
+81,"CREATE TABLE torrents
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+	""releaseType"" TEXT, -- Example Values: `single`, `album`, `live album`, `ep`, `unknown` | Value Statics: Total count 75719 - Distinct count 15 - Null count 0   
+);"
+82,"CREATE TABLE torrents
+(
+	""artist"" TEXT, -- Example Values: `sel` | Value Statics: Total count 75719 - Distinct count 31287 - Null count 0   
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+);"
+83,"CREATE TABLE torrents
+(
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+	""releaseType"" TEXT, -- Example Values: `single`, `album`, `live album`, `ep`, `unknown` | Value Statics: Total count 75719 - Distinct count 15 - Null count 0   
+);"
+85,"CREATE TABLE torrents
+(
+	""groupName"" TEXT, -- Example Values: `titles`, `same` | Value Statics: Total count 75719 - Distinct count 69692 - Null count 0   
+);"
+86,"CREATE TABLE torrents
+(
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+	""artist"" TEXT, -- Example Values: `lartiste` | Value Statics: Total count 75719 - Distinct count 31287 - Null count 0   
+);"
+84,"CREATE TABLE tags
+(
+	""tag"" TEXT, -- Example Values: `2000s` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+);
+
+CREATE TABLE torrents
+(
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+	""groupYear"" INTEGER, -- Example Values: `(1979,)`, `(1980,)`, `(1981,)` | Value Statics: Total count 75719 - Distinct count 38 - Null count 0   
+);"
+87,"CREATE TABLE tags
+(
+	""tag"" TEXT, -- Example Values: `download`, `album` | Value Statics: Total count 100000 - Distinct count 2855 - Null count 0   
+	""index"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 100000 - Distinct count 100000 - Null count 0   
+);
+
+CREATE TABLE torrents
+(
+	""totalSnatched"" INTEGER, -- Example Values: `(239,)`, `(156,)`, `(480,)` | Value Statics: Total count 75719 - Distinct count 2816 - Null count 0   
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+);"
+88,"CREATE TABLE torrents
+(
+	""artist"" TEXT, -- Example Values: `lartiste` | Value Statics: Total count 75719 - Distinct count 31287 - Null count 0   
+	""id"" INTEGER, -- Example Values: `(0,)`, `(1,)`, `(2,)` | Value Statics: Total count 75719 - Distinct count 75719 - Null count 0   
+);"
+89,
+90,"CREATE TABLE football_data
+(
+	""Season"" TEXT, -- Example Values: `2018` | Value Statics: Total count 100000 - Distinct count 19 - Null count 0   
+	""AwayTeam"" TEXT, -- Example Values: `Omiya Ardija` | Value Statics: Total count 100000 - Distinct count 966 - Null count 0   
+	""HomeTeam"" TEXT, -- Example Values: `Omiya Ardija` | Value Statics: Total count 100000 - Distinct count 965 - Null count 0   
+);"
+91,"CREATE TABLE football_data
+(
+	""Season"" TEXT, -- Example Values: `2019`, `2012`, `2016`, `2014`, `2018`, `2017`, `2013`, `2015` | Value Statics: Total count 100000 - Distinct count 19 - Null count 0   
+	""Country"" TEXT, -- Example Values: `Spain` | Value Statics: Total count 100000 - Distinct count 26 - Null count 0   
+);"
+92,"CREATE TABLE betfront
+(
+	""DRAW_OPENING"" REAL, -- Example Values: `(3.91,)`, `(8.56,)`, `(4.8,)` | Value Statics: Total count 37853 - Distinct count 682 - Null count 0   
+	""MATCH"" TEXT, -- Example Values: `Groningen - PSV`, `Groningen - Ajax`, `Groningen - Ajax`, `Groningen - PSV` | Value Statics: Total count 37853 - Distinct count 17911 - Null count 0   
+);"
+93,"CREATE TABLE betfront
+(
+	""YEAR"" INTEGER, -- Example Values: `2009`, `2010`, `2011`, `2012`, `2013` | Value Statics: Total count 37853 - Distinct count 5 - Null count 0   
+	""MATCH"" TEXT, -- Example Values: `('Malta - Albania',)`, `('San Marino - Northern Ireland',)`, `('Ireland - Georgia',)` | Value Statics: Total count 37853 - Distinct count 17911 - Null count 0   
+);"
+94,
+95,"CREATE TABLE football_data
+(
+	""B365H"" REAL, -- Example Values: `(3.2,)`, `(2.15,)`, `(1.9,)` | Value Statics: Total count 65695 - Distinct count 148 - Null count 34305   
+	""PSH"" REAL, -- Example Values: `(3.32,)`, `(2.17,)`, `(1.92,)` | Value Statics: Total count 60310 - Distinct count 1331 - Null count 39690   
+);"
+97,"CREATE TABLE football_data
+(
+	""B365A"" REAL, -- Example Values: `(2.2,)`, `(2.9,)`, `(3.4,)` | Value Statics: Total count 65695 - Distinct count 150 - Null count 34305   
+);"
+98,"CREATE TABLE football_data
+(
+	""FTHG"" INTEGER, -- Example Values: `1`, `0`, `3`, `2`, `4` | Value Statics: Total count 100000 - Distinct count 11 - Null count 0   
+	""FTAG"" INTEGER, -- Example Values: `0`, `2`, `1`, `3`, `4` | Value Statics: Total count 100000 - Distinct count 10 - Null count 0   
+);"
+96,"CREATE TABLE football_data
+(
+	""FTHG"" INTEGER, -- Example Values: `1`, `0`, `3`, `2`, `4` | Value Statics: Total count 100000 - Distinct count 11 - Null count 0   
+	""FTAG"" INTEGER, -- Example Values: `0`, `2`, `1`, `3`, `4` | Value Statics: Total count 100000 - Distinct count 10 - Null count 0   
+);"
+102,
+99,"CREATE TABLE football_data
+(
+	""League"" TEXT, -- Example Values: `Division 3`, `Division 1`, `Division 2`, `League 2`, `League 1`, `J-League` | Value Statics: Total count 100000 - Distinct count 33 - Null count 0   
+);"
+100,"CREATE TABLE football_data
+(
+	""League"" TEXT, -- Example Values: `League 2`, `League 1`, `J-League` | Value Statics: Total count 100000 - Distinct count 33 - Null count 0   
+	""Country"" TEXT, -- Example Values: `Scotland`, `England` | Value Statics: Total count 100000 - Distinct count 26 - Null count 0   
+	""Referee"" TEXT, -- Example Values: `D England` | Value Statics: Total count 22731 - Distinct count 299 - Null count 77269   
+);"
+103,
+104,
+105,
+106,
+101,"CREATE TABLE football_data
+(
+	""AwayTeam"" TEXT, -- Example Values: `Swindon`, `Millwall` | Value Statics: Total count 100000 - Distinct count 966 - Null count 0   
+	""Season"" TEXT, -- Example Values: `2016/2017` | Value Statics: Total count 100000 - Distinct count 19 - Null count 0   
+	""B365D"" REAL, -- Example Values: `(3.4,)`, `(4.0,)`, `(4.2,)` | Value Statics: Total count 65695 - Distinct count 85 - Null count 34305   
+	""HomeTeam"" TEXT, -- Example Values: `Swindon`, `Millwall` | Value Statics: Total count 100000 - Distinct count 965 - Null count 0   
+);"
+107,
+108,
+109,
+110,
+112,
+113,
+111,
+114,
+116,
+115,
+117,
+118,
+119,
+120,
+121,
+122,
+123,
+124,
+125,
+126,
+128,
+127,
+129,"CREATE TABLE sampledata15
+(
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+);"
+130,"CREATE TABLE sampledata15
+(
+	country text(3), -- Example Values: ``, `260`, `275`, `660`, `480` | Value Statics: Total count 10187 - Distinct count 18 - Null count 0   
+);"
+132,"CREATE TABLE sampledata15
+(
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+	origin text(2), -- Example Values: `1`, `2`, `3` | Value Statics: Total count 10187 - Distinct count 3 - Null count 0   
+	state text(2), -- Example Values: `CA`, `CO`, `FL`, `MD`, `MI` | Value Statics: Total count 10187 - Distinct count 10 - Null count 0   
+);"
+131,"CREATE TABLE sampledata15
+(
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+	year text(2), -- Example Values: `15` | Value Statics: Total count 10187 - Distinct count 1 - Null count 0   
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+	concen double, -- Example Values: `('',)`, `(0.031,)`, `(0.25,)` | Value Statics: Total count 100000 - Distinct count 220 - Null count 0   
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+);"
+133,"CREATE TABLE sampledata15
+(
+	state text(2), -- Example Values: `CA`, `CO`, `FL`, `MD`, `MI` | Value Statics: Total count 10187 - Distinct count 10 - Null count 0   
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	concen double, -- Example Values: `('',)`, `(0.031,)`, `(0.25,)` | Value Statics: Total count 100000 - Distinct count 220 - Null count 0   
+);"
+134,"CREATE TABLE sampledata15
+(
+	variety text(20), -- Example Values: `('Fuji',)`, `('Red Delicious',)`, `('Granny Smith',)` | Value Statics: Total count 10187 - Distinct count 1262 - Null count 0   
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	concen double, -- Example Values: `('',)`, `(0.031,)`, `(0.25,)` | Value Statics: Total count 100000 - Distinct count 220 - Null count 0   
+);"
+135,"CREATE TABLE sampledata15
+(
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	lod double, -- Example Values: `(0.015,)`, `(0.005,)`, `(0.003,)` | Value Statics: Total count 100000 - Distinct count 23 - Null count 0   
+	concen double, -- Example Values: `('',)`, `(0.031,)`, `(0.25,)` | Value Statics: Total count 100000 - Distinct count 220 - Null count 0   
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+);"
+136,"CREATE TABLE resultsdata15
+(
+	lab text(3), -- Example Values: `WA1`, `CA1`, `TX1`, `MI1`, `FL1` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+);"
+138,"CREATE TABLE sampledata15
+(
+	state text(2), -- Example Values: `CA`, `CO`, `FL`, `MD`, `MI` | Value Statics: Total count 10187 - Distinct count 10 - Null count 0   
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+);"
+139,"CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	concen double, -- Example Values: `('',)`, `(0.031,)`, `(0.25,)` | Value Statics: Total count 100000 - Distinct count 220 - Null count 0   
+);"
+137,"CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+	country text(3), -- Example Values: ``, `260`, `275`, `660`, `480` | Value Statics: Total count 10187 - Distinct count 18 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	concen double, -- Example Values: `('',)`, `(0.031,)`, `(0.25,)` | Value Statics: Total count 100000 - Distinct count 220 - Null count 0   
+);"
+140,"CREATE TABLE sampledata15
+(
+	day text(2), -- Example Values: `('20',)`, `('17',)`, `('16',)` | Value Statics: Total count 10187 - Distinct count 31 - Null count 0   
+	year text(2), -- Example Values: `15` | Value Statics: Total count 10187 - Distinct count 1 - Null count 0   
+	month text(2), -- Example Values: `01`, `02`, `03`, `04`, `05` | Value Statics: Total count 10187 - Distinct count 12 - Null count 0   
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+);"
+141,"CREATE TABLE sampledata15
+(
+	variety text(20), -- Example Values: `('Fuji',)`, `('Red Delicious',)`, `('Granny Smith',)` | Value Statics: Total count 10187 - Distinct count 1262 - Null count 0   
+	state text(2), -- Example Values: `CA`, `CO`, `FL`, `MD`, `MI` | Value Statics: Total count 10187 - Distinct count 10 - Null count 0   
+	quantity int, -- Example Values: `(12,)`, `('',)`, `(17,)` | Value Statics: Total count 10187 - Distinct count 49 - Null count 0   
+);"
+143,"CREATE TABLE resultsdata15
+(
+	testclass text(1), -- Example Values: `('E',)`, `('A',)`, `('C',)` | Value Statics: Total count 100000 - Distinct count 19 - Null count 0   
+);"
+142,"CREATE TABLE sampledata15
+(
+	state text(2), -- Example Values: `CA`, `CO`, `FL`, `MD`, `MI` | Value Statics: Total count 10187 - Distinct count 10 - Null count 0   
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+);"
+145,"CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+	country text(3), -- Example Values: ``, `260`, `275`, `660`, `480` | Value Statics: Total count 10187 - Distinct count 18 - Null count 0   
+);"
+144,"CREATE TABLE sampledata15
+(
+	site text(4), -- Example Values: `('0010',)`, `('0038',)`, `('0043',)` | Value Statics: Total count 10187 - Distinct count 312 - Null count 0   
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);"
+146,"CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+	quantity int, -- Example Values: `(12,)`, `('',)`, `(17,)` | Value Statics: Total count 10187 - Distinct count 49 - Null count 0   
+);"
+147,"CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	pestcode text(3), -- Example Values: `('382',)`, `('387',)`, `('388',)` | Value Statics: Total count 100000 - Distinct count 223 - Null count 0   
+);"
+148,"CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	confmethod text(2), -- Example Values: ``, `LU`, `GT`, `MO` | Value Statics: Total count 100000 - Distinct count 3 - Null count 0   
+);"
+150,"CREATE TABLE resultsdata15
+(
+	testclass text(1), -- Example Values: `('E',)`, `('A',)`, `('C',)` | Value Statics: Total count 100000 - Distinct count 19 - Null count 0   
+);"
+149,"CREATE TABLE resultsdata15
+(
+	lab text(3), -- Example Values: `WA1`, `CA1`, `TX1`, `MI1`, `FL1` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+);"
+151,"CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);
+
+CREATE TABLE resultsdata15
+(
+	conunit text(1), -- Example Values: `M` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+);"
+152,
+153,"CREATE TABLE resultsdata15
+(
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	mean text(2), -- Example Values: `ND`, `O`, `NP`, `R` | Value Statics: Total count 100000 - Distinct count 3 - Null count 0   
+);
+
+CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+);"
+154,"CREATE TABLE resultsdata15
+(
+	extract text(3), -- Example Values: `805`, `818` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+);"
+155,"CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	lab text(3), -- Example Values: `WA1`, `CA1`, `TX1`, `MI1`, `FL1` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+);"
+157,"CREATE TABLE sampledata15
+(
+	country text(3), -- Example Values: ``, `260`, `275`, `660`, `480` | Value Statics: Total count 10187 - Distinct count 18 - Null count 0   
+);"
+156,"CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	lab text(3), -- Example Values: `WA1`, `CA1`, `TX1`, `MI1`, `FL1` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+);
+
+CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+);"
+158,"CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	determin text(2), -- Example Values: `35 `, `52 `, `64 `, `07 `, `72 ` | Value Statics: Total count 100000 - Distinct count 2 - Null count 0   
+);
+
+CREATE TABLE sampledata15
+(
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 10187 - Distinct count 20 - Null count 0   
+);"
+159,"CREATE TABLE resultsdata15
+(
+	commtype text(2), -- Example Values: `FR`, `FZ`, `OT` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+);
+
+CREATE TABLE sampledata15
+(
+	quantity int, -- Example Values: `(12,)`, `('',)`, `(17,)` | Value Statics: Total count 10187 - Distinct count 49 - Null count 0   
+	state text(2), -- Example Values: `CA`, `CO`, `FL`, `MD`, `MI` | Value Statics: Total count 10187 - Distinct count 10 - Null count 0   
+	sample_pk int, -- Example Values: `(1,)`, `(2,)`, `(3,)` | Value Statics: Total count 10187 - Distinct count 10187 - Null count 0   
+);"
+160,"CREATE TABLE sampledata15
+(
+	origin text(2), -- Example Values: `1`, `2`, `3` | Value Statics: Total count 10187 - Distinct count 3 - Null count 0   
+	country text(3), -- Example Values: ``, `260`, `275`, `660`, `480` | Value Statics: Total count 10187 - Distinct count 18 - Null count 0   
+);"
+162,
+163,"CREATE TABLE nuclear_power_plants
+(
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+	`Capacity`, -- Example Values: `('9',)`, `('32',)`, `('',)` | Value Statics: Total count 788 - Distinct count 291 - Null count 0   
+);"
+161,"CREATE TABLE resultsdata15
+(
+	sample_pk int, -- Example Values: `(2,)`, `(3,)`, `(1,)` | Value Statics: Total count 100000 - Distinct count 459 - Null count 0   
+	commod text(2), -- Example Values: `('AP',)`, `('CB',)`, `('CH',)` | Value Statics: Total count 100000 - Distinct count 1 - Null count 0   
+);"
+164,"CREATE TABLE nuclear_power_plants
+(
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+	`Capacity`, -- Example Values: `('9',)`, `('32',)`, `('',)` | Value Statics: Total count 788 - Distinct count 291 - Null count 0   
+);"
+165,"CREATE TABLE nuclear_power_plants
+(
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+166,"CREATE TABLE nuclear_power_plants
+(
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+168,"CREATE TABLE nuclear_power_plants
+(
+	`Name`, -- Example Values: `('Ågesta',)`, `('Akademik Lomonosov-1 (Vilyuchinsk)',)`, `('Akademik Lomonosov-2 (Vilyuchinsk)',)` | Value Statics: Total count 788 - Distinct count 788 - Null count 0   
+	`Capacity`, -- Example Values: `('9',)`, `('32',)`, `('',)` | Value Statics: Total count 788 - Distinct count 291 - Null count 0   
+);"
+167,"CREATE TABLE nuclear_power_plants
+(
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+	`Status`, -- Example Values: `Shutdown`, `Under Construction`, `Planned`, `Operational`, `Cancelled Construction` | Value Statics: Total count 788 - Distinct count 6 - Null count 0   
+);"
+169,"CREATE TABLE nuclear_power_plants
+(
+	`Status`, -- Example Values: `Shutdown`, `Under Construction`, `Planned`, `Operational`, `Cancelled Construction` | Value Statics: Total count 788 - Distinct count 6 - Null count 0   
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+170,"CREATE TABLE nuclear_power_plants
+(
+	`Status`, -- Example Values: `Shutdown`, `Under Construction`, `Planned`, `Operational`, `Cancelled Construction` | Value Statics: Total count 788 - Distinct count 6 - Null count 0   
+);"
+171,"CREATE TABLE nuclear_power_plants
+(
+	`ReactorModel`, -- Example Values: `('',)`, `(""KLT-40S 'Floating'"",)`, `('VVER V-509',)` | Value Statics: Total count 788 - Distinct count 148 - Null count 0   
+);"
+172,"CREATE TABLE nuclear_power_plants
+(
+	`Name`, -- Example Values: `('Ågesta',)`, `('Akademik Lomonosov-1 (Vilyuchinsk)',)`, `('Akademik Lomonosov-2 (Vilyuchinsk)',)` | Value Statics: Total count 788 - Distinct count 788 - Null count 0   
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+174,"CREATE TABLE nuclear_power_plants
+(
+	`OperationalFrom`, -- Example Values: `('1964-05-01',)`, `('',)`, `('1973-07-16',)` | Value Statics: Total count 788 - Distinct count 572 - Null count 0   
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+173,"CREATE TABLE nuclear_power_plants
+(
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+	`Status`, -- Example Values: `Shutdown`, `Under Construction`, `Planned`, `Operational`, `Cancelled Construction` | Value Statics: Total count 788 - Distinct count 6 - Null count 0   
+	`Name`, -- Example Values: `('Ågesta',)`, `('Akademik Lomonosov-1 (Vilyuchinsk)',)`, `('Akademik Lomonosov-2 (Vilyuchinsk)',)` | Value Statics: Total count 788 - Distinct count 788 - Null count 0   
+);"
+175,"CREATE TABLE nuclear_power_plants
+(
+	`Status`, -- Example Values: `Shutdown`, `Under Construction`, `Planned`, `Operational`, `Cancelled Construction` | Value Statics: Total count 788 - Distinct count 6 - Null count 0   
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+176,"CREATE TABLE nuclear_power_plants
+(
+	`Capacity`, -- Example Values: `('9',)`, `('32',)`, `('',)` | Value Statics: Total count 788 - Distinct count 291 - Null count 0   
+	`Status`, -- Example Values: `Shutdown`, `Under Construction`, `Planned`, `Operational`, `Cancelled Construction` | Value Statics: Total count 788 - Distinct count 6 - Null count 0   
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+177,"CREATE TABLE nuclear_power_plants
+(
+	`ReactorType`, -- Example Values: `PHWR`, `PWR`, ``, `FBR`, `LWGR` | Value Statics: Total count 788 - Distinct count 14 - Null count 0   
+	`Capacity`, -- Example Values: `('9',)`, `('32',)`, `('',)` | Value Statics: Total count 788 - Distinct count 291 - Null count 0   
+);"
+178,"CREATE TABLE nuclear_power_plants
+(
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+	`Status`, -- Example Values: `Shutdown`, `Under Construction`, `Planned`, `Operational`, `Cancelled Construction` | Value Statics: Total count 788 - Distinct count 6 - Null count 0   
+);"
+179,"CREATE TABLE nuclear_power_plants
+(
+	`Status`, -- Example Values: `Shutdown`, `Under Construction`, `Planned`, `Operational`, `Cancelled Construction` | Value Statics: Total count 788 - Distinct count 6 - Null count 0   
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+180,"CREATE TABLE nuclear_power_plants
+(
+	`Latitude`, -- Example Values: `('59.206000',)`, `('59.919000',)`, `('',)` | Value Statics: Total count 788 - Distinct count 334 - Null count 0   
+	`ConstructionStartAt`, -- Example Values: `('1957-12-01',)`, `('2007-04-15',)`, `('',)` | Value Statics: Total count 788 - Distinct count 499 - Null count 0   
+	`ReactorType`, -- Example Values: `PHWR`, `PWR`, ``, `FBR`, `LWGR` | Value Statics: Total count 788 - Distinct count 14 - Null count 0   
+	`Longitude`, -- Example Values: `('18.082900',)`, `('30.261000',)`, `('',)` | Value Statics: Total count 788 - Distinct count 333 - Null count 0   
+);"
+182,"CREATE TABLE nuclear_power_plants
+(
+	`Source`, -- Example Values: `WNA/IAEA`, `WNA`, `WNA/wikipedia/IAEA`, `wikipedia`, `IAEA` | Value Statics: Total count 788 - Distinct count 7 - Null count 0   
+);"
+181,"CREATE TABLE nuclear_power_plants
+(
+	`Capacity`, -- Example Values: `('9',)`, `('32',)`, `('',)` | Value Statics: Total count 788 - Distinct count 291 - Null count 0   
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+);"
+183,"CREATE TABLE nuclear_power_plants
+(
+	`ReactorType`, -- Example Values: `PHWR`, `PWR`, ``, `FBR`, `LWGR` | Value Statics: Total count 788 - Distinct count 14 - Null count 0   
+	`Capacity`, -- Example Values: `('9',)`, `('32',)`, `('',)` | Value Statics: Total count 788 - Distinct count 291 - Null count 0   
+);"
+184,"CREATE TABLE nuclear_power_plants
+(
+	`Country`, -- Example Values: `('Sweden',)`, `('Russian Federation',)`, `('Iran',)` | Value Statics: Total count 788 - Distinct count 40 - Null count 0   
+	`Name`, -- Example Values: `('Ågesta',)`, `('Akademik Lomonosov-1 (Vilyuchinsk)',)`, `('Akademik Lomonosov-2 (Vilyuchinsk)',)` | Value Statics: Total count 788 - Distinct count 788 - Null count 0   
+);"
