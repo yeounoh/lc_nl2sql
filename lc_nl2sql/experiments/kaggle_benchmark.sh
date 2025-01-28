@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Use Kaggle w/ gemini-1.5-pro"
-input_file_sk100="lc_nl2sql/data/kaggle_dev_example_synthetic_examples_200.json"
+input_file_sk100="lc_nl2sql/data/kaggle_dev_example_synthetic_examples_100.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/kaggle/dev.json \
@@ -35,7 +35,7 @@ python lc_nl2sql/predict/measure_latency.py \
  
 
 echo "Use Kaggle w/ gemini-1.5-flash"
-input_file_sk100="lc_nl2sql/data/kaggle_dev_example_synthetic_examples_200_flash.json"
+input_file_sk100="lc_nl2sql/data/kaggle_dev_example_synthetic_examples_100_flash.json"
 if [[ ! -f "$input_file_sk100" ]]; then
   python lc_nl2sql/data_process/sql_data_process.py \
   --input_data_path lc_nl2sql/data/kaggle/dev.json \
