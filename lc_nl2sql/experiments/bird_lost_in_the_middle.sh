@@ -31,6 +31,7 @@ for k in "${shuffle[@]}"; do
   --example_pool_type train \
   --example_selection_file lc_nl2sql/data/bird/similar_examples.json \
   --inject_gt_example 1 \
+  --shuffle "$k" \
   --num_examples 100
   
   python lc_nl2sql/predict/predict.py \
