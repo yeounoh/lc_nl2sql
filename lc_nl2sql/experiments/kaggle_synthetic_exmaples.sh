@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Generate different number of synthetic examples
-n_examples=(0 5 10 25 50 75 100 125 200)
+n_examples=(0 5 10 20 25 50 75 100 125 200)
 for k in "${n_examples[@]}"; do
   echo "Running with $k synthetic examples"  
   output_file="lc_nl2sql/data/kaggle_dev_example_with_synthetic_examples_$k.json"
