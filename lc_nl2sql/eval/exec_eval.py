@@ -240,12 +240,12 @@ def eval_exec_match(
             # ), "gold query %s has error on database file %s" % (g_str, db_path)
             # Some golden queries are invalid (e.g., BEAVER)
             if g_flag == "exception":
-                print('g_flag:', g_denotation)
+                #print('g_flag:', g_denotation)
                 pred_passes = 1
 
             # wrong if execution fails
             if p_flag == "exception":
-                print('p_flag:', p_denotation)
+                #print('p_flag:', p_denotation)
                 pred_passes = 0
 
             # if denotations are not equivalent, the prediction must be wrong
