@@ -385,6 +385,17 @@ class ProcessSqlData:
                 _examples = self.model._generate_sql(prompt, use_flash=self.use_flash)
                 num_generated_examples += len(_examples.split("\"input\":"))
                 examples += "\n" + _examples
+            
+            while num_generated_examples > k:
+                indices = []
+                index = -1
+                while True:
+                    index = examples.find("\"input\":", index + 1)
+                    if index == -1:
+                        break
+                    indices.append(index)
+                examples = examples[:indices[-1]]
+                num_generated_examples = len(examples.split("\"input\":"))
             return examples
             
 
@@ -435,6 +446,8 @@ class ProcessSqlData:
             if len(col_selected_schemas) > 0:
                 filtered_schema = col_selected_schemas[int(
                     data['question_id'])]
+                if len("(".join(filtered_schema.split("(")[1:]).split(");")[0]) < 1:
+                    filtered_schema = schema
             if not filtered_schema:
                 filtered_col_json = select_table_columns(
                     schema, data['question'], data['evidence'] if 'evidence' in data else "")
@@ -483,7 +496,7 @@ class ProcessSqlData:
                         \"input\": \"{sql_prompt}\"\n
                         \"output\": \"{sql}\"\n
                         """
-                        shots.append(shot_template.format(sql_prompt=e['question'], sql=e['SQL']))
+                        shots.append(shot_template.format(sql_prompt=e['question'], sql=e[output_name]))
                     examples += '\n'.join(shots)
             
                 if self.num_examples > 0:
@@ -516,7 +529,7 @@ class ProcessSqlData:
                         shots = list()
                         for i, eg in enumerate(selected_examples):
                             if i == int(len(selected_examples) * self.gt_pos) and self.inject_gt_example:
-                                shots.append(shot_template.format(sql_prompt=data["question"], sql=data['SQL']))
+                                shots.append(shot_template.format(sql_prompt=data["question"], sql=data[output_name]))
                             shots.append(shot_template.format(
                                 sql_prompt=eg['sql_prompt'], 
                                 sql=eg['sql']))
@@ -615,6 +628,7 @@ class ProcessSqlData:
         data_info = SQL_DATA_INFO[source_type]
         assert data_info['data_source'] in ['bird', 'spider', 'kaggle', 'beaver']
         
+        # TODO(yeounoh) - column selection results for kaggle
         col_selected_schemas = dict()
         if (self.use_column_filtering) and self.filtered_schema_file:
             df = pd.read_csv(self.filtered_schema_file)

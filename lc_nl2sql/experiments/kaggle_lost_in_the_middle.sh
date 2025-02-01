@@ -1,0 +1,49 @@
+
+# Lost in the middle experiments
+gt_pos=(0.1 0.25 0.5 0.75 0.9)
+for k in "${gt_pos[@]}"; do
+  echo "Running with $k train examples and GT"
+  python lc_nl2sql/data_process/sql_data_process.py \
+  --input_data_path lc_nl2sql/data/kaggle/dev.json \
+  --input_table_path lc_nl2sql/data/kaggle/KaggleDBQA_tables.json \
+  --db_folder_path lc_nl2sql/data/kaggle/databases \
+  --source_type "kaggle" \
+  --db_tbl_col_vals_file db_tbl_col_vals_kaggle.pickle \
+  --example_pool_type train \
+  --example_selection_file lc_nl2sql/data/kaggle/similar_examples.json \
+  --inject_gt_example 1 \
+  --num_examples 100 \
+  --gt_pos "$k"
+
+  python lc_nl2sql/predict/predict.py \
+  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+  --db_tbl_col_vals_file db_tbl_col_vals_kaggle.pickle \
+  --num_beams 1 \
+  --temperature 0.5 \
+  --db_folder_path lc_nl2sql/data/kaggle/databases \
+  --predicted_out_filename "lc_nl2sql/output/pred/kaggle_lost_in_the_middle_gt_pos_$k"
+done
+
+shuffle=(1 2 3)
+for k in "${shuffle[@]}"; do
+  echo "Running with shuffle mode $k"
+  python lc_nl2sql/data_process/sql_data_process.py \
+  --input_data_path lc_nl2sql/data/kaggle/dev.json \
+  --input_table_path lc_nl2sql/data/kaggle/KaggleDBQA_tables.json \
+  --db_folder_path lc_nl2sql/data/kaggle/databases \
+  --source_type "kaggle" \
+  --db_tbl_col_vals_file db_tbl_col_vals_kaggle.pickle \
+  --example_pool_type train \
+  --example_selection_file lc_nl2sql/data/kaggle/similar_examples.json \
+  --inject_gt_example 1 \
+  --shuffle "$k" \
+  --num_examples 100
+  
+  python lc_nl2sql/predict/predict.py \
+  --predicted_input_filename lc_nl2sql/data/example_text2sql_dev.json \
+  --db_tbl_col_vals_file db_tbl_col_vals_kaggle.pickle \
+  --num_beams 1 \
+  --temperature 0.5 \
+  --db_folder_path lc_nl2sql/data/kaggle/databases \
+  --predicted_out_filename "lc_nl2sql/output/pred/kaggle_lost_in_the_middle_shuffle_$k"
+done

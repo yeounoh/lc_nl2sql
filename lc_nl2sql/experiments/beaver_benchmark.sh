@@ -12,8 +12,9 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --db_tbl_col_vals_file db_tbl_col_vals_beaver.pickle \
   --num_col_values 10 \
   --synthetic_examples 1 \
+  --use_column_filtering 1 \
+  --filtered_schema_file lc_nl2sql/data/beaver/col_selection_schema.csv \
   --num_examples 100
-  #--filtered_schema_file lc_nl2sql/data/kaggle/col_selection_schema_kaggle.csv \
 fi
 
 python lc_nl2sql/predict/predict.py \
@@ -42,11 +43,12 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --source_type "beaver" \
   --db_folder_path lc_nl2sql/data/beaver/databases \
   --db_tbl_col_vals_file db_tbl_col_vals_beaver.pickle \
+  --filtered_schema_file lc_nl2sql/data/beaver/col_selection_schema.csv \
   --num_col_values 10 \
   --synthetic_examples 1 \
   --use_flash 1 \
+  --use_column_filtering 1\
   --num_examples 100
-  #--filtered_schema_file lc_nl2sql/data/kaggle/col_selection_schema_kaggle.csv \
 fi
 
 python lc_nl2sql/predict/predict.py \

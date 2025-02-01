@@ -668,28 +668,12 @@ def evaluate(
     with open(predict) as f:
         plist = []
         pseq_one = []
-        if predict.endswith(".sql"):
-            for l in f.readlines():
-                if len(l.strip()) == 0:
-                    # when some predict is none, support it can continue work
-                    pseq_one.append(["no out"])
-
-                else:
-                    pseq_one.append(l.strip().split("\t"))
-        elif predict.endswith(".jsonl"):
-            # --- Updated by simonkorl 8/28/2023 ---
-            # Support format in ChatGLM-Efficient-Tuning
-            # You can now evaluate ChatGLM-Efficient-Tuning predict results
-            for l in f.readlines():
-                obj = json.loads(l)
-                if len(obj["predict"].strip()) == 0:
-                    # when some predict is none, support it can continue work
-                    pseq_one.append(["no out"])
-
-                else:
-                    pseq_one.append(obj["predict"].strip().split("\t"))
-        else:
-            return None
+        for l in f.readlines():
+            if len(l.strip()) == 0:
+                # when some predict is none, support it can continue work
+                pseq_one.append(["no out"])
+            else:
+                pseq_one.append(l.strip().split("\t"))
 
         if len(pseq_one) != 0:
             plist.append(pseq_one)
@@ -1167,17 +1151,9 @@ def build_foreign_key_map_from_json(table):
 
 
 def evaluate_api(args: Optional[Dict[str, Any]] = None):
-    # Prepare output file path by appending "2sql" before ".txt" if --natsql is true
-    if args["natsql"]:
-        pred_file_path = (
-            args["input"].rsplit(".", 1)[0] + "2sql." + args["input"].rsplit(".", 1)[1]
-        )
-        gold_file_path = args["gold_natsql"]
-        table_info_path = args["table_natsql"]
-    else:
-        pred_file_path = args["input"]
-        gold_file_path = args["gold"]
-        table_info_path = args["table"]
+    pred_file_path = args["input"]
+    gold_file_path = args["gold"]
+    table_info_path = args["table"]
 
     # only evaluating exact match needs this argument
     kmaps = None
@@ -1251,30 +1227,9 @@ if __name__ == "__main__":
         action="store_true",
         help="whether to print progress bar of running test inputs for each datapoint",
     )
-    parser.add_argument(
-        "--natsql",
-        default=False,
-        action="store_true",
-        help="whether to convert natsql to sql and evaluate the converted sql",
-    )
     args = parser.parse_args()
 
-    # Check if input file name containes "natsql"
-    if "natsql" in args.input:
-        args.natsql = True
-
-    # Prepare output file path by appending "2sql" before ".txt" if --natsql is true
-    if args.natsql:
-        output_file_path = (
-            args.input.rsplit(".", 1)[0] + "2sql." + args.input.rsplit(".", 1)[1]
-        )
-        args.gold = "./lc_nl2sql/data/eval_data/gold_natsql2sql.txt"
-        args.table = "./lc_nl2sql/data/eval_data/tables_for_natsql2sql.json"
-    else:
-        output_file_path = args.input
-        # args.gold = "./eval/data/gold.txt"
-        # args.gold = "./lc_nl2sql/data/eval_data/gold.txt"
-        # args.table = "./lc_nl2sql/data/eval_data/tables.json"
+    output_file_path = args.input
     args.pred = output_file_path
 
     # only evaluating exact match needs this argument
@@ -1284,11 +1239,6 @@ if __name__ == "__main__":
             args.table is not None
         ), "table argument must be non-None if exact set match is evaluated"
         kmaps = build_foreign_key_map_from_json(args.table)
-
-    if args.natsql:
-        # First, run `python convert_natsql_to_sql.py` in a subprocess to convert the predicted queries to SQL
-        cmd = f"python convert_natsql_to_sql.py --input_file {args.input} --output_file {output_file_path}"
-        subprocess.run(cmd, shell=True, check=True)
 
     # Second, evaluate the predicted SQL queries
     evaluate(
