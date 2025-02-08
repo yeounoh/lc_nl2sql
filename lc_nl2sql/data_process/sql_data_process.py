@@ -449,8 +449,11 @@ class ProcessSqlData:
                 if len("(".join(filtered_schema.split("(")[1:]).split(");")[0]) < 1:
                     filtered_schema = schema
             if not filtered_schema:
+                hints = data['evidence'] if 'evidence' in data else ""
+                if not hint:
+                    hint = data['mappoing'] if 'mapping' in data else ""
                 filtered_col_json = select_table_columns(
-                    schema, data['question'], data['evidence'] if 'evidence' in data else "")
+                    schema, data['question'], hints)
                 table_schema_map = db_table_schema_map[
                     data[db_id_name]]
                 filtered_schema = filter_tables(
@@ -539,7 +542,9 @@ class ProcessSqlData:
                 if self.num_documents > 0:
                     documentation = _extract_k_documents(int(data['question_id']), self.num_documents)
 
-                hints = data["evidence"] if "evidence" in data and self.use_hint else ""
+                hints = data['evidence'] if 'evidence' in data else ""
+                if not hints:
+                    hints = data['mappoing'] if 'mapping' in data else ""
                 if self.use_rules:
                     input_instruction = BASIC_INSTRUCTION_PROMPT.format(
                         db_name=data[db_id_name],
