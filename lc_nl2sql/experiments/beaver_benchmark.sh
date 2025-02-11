@@ -10,7 +10,7 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --source_type "beaver" \
   --db_folder_path lc_nl2sql/data/beaver/databases \
   --db_tbl_col_vals_file db_tbl_col_vals_beaver.pickle \
-  --num_col_values 5 \
+  --num_col_values 10 \
   --synthetic_examples 1 \
   --use_column_filtering 1 \
   --filtered_schema_file lc_nl2sql/data/beaver/col_selection_schema.csv \
@@ -23,7 +23,7 @@ python lc_nl2sql/predict/predict.py \
   --num_beams 1 \
   --temperature 0.5 \
   --use_self_correction 1 \
-  --use_disambiguation 0 \
+  --use_disambiguation 1 \
   --db_folder_path lc_nl2sql/data/beaver/databases \
   --predicted_out_filename "lc_nl2sql/output/pred/beaver_benchmark.sql"
 
@@ -44,7 +44,7 @@ if [[ ! -f "$input_file_sk100" ]]; then
   --db_folder_path lc_nl2sql/data/beaver/databases \
   --db_tbl_col_vals_file db_tbl_col_vals_beaver.pickle \
   --filtered_schema_file lc_nl2sql/data/beaver/col_selection_schema.csv \
-  --num_col_values 5 \
+  --num_col_values 10 \
   --synthetic_examples 1 \
   --use_flash 1 \
   --use_column_filtering 1\
@@ -57,7 +57,7 @@ python lc_nl2sql/predict/predict.py \
   --num_beams 1 \
   --temperature 0.5 \
   --use_self_correction 1 \
-  --use_disambiguation 0 \
+  --use_disambiguation 1 \
   --use_flash 1 \
   --db_folder_path lc_nl2sql/data/beaver/databases \
   --predicted_out_filename "lc_nl2sql/output/pred/beaver_benchmark_flash.sql"

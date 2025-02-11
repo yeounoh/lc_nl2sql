@@ -182,7 +182,7 @@ class GeminiModel:
                 if "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
                     logging.info(f"{str(e)}, retrying ...")
                     query = self._remove_col_vals(query)
-                    max_retries = 1
+                    max_retries = 0
                 else:
                     logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
@@ -345,7 +345,7 @@ class GeminiModel:
             logging.info(f"Correction failed due to {err}: {_sql}")
             if not return_invalid:
                 return "", accumulated_token_count
-        return _sql, accumulated_token_count
+        return _sql, accumulated_token_count, retry_cnt
 
     def chat(self,
              query: str,
@@ -356,14 +356,13 @@ class GeminiModel:
             use_flash = False
             if 'use_flash' in input_kwargs and input_kwargs['use_flash']:
                 use_flalsh = True
-            resp, max_retries = self._generate_sql(query,
+            resp, _ = self._generate_sql(query,
                                       use_flash=use_flash,
                                       temperature=self.temperature)
-            n_tries = 5 - max_retries + 1
         except:
             print(f'\n*** {query} resulted in API error...\n')
-            resp, n_tries = "", 1
-        return resp, n_tries
+            resp, _ = "", 1
+        return resp, _
 
     def stream_chat(self,
                     query: str,

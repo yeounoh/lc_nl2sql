@@ -23,7 +23,7 @@ def create_table_from_schema(cursor, schema_file, table_name):
                 }
         # Build the CREATE TABLE statement
         fkeys = []
-        pkey_exist = False #disable pkey as the original DB violates UNIQUE constraints
+        pkey_exist = True #disable pkey as the original DB violates UNIQUE constraints
         col_idx = 0
         create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} ("
         for row in reader:
