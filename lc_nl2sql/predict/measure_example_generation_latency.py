@@ -25,7 +25,7 @@ def measure_example_generaitn_latency(model: GeminiModel, predict_data: List[Dic
                 prompt = EXAMPLE_GENERATOR2.format(schema=schema, k=_k)
             else:
                 prompt = EXAMPLE_GENERATOR.format(schema, _k)
-            _examples = model._generate_sql(prompt)
+            _examples, _ = model._generate_sql(prompt)
             num_generated_examples += len(_examples.split("\"input\":"))
             examples += "\n" + _examples
         return examples

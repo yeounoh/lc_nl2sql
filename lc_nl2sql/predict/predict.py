@@ -50,12 +50,12 @@ def inference_worker(
         generation_latency, verification_latency = 0, 0
         e2e_latency = time.time()
         for i in range(n_candidates):
-            n_tries += 1
             model.set_temperature(model.generating_args.temperature + 0.1 * i)
             start_time = time.time()  # tracks output generation time
-            response, _ = model.chat(query=item["input"],
+            response, _n_tries = model.chat(query=item["input"],
                                      history=[],
                                      **input_kwargs)
+            n_tries += _n_tries
             response, extra_tokens = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid, return_invalid=True, 
                                                 use_flash=model.generating_args.use_flash)
