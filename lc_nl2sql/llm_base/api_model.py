@@ -83,12 +83,12 @@ class GeminiModel:
             logging.debug("Token counting failed, returning 1000001 as size")
             return 1000001
         
-    def _compress(self, query, multiplier=3.4):
+    def _compress(self, query, multiplier=1.4):
         # Remove GitHub URLs using re.sub()
         pattern = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         query = re.sub(pattern, "", query)
         n_reduction = 0
-        while len(query) > 1000000 * multiplier and n_reduction < 8:
+        while len(query) > 2000000 * multiplier and n_reduction < 8:
             processed_lines = []
             for line in query.splitlines():
                 if len(line) > 20000:
@@ -182,7 +182,6 @@ class GeminiModel:
                 if "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
                     logging.info(f"{str(e)}, retrying ...")
                     query = self._remove_col_vals(query)
-                    max_retries = 0
                 else:
                     logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
