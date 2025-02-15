@@ -99,9 +99,10 @@ Also consider the "Rules" and some useful "Hints" if provided.
 Now generate SQLite SQL query to answer the given "Question".
 
 Output the SQL query string ONLY, and make sure it is a single SQL statement.
+If you already have access to the exact answer, please rewrite the query so to avoid RECITATION error.
 """
 
-BASIC_INSTRUCTION_PROMPT_NO_RULES = """\
+BASIC_INSTRUCTION_PROMPT_NO_RULES = """
 You are a SQLite SQL expert.
 Your job is to write a SQLite SQL query to answer the user's question.
 You need to understand the question in natural language and good understanding of the underlying database schema and structure to get it right.
@@ -130,6 +131,7 @@ Also consider some useful "Hints" if provided.
 Now generate SQLite SQL query to answer the given "Question".
 
 Output the SQL query string ONLY.
+If you already have access to the exact answer, please rewrite the query so to avoid RECITATION error.
 """
 
 COLUMN_SELECTOR_TEMPLATE= """

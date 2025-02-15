@@ -32,6 +32,7 @@ class GeminiModel:
     def __init__(self, project_id="400355794761") -> None:
         vertexai.init(project=project_id, location="us-central1")
         self.model = GenerativeModel(model_name="gemini-1.5-pro-002")  # preview-0514
+        self.model = GenerativeModel(model_name="gemini-2.0-flash")
         self.model2 = GenerativeModel(
             model_name="gemini-1.5-flash-002")
         self.ignore_hints = False
@@ -191,7 +192,7 @@ class GeminiModel:
                                             max_retries=max_retries - 1)
             else:
                 logging.error(f"SQL generation failed for: {str(e)}")
-            return ""
+            return "", max_retries
         resp = re.sub(r"^ite\s+", "", resp)
         resp = re.sub('\s+', ' ', resp).strip()
         return resp, max_retries

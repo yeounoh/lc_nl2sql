@@ -78,6 +78,7 @@ def main():
                        "db_tbl_col_vals_file": args.db_tbl_col_vals_file})
 
     data_generated = False
+    reuse_data = int(args.reuse_data) != 0
     candidate_sets = list()
     for i in range(int(args.num_candidates)):
         if not data_generated or not reuse_data:
@@ -92,7 +93,7 @@ def main():
     with open(args.output_file_path, "w", newline="") as csvfile:
         header = [idx for idx in range(len(predict_data))]
         writer = csv.writer(csvfile)
-        writer.writerows(header + candidate_sets)
+        writer.writerows([header] + candidate_sets)
 
 if __name__ == "__main__":
     main()
