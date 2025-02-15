@@ -23,7 +23,7 @@ def create_table_from_schema(cursor, schema_file, table_name):
                 }
         # Build the CREATE TABLE statement
         fkeys = []
-        pkey_exist = False
+        pkey_exist = True #disable pkey as the original DB violates UNIQUE constraints
         col_idx = 0
         create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} ("
         for row in reader:
@@ -39,9 +39,8 @@ def create_table_from_schema(cursor, schema_file, table_name):
                 create_table_sql += f"({data_length})"
 
             if pkey == 'PRIMARY KEY' and not pkey_exist:
-                create_table_sql += " PRIMARY KEY"
+                #create_table_sql += " PRIMARY KEY"
                 # to avoid: sqlite3.OperationalError: table "LIBRARY_MATERIAL_STATUS" has more than one primary key
-                pkey_exist = True
                 metadata['primary_keys'].append(col_idx)
 
             if 'FOREIGN KEY' in fkey:
@@ -53,13 +52,18 @@ def create_table_from_schema(cursor, schema_file, table_name):
 
             # Add a comma if it's not the last column
             create_table_sql += ", "
+        if len(metadata['primary_keys']) > 0:
+            pkeys = []
+            for idx in metadata['primary_keys']:
+                pkeys.append(metadata['columns'][idx][0])
+            pkey_str = f'PRIMARY KEY ({",".join(pkeys)})'
+            create_table_sql += pkey_str + ", "
 
         # Remove the trailing comma and space, and close the statement
         if len(fkeys) > 0:
             create_table_sql += ", ".join(fkeys) + ")"
         else:
             create_table_sql = create_table_sql[:-2] + ")"
-
         # Execute the CREATE TABLE statement
         cursor.execute(create_table_sql)
 
@@ -81,7 +85,7 @@ def load_table_content(cursor, content_file, table_name):
                     cursor.execute(f'INSERT OR IGNORE INTO {table_name} VALUES ({",".join(["?"] * len(row))})', row)
                 except sqlite3.Error as e:
                     print(e)
-                    continue
+                    raise
 
 
 schema_directory = 'schema/dw'

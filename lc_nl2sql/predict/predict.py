@@ -50,15 +50,16 @@ def inference_worker(
         generation_latency, verification_latency = 0, 0
         e2e_latency = time.time()
         for i in range(n_candidates):
-            n_tries += 1
             model.set_temperature(model.generating_args.temperature + 0.1 * i)
             start_time = time.time()  # tracks output generation time
             response, _ = model.chat(query=item["input"],
                                      history=[],
                                      **input_kwargs)
-            response, extra_tokens = model.verify_and_correct(item["input"], response,
+            n_tries += 1
+            response, extra_tokens, n_retries = model.verify_and_correct(item["input"], response,
                                                 model.db_folder_path, qid, return_invalid=True, 
                                                 use_flash=model.generating_args.use_flash)
+            n_tries += n_retries
             generation_latency = time.time() - start_time
             if response != "":
                 start_time = time.time()
@@ -74,7 +75,7 @@ def inference_worker(
     try:
         return func_timeout(1800, _task2, args=())
     except FunctionTimedOut:
-        return ("", 0, 0, 0, 0, 0)
+        return ("", 0, 0, 0, 0, 0, 0)
 
 def parallelized_inference(model: GeminiModel, predict_data: List[Dict],
                            **input_kwargs):

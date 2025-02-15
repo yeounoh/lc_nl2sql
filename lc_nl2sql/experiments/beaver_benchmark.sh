@@ -20,7 +20,7 @@ fi
 python lc_nl2sql/predict/predict.py \
   --predicted_input_filename "$input_file_sk100" \
   --db_tbl_col_vals_file db_tbl_col_vals_beaver.pickle \
-  --num_beams 10 \
+  --num_beams 1 \
   --temperature 0.5 \
   --use_self_correction 1 \
   --use_disambiguation 1 \
@@ -54,7 +54,7 @@ fi
 python lc_nl2sql/predict/predict.py \
   --predicted_input_filename "$input_file_sk100" \
   --db_tbl_col_vals_file db_tbl_col_vals_beaver.pickle \
-  --num_beams 10 \
+  --num_beams 1 \
   --temperature 0.5 \
   --use_self_correction 1 \
   --use_disambiguation 1 \

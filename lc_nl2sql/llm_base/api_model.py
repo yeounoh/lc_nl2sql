@@ -83,12 +83,12 @@ class GeminiModel:
             logging.debug("Token counting failed, returning 1000001 as size")
             return 1000001
         
-    def _compress(self, query, multiplier=3.4):
+    def _compress(self, query, multiplier=1.4):
         # Remove GitHub URLs using re.sub()
         pattern = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         query = re.sub(pattern, "", query)
         n_reduction = 0
-        while len(query) > 1000000 * multiplier and n_reduction < 8:
+        while len(query) > 2000000 * multiplier and n_reduction < 8:
             processed_lines = []
             for line in query.splitlines():
                 if len(line) > 20000:
@@ -182,7 +182,6 @@ class GeminiModel:
                 if "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
                     logging.info(f"{str(e)}, retrying ...")
                     query = self._remove_col_vals(query)
-                    max_retries = 1
                 else:
                     logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
@@ -195,7 +194,7 @@ class GeminiModel:
             return ""
         resp = re.sub(r"^ite\s+", "", resp)
         resp = re.sub('\s+', ' ', resp).strip()
-        return resp
+        return resp, max_retries
 
     def majority_voting(self, query, candidates):
         should_vote = False
@@ -206,14 +205,15 @@ class GeminiModel:
         if not should_vote:
             return candidates[0]
         candidates = "\n\n".join([c for c in set(candidates)])
-        sql = self._generate_sql(MAJORITY_VOTING.format(input=query,
+        sql, _ = self._generate_sql(MAJORITY_VOTING.format(input=query,
                                                         candidates=candidates),
                                  use_flash=False)
         return sql
     
     def verify_answer(self, sql, question, schema, use_flash=False):
         prompt = VERIFY_ANSWER.format(sql=sql, question=question, schema=schema)
-        return self._generate_sql(prompt, use_flash=use_flash)
+        answer, _ = self._generate_sql(prompt, use_flash=use_flash)
+        return answer
 
     def verify_and_correct(self, query, sql, db_folder_path, qid, return_invalid=True, use_flash=False):
         if not self.use_self_correction or query == "":
@@ -227,7 +227,7 @@ class GeminiModel:
                 "Now generate SQLite SQL query to answer the given")]
             new_prompt = CHECKER_TEMPLATE.format(context_str, input_str, s,
                                                  err)
-            new_sql = self._generate_sql(new_prompt,
+            new_sql, _ = self._generate_sql(new_prompt,
                                          use_flash=use_flash,
                                          temperature=self.temperature)
             return new_sql, self._count_token(new_prompt) if self.measure_self_correction_tokens else 0
@@ -291,7 +291,7 @@ class GeminiModel:
             new_prompt = LITERAL_ERROR_TEMPLATE.format(context_str, col_vals,
                                                        input_str,
                                                        "\n".join(tried_sql))
-            new_sql = self._generate_sql(new_prompt,
+            new_sql, _ = self._generate_sql(new_prompt,
                                          use_flash=use_flash,
                                          temperature=0.9)
             return new_sql, self._count_token(new_prompt) if self.measure_self_correction_tokens else 0
@@ -344,7 +344,7 @@ class GeminiModel:
             logging.info(f"Correction failed due to {err}: {_sql}")
             if not return_invalid:
                 return "", accumulated_token_count
-        return _sql, accumulated_token_count
+        return _sql, accumulated_token_count, retry_cnt
 
     def chat(self,
              query: str,
@@ -355,13 +355,13 @@ class GeminiModel:
             use_flash = False
             if 'use_flash' in input_kwargs and input_kwargs['use_flash']:
                 use_flalsh = True
-            resp = self._generate_sql(query,
+            resp, _ = self._generate_sql(query,
                                       use_flash=use_flash,
                                       temperature=self.temperature)
         except:
             print(f'\n*** {query} resulted in API error...\n')
-            resp = ""
-        return resp, ()
+            resp, _ = "", 1
+        return resp, _
 
     def stream_chat(self,
                     query: str,
