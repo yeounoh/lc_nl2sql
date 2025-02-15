@@ -48,10 +48,12 @@ def main():
 
     parser.add_argument("--temperature", default=0.5)
     parser.add_argument("--num_candidates", default=10)
+    parser.add_argument("--reuse_data", default=0)
+    parser.add_argument("--shuffle_schema", default=0)
 
     args = parser.parse_args()
 
-    all_in_one_dev_file = os.path.join(DATA_PATH, "example_text2sql_dev.json")
+    all_in_one_dev_file = os.path.join(DATA_PATH, "example_text2sql.json")
     process = ProcessSqlData(
         input_data_file=args.input_data_path,
         input_table_file=args.input_table_path,
@@ -67,6 +69,7 @@ def main():
         filtered_schema_file=args.filtered_schema_file,
         db_tbl_col_vals_file=args.db_tbl_col_vals_file,
         vertex_ai_project_id=args.vertex_ai_project_id,
+        shuffle_schema=int(args.shuffle_schema),
     )
 
     model = GeminiModel(project_id=args.vertex_ai_project_id)
@@ -74,19 +77,22 @@ def main():
                        "db_folder_path": args.db_folder_path,
                        "db_tbl_col_vals_file": args.db_tbl_col_vals_file})
 
-    dev_data = process.create_sft_raw_data(dump_file=False)
-    predict_data = [extract_sql_prompt_dataset(item) for item in dev_data]
+    data_generated = False
     candidate_sets = list()
-    candidate_sets.append([idx for idx in range(len(predict_data))])
     for i in range(int(args.num_candidates)):
+        if not data_generated or not reuse_data:
+            dev_data = process.create_sft_raw_data(dump_file=False)
+            predict_data = [extract_sql_prompt_dataset(item) for item in dev_data]
+            data_generated = True
         result = predict.parallelized_inference(model, predict_data)
         candidate_sets.append(result[0])
         with open(f'cand_{i}.txt', 'w') as f:
             for l in result[0]:
                 f.write(l + "\n")
     with open(args.output_file_path, "w", newline="") as csvfile:
+        header = [idx for idx in range(len(predict_data))]
         writer = csv.writer(csvfile)
-        writer.writerows(candidate_sets)
+        writer.writerows(header + candidate_sets)
 
 if __name__ == "__main__":
     main()

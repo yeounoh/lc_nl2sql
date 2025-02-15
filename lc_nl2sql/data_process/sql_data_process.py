@@ -59,6 +59,7 @@ class ProcessSqlData:
         filtered_schema_generation=False,
         source_type="bird",
         shuffle=2,
+        shuffle_schema=0,
     ) -> None:
         self.input_data_file = input_data_file
         self.input_table_file = input_table_file
@@ -89,6 +90,9 @@ class ProcessSqlData:
         self.use_flash = use_flash
         self.filtered_schema_generation = filtered_schema_generation
         self.shuffle = shuffle
+        assert shuffle in [0, 1, 2]
+        self.shuffle_schema = shuffle_schema
+        assert shuffle_schema in [0, 1, 2]
 
         self.source_type = source_type
 
@@ -241,7 +245,7 @@ class ProcessSqlData:
             table_schema_map = dict()
             table_creation_statements = ""
             for i, name in enumerate(tables):
-                ddl_statements = [f'CREATE TABLE `{name}` (\n']
+                ddl_statements = []
                 for j, col in enumerate(columns):
                     if col[0] == i:
                         is_primary_key = False
@@ -275,10 +279,21 @@ class ProcessSqlData:
                         ddl_statements.append(
                             f'  `{col_name}` {col_type}{col_key}, -- {col_comment} \n'
                         )
+                # shuffle column ordering
+                if self.shuffle_schema == 2:
+                    random.shuffle(ddl_statements)
+                ddl_statements = [f'CREATE TABLE `{name}` (\n'] + ddl_statements
                 ddl_statements.append(");\n")
-                table_creation_statements += "".join(ddl_statements)
                 if name not in table_schema_map:
                     table_schema_map[name] = ddl_statements
+                table_creation_statements += "".join(ddl_statements)
+            
+            if self.shuffle_schema >= 1:
+                shuffled_tables = list(table_schema_map.values())
+                random.shuffle(shuffled_tables)
+                table_creation_statements = ""
+                for ddl_statements in shuffled_tables:
+                    table_creation_statements += "".join(ddl_statements)
             return tbl_col_vals, table_creation_statements, table_schema_map
 
         n_workers = 40
@@ -304,7 +319,7 @@ class ProcessSqlData:
             db_table_schema_map = dict()
             db_context = dict()
 
-        if len(db_tbl_col_vals) == 0 or len(db_table_schema_map) == 0 and len(db_context) == 0:
+        if len(db_tbl_col_vals) == 0 or len(db_table_schema_map) == 0 and len(db_context) == 0 or self.shuffle_schema > 0:
             with ThreadPoolExecutor(max_workers=n_workers) as executor:
                 futures = {
                     executor.submit(_process_table_schema, item): item['db_id']
@@ -708,6 +723,8 @@ if __name__ == "__main__":
     parser.add_argument("--filtered_schema_generation", default=False)
     # 0 (before system inst), 1 (before schema), 2 (after schema & before question)
     parser.add_argument("--shuffle", default=2)
+    # 0 (no shuffling), 1 (shuffle tables), 2 (shuffle table & column)
+    parser.add_argument("--shuffle_schema", default=0)
 
     args = parser.parse_args()
 
@@ -745,5 +762,6 @@ if __name__ == "__main__":
         filtered_schema_generation=bool(int(args.filtered_schema_generation)),
         source_type=args.source_type,
         shuffle=int(args.shuffle),
+        shuffle_schema=int(args.shuffle_schema),
     )
     process.create_sft_raw_data(source_type=args.source_type)
