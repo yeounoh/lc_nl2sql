@@ -156,33 +156,37 @@ class GeminiModel:
                 resp = resp.split("<FINAL_ANSWER>")[1].split(
                     "</FINAL_ANSWER>")[0]
         except Exception as e:
-            if "RECITATION" in str(e):
-                json_response = str(e).split("Response:")[1]
-                try:
-                    response_data = json.loads(json_response)
-                    citations = response_data['candidates'][0]['citation_metadata']['citations']
-
-                    # Sort citations by start_index in descending order to avoid index issues
-                    citations.sort(key=lambda x: x['start_index'], reverse=True)
-
-                    modified_string = query
-                    example_col_start = query.find("###Table column example values###")
-                    for citation in citations:
-                        start_index = citation['start_index']
-                        end_index = citation['end_index']
-                        if example_col_start != -1 and int(start_index) > example_col_start:
-                            modified_string = modified_string[:start_index] + modified_string[end_index:]
-                            logging.info(f"Fixed RECITATION error: {query[start_index:end_index]}")
-                        else:
-                            logging.info(f"Not fixing RECITATION error: {query[start_index:end_index]}")
-                    query = modified_string
-                        
-                except (json.JSONDecodeError, KeyError, IndexError) as e:
-                    logging.debug(f"Error processing JSON response: {e}")
             if max_retries > 0:
-                if "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
+                if "RECITATION" in str(e):
+                    # json_response = str(e).split("Response:")[1]
+                    # try:
+                    #     response_data = json.loads(json_response)
+                    #     citations = response_data['candidates'][0]['citation_metadata']['citations']
+
+                    #     # Sort citations by start_index in descending order to avoid index issues
+                    #     citations.sort(key=lambda x: x['start_index'], reverse=True)
+
+                    #     modified_string = query
+                    #     example_col_start = query.find("###Table column example values###")
+                    #     for citation in citations:
+                    #         start_index = citation['start_index']
+                    #         end_index = citation['end_index']
+                    #         if example_col_start != -1 and int(start_index) > example_col_start:
+                    #             modified_string = modified_string[:start_index] + modified_string[end_index:]
+                    #             logging.info(f"Fixed RECITATION error: {query[start_index:end_index]}")
+                    #         else:
+                    #             logging.info(f"Not fixing RECITATION error: {query[start_index:end_index]}")
+                    #     query = modified_string
+                            
+                    # except (json.JSONDecodeError, KeyError, IndexError) as e:
+                    #     logging.debug(f"Error processing JSON response: {e}")
+                    query += ("\n\n Also, the last attempt resulted in RECITATION error. "
+                            "Please re-write your response so that it does not incur RECITATION error.")
+                    max_retries = 1
+                elif "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
                     logging.info(f"{str(e)}, retrying ...")
                     query = self._remove_col_vals(query)
+                    max_retries = 1
                 else:
                     logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
