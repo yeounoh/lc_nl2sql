@@ -182,11 +182,11 @@ class GeminiModel:
                     #     logging.debug(f"Error processing JSON response: {e}")
                     query += ("\n\n Also, the last attempt resulted in RECITATION error. "
                             "Please re-write your response so that it does not incur RECITATION error.")
-                    max_retries = 1
+                    max_retries = min(1, max_retries - 1)
                 elif "400" in str(e) or "PROHIBITED_CONTENT" in str(e):
                     logging.info(f"{str(e)}, retrying ...")
                     query = self._remove_col_vals(query)
-                    max_retries = 1
+                    max_retries = min(1, max_retries - 1)
                 else:
                     logging.info(f"{str(e)}, retrying in {30 // max(max_retries, 1)} seconds")
                     time.sleep(30 // max(max_retries, 1))
